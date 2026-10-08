@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–6 done (hook; config; db; untrusted; llm; `persona.py`: [stable block = identity + tone.md verbatim + UNTRUSTED_RULE + canary line, cached] + [task block, last]; `tone_version()`). Next: step 7 cli.py.
+Sprint 0 (Foundation). Steps 1–7 done (hook; config; db; untrusted; llm; persona; `cli.py`: `cloe init` / `doctor` / `version`, `--env`, COMMAND_MODULES registry for later sprints; doctor never prints addresses and does not create the DB). Next: step 8 hygiene + injection tests.
 
 ## Done
 
