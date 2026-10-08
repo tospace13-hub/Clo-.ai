@@ -22,7 +22,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from cloe import db, people, persona, records
 from cloe.llm import InjectionSuspected, LLMError
-from cloe.untrusted import injection_flags, wrap
+from cloe.untrusted import wrap
 
 COLUMNS = (
     "submitted_at", "name", "email", "role",
@@ -234,17 +234,6 @@ def _row_consents(conn, pid: int, rec: dict[str, str], at: str, report: Report) 
             report.consents += 1
 
 
-def _quarantine(rec: dict[str, str]) -> list[str]:
-    """Blank instruction-like cells that would become names or header fields; return them
-    as texts for flagged facts."""
-    moved = []
-    for col in FIELD_COLUMNS:
-        if rec[col] and injection_flags(rec[col]):
-            moved.append(f"Join form field {col}: {rec[col]}")
-            rec[col] = ""
-    return moved
-
-
 def _row_facts(conn, cid: int, sid: int, rec: dict[str, str], report: Report) -> None:
     tier = rec["tier"]
     if tier and rec["tier_other"] and tier.lower().startswith("other"):
@@ -291,7 +280,7 @@ def ingest_responses(
         report.new += new
         report.seen += not new
         at = people.parse_time(submitted) or db.now()
-        moved = _quarantine(rec)
+        moved = records.quarantine(rec, FIELD_COLUMNS, "Join form")
 
         cid = None
         company = {

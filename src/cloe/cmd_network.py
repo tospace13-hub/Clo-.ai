@@ -66,6 +66,37 @@ def cmd_ingest_joinform(args: argparse.Namespace, settings: config.Settings) -> 
     return 0
 
 
+def cmd_ingest_tell(args: argparse.Namespace, settings: config.Settings) -> int:
+    import json
+
+    from cloe import records
+    from cloe.sources import tell
+
+    unknown: list[str] = []
+    try:
+        if args.db:
+            if not settings.tell_db_url:
+                return _err("--db needs TELL_DB_URL (and TELL_DB_CA_CERT) in .env")
+            recs = tell.load_db(settings.tell_db_url, settings.tell_db_ca_cert)
+            origin = "db"
+            digest = records.sha256(json.dumps(recs, sort_keys=True))
+        elif args.file:
+            path = Path(args.file)
+            recs, unknown = tell.read_export(path)
+            origin, digest = path.name, records.sha256(path.read_bytes())
+        else:
+            return _err("give the TELL dashboard export (.xlsx), or --db")
+    except (OSError, ValueError) as exc:
+        return _err(f"TELL: {exc}")
+    conn = open_db(settings)
+    report = tell.ingest(conn, recs, origin=origin, digest=digest, unknown_columns=unknown)
+    conn.close()
+    print(f"OK   TELL from {origin}")
+    for line in report.lines():
+        print(f"     {line}")
+    return 0
+
+
 def register(sub: argparse._SubParsersAction) -> None:
     ingest = sub.add_parser("ingest", help="import outside data").add_subparsers(
         dest="source", required=True
@@ -76,3 +107,7 @@ def register(sub: argparse._SubParsersAction) -> None:
     p.add_argument("file", nargs="?", help="CSV/XLSX export; omit to read the Google Sheet")
     p.add_argument("--no-llm", action="store_true", help="don't classify needs now")
     p.set_defaults(func=cmd_ingest_joinform)
+    p = ingest.add_parser("tell", help="TELL: the dashboard's xlsx export, or --db (read-only)")
+    p.add_argument("file", nargs="?", help="companies.xlsx from the TELL dashboard export")
+    p.add_argument("--db", action="store_true", help="read TELL_DB_URL instead of a file")
+    p.set_defaults(func=cmd_ingest_tell)

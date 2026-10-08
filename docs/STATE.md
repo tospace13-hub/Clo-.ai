@@ -57,7 +57,11 @@ only) and `sources/joinform.py` (sheet or CSV/XLSX; header detection; quarantine
 instruction-like name/header cells; consent seed; unsubscribe tab; needs classified via
 `extract`, unclassified without a key); `cloe ingest joinform [file]`; fixture
 `tests/fixtures/joinform.csv`; injection placeholder for Sprint 1 is now a real test.
-Next: step 3, `sources/tell.py` + `tests/fixtures/tell.xlsx`.
+Step 3 done: `sources/tell.py` (dashboard xlsx export; `--db` read-only via
+`TELL_DB_URL` + required `TELL_DB_CA_CERT`; fills blanks only; keywords chunked ≤ 20 per
+fact, flagged `scraped`; contacts as people without consent); `cloe ingest tell`;
+fixture `tests/fixtures/tell.xlsx` (+ `make_tell_xlsx.py` to regenerate).
+Next: step 4, `profile.py`, then `cloe profile / consent set / forget / export / companies list`.
 
 ## Done
 

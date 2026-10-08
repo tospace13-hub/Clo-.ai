@@ -302,5 +302,16 @@ def add_need(
     return cur.lastrowid
 
 
+def quarantine(values: dict[str, str], keys: tuple[str, ...], label: str) -> list[str]:
+    """Blank instruction-like cells that would become names or header fields (facts and
+    needs are flagged instead). Returns their text for flagged facts of kind "other"."""
+    moved = []
+    for key in keys:
+        if values.get(key) and injection_flags(values[key]):
+            moved.append(f"{label} field {key}: {values[key]}")
+            values[key] = ""
+    return moved
+
+
 def flags_of(row: sqlite3.Row) -> set[str]:
     return {f for f in (row["flags"] or "").split(",") if f}
