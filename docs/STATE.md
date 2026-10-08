@@ -9,6 +9,7 @@ refuses any commit that doesn't touch this file.
 
 ## Round log (newest first)
 
+- 2026-10-08 · hosts · finished — `space13.to` added to the hosts to unblock (CONTEXT §G).
 - 2026-10-08 · rename · finished — the AI is **Cloé** (was "Clo"), the person is **Chloe**;
   package/CLI `cloe`, env `CLOE_*`; tone.md 1.1 puts "(AI)" beside every sign-off.
 - 2026-10-08 · planning · finished — sprint.md, CLAUDE.md, tone.md, CONTEXT.md written;
@@ -59,5 +60,5 @@ refuses any commit that doesn't touch this file.
    (hello@space13.to via Google Workspace SMTP?).
 6. Who owns the AI-statement and privacy-statement updates on space13.to? (Sprint 7 drafts
    them.)
-7. Unblock `m-dpp.nl`, `news.byborre.com`, `byborre.com` in the cloud environment's
+7. Unblock `m-dpp.nl`, `news.byborre.com`, `byborre.com`, `space13.to` in the cloud environment's
    network settings, or run work order 001 on the MacBook before Sprint 2.

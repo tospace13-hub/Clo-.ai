@@ -134,8 +134,11 @@ tell_match, team_notes
 
 ## G. Hosts blocked from cloud sessions (network policy)
 
-`m-dpp.nl`, `news.byborre.com`, `thenextcartel.com`, `www.byborre.com` returned
-"blocked by the network egress proxy". Either add them under *Allowed domains* in the
+`m-dpp.nl`, `news.byborre.com`, `thenextcartel.com`, `www.byborre.com`, `space13.to`,
+`www.space13.to` returned "blocked by the network egress proxy" (re-tested 2026-10-08).
+The team has asked for them to be allowed. For space13.to, the site's source is the
+`tospace13-hub/tos13website` repo on GitHub, which is reachable — read that instead of the
+live site. Either add them under *Allowed domains* in the
 environment settings (https://code.claude.com/docs/en/cloud-environments#network-access) or
 fetch them on the MacBook and commit the HTML into `tests/fixtures/`. `pypi.org` and
 GitHub work.
