@@ -21,6 +21,9 @@ tell = [
 pdf = [
     "pypdf>=6.19.0",
 ]
+sheets = [
+    "google-auth[requests]>=2.61.0",
+]
 
 [project.scripts]
 cloe = "cloe.cli:main"

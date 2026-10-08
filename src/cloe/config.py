@@ -81,6 +81,8 @@ class Settings:
     webhook_secret: str = field(default="", repr=False)
     tell_db_url: str = field(default="", repr=False)
     tell_db_ca_cert: str = ""
+    joinform_sheet_id: str = ""
+    google_service_account_file: str = ""
     canary: str = field(default="", repr=False)
     env_path: Path = DEFAULT_ENV_PATH
 
@@ -153,6 +155,8 @@ def load(
         webhook_secret=get("CLOE_WEBHOOK_SECRET"),
         tell_db_url=get("TELL_DB_URL"),
         tell_db_ca_cert=get("TELL_DB_CA_CERT"),
+        joinform_sheet_id=get("CLOE_JOINFORM_SHEET_ID"),
+        google_service_account_file=get("GOOGLE_SERVICE_ACCOUNT_FILE"),
         canary=canary,
         env_path=path,
     )

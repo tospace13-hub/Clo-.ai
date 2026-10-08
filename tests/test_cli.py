@@ -21,7 +21,8 @@ def test_init_is_idempotent_and_logged(capsys, env_file, tmp_path):
     assert cli.main(["--env", str(env_file), "init"]) == 0
     assert cli.main(["--env", str(env_file), "init"]) == 0
     out = capsys.readouterr().out
-    assert "1 migration(s) applied" in out and "0 migration(s) applied" in out
+    assert f"{len(db.MIGRATIONS)} migration(s) applied" in out
+    assert "0 migration(s) applied" in out
     conn = db.connect(tmp_path / "data" / "cloe.db")
     assert conn.execute("SELECT count(*) FROM event WHERE action='init'").fetchone()[0] == 2
 

@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .env
+secrets/
 data/
 !data/.gitkeep
 docs/workorders/*.result.json

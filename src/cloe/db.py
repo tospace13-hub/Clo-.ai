@@ -163,6 +163,18 @@ MIGRATIONS: list[str] = [
     );
     CREATE INDEX event_action ON event(action, at);
     """,
+    # 2 — Sprint 1: TELL's company class for the profile header; the name+city identity key
+    # (records.identity_key) so matching is an index lookup; the suppression list that keeps
+    # `cloe forget` from being undone by the next import (sha256 of the email only).
+    """
+    ALTER TABLE company ADD COLUMN company_class TEXT;
+    ALTER TABLE company ADD COLUMN identity_key TEXT;
+    CREATE INDEX company_identity ON company(identity_key);
+    CREATE TABLE forgotten (
+        email_sha256 TEXT PRIMARY KEY,
+        at           TEXT NOT NULL
+    );
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

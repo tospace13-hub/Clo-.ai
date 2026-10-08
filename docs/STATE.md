@@ -45,8 +45,14 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 1, step 1 of 6: `sources/joinform.py` (parse, upsert company/person, consent, facts,
-needs via extract, idempotent). Fixtures only: no real join-form export has been shared.
+Sprint 1. Done so far: `records.py` (identity rules, company/source/fact/need writes),
+`people.py` (person, consent ledger, forget, export), migration 2 (`company.company_class`,
+`company.identity_key`, `forgotten`), settings `CLOE_JOINFORM_SHEET_ID` +
+`GOOGLE_SERVICE_ACCOUNT_FILE`, optional extra `sheets` (google-auth). Team asked that the
+join form be read straight from the "TOS13 join form responses" Google Sheet: header row
+checked on 2026-10-08, it matches CONTEXT §C exactly (24 columns, tab `Responses`); a
+second tab `Unsubscribe` has `submitted_at, email, responses_updated`.
+Next: `sources/sheets.py` + `sources/joinform.py` (sheet and file), fixtures, tests.
 
 ## Done
 
