@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–5 done (hook; config; db; untrusted; `llm.py`: Claude.extract/draft/research + FakeClaude sharing one guard layer — wrapped-input check, refusal → Refused, max_tokens → Truncated, canary → InjectionSuspected + event; research loops pause_turn ≤5, append-only). Next: step 6 persona.py.
+Sprint 0 (Foundation). Steps 1–6 done (hook; config; db; untrusted; llm; `persona.py`: [stable block = identity + tone.md verbatim + UNTRUSTED_RULE + canary line, cached] + [task block, last]; `tone_version()`). Next: step 7 cli.py.
 
 ## Done
 
