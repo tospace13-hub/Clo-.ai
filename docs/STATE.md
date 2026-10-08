@@ -10,6 +10,7 @@ to "Laurels" with the habits that earned it.
 
 ## Round log (newest first)
 
+- 2026-10-08 · sprint 0 · started — Foundation.
 - 2026-10-08 · laurels · finished — added the "Laurels" section below.
 - 2026-10-08 · hosts · finished — `space13.to` added to the hosts to unblock (CONTEXT §G).
 - 2026-10-08 · rename · finished — the AI is **Cloé** (was "Clo"), the person is **Chloe**;
@@ -42,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 0 not started)
+Sprint 0 (Foundation). Step 1 of 9: hooks + branch.
 
 ## Done
 
