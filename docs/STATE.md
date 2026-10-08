@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–9 done (all build steps). Next: Definition of Done + hand-off (schema into Decisions).
+Sprint 0 (Foundation). Steps 1–9 done (all build steps; README now lists init/doctor/version). Next: Definition of Done + hand-off (schema into Decisions).
 
 ## Done
 

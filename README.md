@@ -5,17 +5,14 @@ know the companies in the network, finds them data they can use, and brings it t
 email and SMS — signed "Cloé (AI)", after Chloe approves. Cloé is the AI, named after and
 modelled on Chloe, who brought the WoTO companies together.
 
-- **Plan:** `sprint.md` (one sprint per Claude Code session) · **Status:** `docs/STATE.md`
-- **Voice:** `tone.md` · **Facts already researched:** `docs/CONTEXT.md`
-- **Rules for Claude Code sessions:** `CLAUDE.md`
-
-## Setup
-
 ```
 uv sync --all-extras
-cp .env.example .env          # fill in what you have; CLOE_SEND stays 0 until launch
+cp .env.example .env                  # fill in what you have; CLOE_SEND stays 0 until launch
 git config core.hooksPath .githooks   # pre-commit: STATE.md staged, ruff, pytest
-uv run cloe doctor
+uv run cloe init                      # create / migrate data/cloe.db
+uv run cloe doctor                    # OK / WARN / FAIL per check
+uv run cloe version
 ```
 
-Status: planning done (2026-10-08); Sprint 0 not started.
+Plan: `sprint.md` (one sprint per Claude Code session) · Status: `docs/STATE.md` ·
+Voice: `tone.md` · Researched facts: `docs/CONTEXT.md` · Session rules: `CLAUDE.md`.
