@@ -84,7 +84,9 @@ def test_consent_set(loaded, capsys, tmp_path):
     conn = connect(tmp_path)
     pid = people.get_person(conn, "info@example.nl")["id"]
     assert people.current_consent(conn, pid, "email", "cloe_updates") == "yes"
-    row = conn.execute("SELECT source, evidence FROM consent WHERE person_id = ?", (pid,)).fetchone()
+    row = conn.execute(
+        "SELECT source, evidence FROM consent WHERE person_id = ?", (pid,)
+    ).fetchone()
     assert tuple(row) == ("manual", "said yes on the phone, 2026-10-08")
 
     assert run(loaded, "consent", "set", "info@example.nl", "sms", "followup", "yes",

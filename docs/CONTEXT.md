@@ -51,8 +51,11 @@ Last verified: 2026-10-08. Each section says which sprint needs it.
 ## C. Join form on space13.to (Sprint 1)
 
 Backend: Google Apps Script (`_tools/join-form/Code.gs`) → first tab of the Google Sheet
-"TOS13 join form responses" + notification email to hello@space13.to. Export as CSV/XLSX
-for Cloé (`cloe ingest joinform <file>`). Columns, in order:
+"TOS13 join form responses" + notification email to hello@space13.to. Cloé reads the sheet
+directly (`cloe ingest joinform`, Sheets API, read-only service account; Sprint 1) or a
+CSV/XLSX export (`cloe ingest joinform <file>`). Tab `Responses` — header row checked
+against the live sheet on 2026-10-08, identical to the list below. Tab `Unsubscribe` —
+`submitted_at, email, responses_updated`. Columns of `Responses`, in order:
 
 ```
 submitted_at, name, email, role,

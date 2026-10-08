@@ -5,6 +5,20 @@ why it matters. Record corrections and confirmed approaches alike. Don't repeat 
 history or STATE.md already says. Update an existing entry rather than adding a duplicate;
 delete entries that turn out to be wrong.
 
+## 2026-10-08 — Date consent by when the person acted; re-imports act only on changes
+
+A re-import that dates consent "now" (e.g. an unparseable `submitted_at`) can silently undo
+a later "no" Chloe recorded. Rule: a new row is dated by its own timestamp; a row seen
+before only acts on cells that changed since the last import (dated when observed);
+one-off events (unsubscribes) are applied once. The latest ledger row by `at` wins.
+
+## 2026-10-08 — Don't grep other repos' working copies for facts CONTEXT already has
+
+Searching the local TELL clone (it has a `db/mysql/.env`) was refused by the session's
+permission classifier as credential exploration. CONTEXT §D already lists TELL's tables
+and export columns; where something is missing (TELL's `query_org`), write it down as an
+open question for the TELL team instead of digging.
+
 ## 2026-10-08 — Shell heredocs here turn `\uXXXX` escapes into real characters
 
 Writing Python tests through a bash heredoc put literal zero-width characters into the

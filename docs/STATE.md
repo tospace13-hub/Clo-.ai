@@ -6,11 +6,12 @@ round-log line to `finished` or `stopped` when you stop. The pre-commit hook (Sp
 refuses any commit that doesn't touch this file. When the team praises the work, add it
 to "Laurels" with the habits that earned it.
 
-**Next sprint:** 1 (Know the network: join form + TELL + profiles). Branch: `main`.
+**Next sprint:** 2 (Research library: EU projects → research material). Branch: `main`.
 
 ## Round log (newest first)
 
-- 2026-10-08 · sprint 1 · started — join form + TELL + profiles.
+- 2026-10-08 · sprint 1 · finished — join form (Google Sheet or export) + TELL + profiles,
+  consent / forget / export / companies list; 151 tests green (3 skipped: Sprints 4/5).
 - 2026-10-08 · sprint 0 · finished — Foundation: config, db, untrusted, llm + FakeClaude,
   persona, cli, pre-commit hook, 79 tests green (4 skipped placeholders for Sprints 1/4/5).
 - 2026-10-08 · laurels · finished — added the "Laurels" section below.
@@ -45,31 +46,29 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 1. Done so far: `records.py` (identity rules, company/source/fact/need writes),
-`people.py` (person, consent ledger, forget, export), migration 2 (`company.company_class`,
-`company.identity_key`, `forgotten`), settings `CLOE_JOINFORM_SHEET_ID` +
-`GOOGLE_SERVICE_ACCOUNT_FILE`, optional extra `sheets` (google-auth). Team asked that the
-join form be read straight from the "TOS13 join form responses" Google Sheet: header row
-checked on 2026-10-08, it matches CONTEXT §C exactly (24 columns, tab `Responses`); a
-second tab `Unsubscribe` has `submitted_at, email, responses_updated`.
-Step 2 done: `sources/sheets.py` (Sheets API, read-only service account, formatted values
-only) and `sources/joinform.py` (sheet or CSV/XLSX; header detection; quarantine of
-instruction-like name/header cells; consent seed; unsubscribe tab; needs classified via
-`extract`, unclassified without a key); `cloe ingest joinform [file]`; fixture
-`tests/fixtures/joinform.csv`; injection placeholder for Sprint 1 is now a real test.
-Step 3 done: `sources/tell.py` (dashboard xlsx export; `--db` read-only via
-`TELL_DB_URL` + required `TELL_DB_CA_CERT`; fills blanks only; keywords chunked ≤ 20 per
-fact, flagged `scraped`; contacts as people without consent); `cloe ingest tell`;
-fixture `tests/fixtures/tell.xlsx` (+ `make_tell_xlsx.py` to regenerate).
-Steps 4–5 done: `profile.py` (render + write, golden `tests/fixtures/profile_example.nl.md`),
-`cmd_network.py`: `cloe profile`, `cloe companies list [--tier --city --needs [KIND]]`,
-`cloe consent set`, `cloe forget`, `cloe export`. Consent dating fixed after self-review:
-a seen row only acts on changed consent cells (dated when observed); unsubscribes are
-applied once (kept as join-form sources); code-flagged needs are never sent to a model.
-Next: step 6, DoD run, README, STATE hand-off, final commit, push, Slack.
+(none — Sprint 1 finished; Sprint 2 not started)
 
 ## Done
 
+- 2026-10-08 (sprint 1): Definition of Done (run with `CLOE_DB` in a scratch folder so the
+  fixtures stay out of `data/cloe.db`) — `uv run pytest -q` → `151 passed, 3 skipped`;
+  ruff → `All checks passed!`; `cloe ingest joinform tests/fixtures/joinform.csv` → 5 rows,
+  4 companies, 5 people, 25 consent rows, 22 facts, 4 needs (1 flagged; 3 unclassified: no
+  API key); `cloe ingest tell tests/fixtures/tell.xlsx` → 6 new, 4 matched, 7 contacts
+  without consent, 33 facts (1 flagged keyword); `cloe profile example.nl` → the injection
+  text appears only under "Flagged text" (indented code block); `cloe forget
+  injected@example.nl` → person 1, consents 5, sources 1, facts 2, needs 1, profiles 1;
+  `cloe export injected@example.nl` → `FAIL not found`, exit 1. Modules: `records.py`,
+  `people.py`, `sources/sheets.py`, `sources/joinform.py`, `sources/tell.py`, `profile.py`,
+  `cmd_network.py`. Tests: `test_records`, `test_joinform` (incl. the Sheets path with a
+  fake session), `test_tell`, `test_profile` (golden `tests/fixtures/profile_example.nl.md`;
+  regenerate with `CLOE_UPDATE_GOLDEN=1`), `test_cmd_network` (the DoD flow end to end);
+  the Sprint 1 injection placeholder is now a real test.
+  **Real data:** no real join-form rows or TELL export were used — fixtures only. At the
+  team's request the join form is read straight from the "TOS13 join form responses" Google
+  Sheet; its header row (only the header) was checked on 2026-10-08: tab `Responses` is
+  identical to CONTEXT §C (24 columns, same order); a second tab `Unsubscribe` has
+  `submitted_at, email, responses_updated` (now in CONTEXT §C). No column differences.
 - 2026-10-08 (sprint 0): Definition of Done —
   `uv run pytest -q` → `79 passed, 4 skipped`; `uv run ruff check src tests` → `All checks
   passed!`; `uv run cloe doctor` → 11 OK, 3 WARN (no API key, no real approver,
@@ -149,6 +148,52 @@ Next: step 6, DoD run, README, STATE hand-off, final commit, push, Slack.
   `persona.tone_version(text)`.
   CLI: add a module name to `cli.COMMAND_MODULES`; it defines `register(subparsers)` and
   sets `func=handler`, `handler(args, settings) -> int`.
+- **Migration 2 (Sprint 1):** `company.company_class` (TELL), `company.identity_key`
+  (indexed, `records.identity_key(name, city)`), table `forgotten(email_sha256 PK, at)` —
+  the suppression list that keeps `cloe forget` from being undone by an import.
+- **Identity resolution (`records.py`):** company by normalised domain = the website's host
+  (lowercase; no scheme, `www.`, port, path or query; unicode → punycode; shared hosts like
+  facebook.com, linktr.ee, gmail.com are not a domain), else by `identity_key` = name +
+  city with accents, punctuation and legal-form words (B.V., N.V., v.o.f., …) removed. A
+  name+city match is taken only when the two records don't carry *different* domains.
+  People by lowercased email; invalid emails skipped; forgotten emails never imported.
+  Join form overwrites company/person fields on a new row (the company told us; the newest
+  row wins) and only fills blanks on a seen row; TELL only fills blanks and never changes a
+  known person. TELL rows without an id get `tell_id = "export:<identity_key>"`.
+- **Consent ledger:** rows dated by when the person acted; latest `at` wins (ties: newest
+  row). New join-form row: `followup` from `consent_privacy`, `newsletter` from
+  `consent_newsletter` (empty = no), `sms/*` = unknown, all dated `submitted_at`. A row
+  seen before only acts on consent cells that changed since its last import (dated now).
+  `Unsubscribe` tab: "no" for **every** email purpose, applied once per row (kept as a
+  join-form source). TELL contacts get no consent rows (= unknown). `cloe consent set`
+  writes `source=manual` with required evidence.
+- **Facts and needs:** text scrubbed and single-lined (facts ≤ 500 chars, needs ≤ 1000),
+  de-duplicated per company + kind + text. Flags (comma list): `instruction_like` (code
+  heuristics or the model), `scraped` (TELL keywords: wrap before any model reads them).
+  Confidence: join form 0.9, TELL 0.6, TELL keywords 0.4, quarantined cells 0.1.
+  Instruction-like name/header cells (name, trade name, city, …) are blanked and kept as a
+  flagged fact of kind `other`. `need.status` is `open` or `flagged`; `need.kind` stays
+  NULL until classified, from the closed enum `materials production recycling data
+  regulation research funding partners market knowledge technology other`
+  (`joinform.NeedClassification`, via `Claude.extract`, `bulk=True`). Code-flagged needs
+  are never sent to a model. Writers (Sprint 4) must skip flagged facts/needs.
+- **Files:** raw join-form rows at `data/raw/<sha256>` (0600; TELL exports are not
+  copied — they hold the whole network's contacts, the source row keeps the sha256);
+  profiles at `data/profiles/<domain>.md` or `company-<id>.md` (0600). `forget` deletes
+  the person, consents, their join-form sources + raw copies + the facts/needs taken from
+  them, their messages, companies left with nothing (and no `tell_id`), and cached
+  profiles; events keep only `person:<id>` refs.
+- **Sprint 1 interfaces:** `records.upsert_company(conn, values, overwrite=False) ->
+  (id, created)`, `records.lookup_company(conn, query)`, `records.upsert_source(conn,
+  kind, url, raw=…, raw_dir=… | digest=…)`, `records.add_fact(…, flags=…)`,
+  `records.add_need(…)`, `records.quarantine(values, keys, label)`;
+  `people.upsert_person`, `people.set_consent(…, at=…)`, `people.current_consent`,
+  `people.consents`, `people.forget`, `people.export`; `joinform.ingest(conn, tabs,
+  raw_dir, claude, canary) -> Report` (tabs from `read_file` or `read_sheet`);
+  `tell.ingest(conn, recs, origin, digest)`; `profile.render(conn, company_id)`,
+  `profile.write(conn, company_id, dir)`. Settings `CLOE_JOINFORM_SHEET_ID`,
+  `GOOGLE_SERVICE_ACCOUNT_FILE`; extra `sheets` (google-auth). Sheets are read with
+  `FORMATTED_VALUE` only (never formulas).
 
 ## Open questions for Chloe / the team
 
@@ -164,3 +209,16 @@ Next: step 6, DoD run, README, STATE hand-off, final commit, push, Slack.
    them.)
 7. Unblock `m-dpp.nl`, `news.byborre.com`, `byborre.com`, `space13.to` in the cloud environment's
    network settings, or run work order 001 on the MacBook before Sprint 2.
+8. Join-form sheet access: who creates the Google Cloud service account, shares "TOS13 join
+   form responses" with it as Viewer, and keeps the key on the MacBook? The sheet is owned
+   by a personal Google account; consider moving it to the TOS13 Workspace. The sheet id
+   stays in `.env` (`CLOE_JOINFORM_SHEET_ID`), not in the repo.
+9. Cloé treats an unsubscribe as "no" for *every* email purpose (follow-up, newsletter,
+   Cloé updates), not only the newsletter. Chloe to confirm.
+10. `cloe ingest tell --db`: the SQL (`tell.DB_QUERY`) was written from the table list in
+    CONTEXT §D; TELL's own `query_org` could not be read this session. TELL team to check
+    the joins before first use; the xlsx export remains the default.
+11. Someone who was forgotten and later submits the join form again is still skipped (there
+    is no "un-forget"). Decide the policy (e.g. a newer submission lifts the suppression).
+12. When several people from one company submit, the newest row's company fields win
+    (e.g. `website`). OK, or should the team's edits in TELL win?
