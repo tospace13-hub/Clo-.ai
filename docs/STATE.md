@@ -6,11 +6,12 @@ round-log line to `finished` or `stopped` when you stop. The pre-commit hook (Sp
 refuses any commit that doesn't touch this file. When the team praises the work, add it
 to "Laurels" with the habits that earned it.
 
-**Next sprint:** 0 (Foundation). Branch: `main`.
+**Next sprint:** 1 (Know the network: join form + TELL + profiles). Branch: `main`.
 
 ## Round log (newest first)
 
-- 2026-10-08 · sprint 0 · started — Foundation.
+- 2026-10-08 · sprint 0 · finished — Foundation: config, db, untrusted, llm + FakeClaude,
+  persona, cli, pre-commit hook, 79 tests green (4 skipped placeholders for Sprints 1/4/5).
 - 2026-10-08 · laurels · finished — added the "Laurels" section below.
 - 2026-10-08 · hosts · finished — `space13.to` added to the hosts to unblock (CONTEXT §G).
 - 2026-10-08 · rename · finished — the AI is **Cloé** (was "Clo"), the person is **Chloe**;
@@ -43,10 +44,18 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–9 done (all build steps; README now lists init/doctor/version). Next: Definition of Done + hand-off (schema into Decisions).
+(none — Sprint 0 finished; Sprint 1 not started)
 
 ## Done
 
+- 2026-10-08 (sprint 0): Definition of Done —
+  `uv run pytest -q` → `79 passed, 4 skipped`; `uv run ruff check src tests` → `All checks
+  passed!`; `uv run cloe doctor` → 11 OK, 3 WARN (no API key, no real approver,
+  `CLOE_SEND=0: dry run`), exit 0. Modules: `config.py`, `db.py`, `untrusted.py`,
+  `llm.py`, `persona.py`, `cli.py`. Tests: `test_config`, `test_db`, `test_untrusted`,
+  `test_llm_fake` (FakeClaude + the real class against a stub client — request shape, no
+  network), `test_persona`, `test_cli`, `test_hygiene`, `test_injection` (6 hostile
+  fixtures in `tests/fixtures/injection/`). `.githooks/pre-commit` active.
 - 2026-10-08 (planning): `uv init --lib`; deps `anthropic`, `pydantic`, `beautifulsoup4`;
   extras `tell` (pymysql, openpyxl), `pdf` (pypdf); dev `pytest`, `ruff`. `.gitignore`,
   `.env.example`, `pyproject` script entry `cloe = cloe.cli:main`. Wrote `sprint.md`,
@@ -73,6 +82,51 @@ Sprint 0 (Foundation). Steps 1–9 done (all build steps; README now lists init/
   sending is gated Python with a named approver. Full list in `sprint.md` → "Security".
 - LinkedIn is never scraped. It is a work order a person performs in their own browser,
   recording business-role facts only.
+- **Schema (migration 1, `db.py`; append new migrations, never edit shipped ones):**
+  `company(id, name, domain UNIQUE, website, city, postcode, kvk, tier, category, employees
+  TEXT, year_start, tell_id, lang, created_at, updated_at)` ·
+  `person(id, company_id, name, email UNIQUE NOCASE, phone, role, lang, created_at)` ·
+  `consent(id, person_id, channel[email|sms], purpose[followup|newsletter|cloe_updates],
+  status[yes|no|unknown], source, evidence, at)` ·
+  `source(id, url, kind[joinform|tell|web|pdf|cordis|workorder|inbound|manual], fetched_at,
+  sha256, raw_path)` ·
+  `fact(id, company_id, kind[does|makes|needs|has_data|project|event|contact|other], text,
+  confidence 0..1, source_id, observed_at, expires_at, flags)` ·
+  `project(id, acronym, title, programme, cordis_id UNIQUE, url, start_date, end_date,
+  partners_nl_json)` ·
+  `document(id, source_id, project_id, title, summary, tags_json, lang, published_at,
+  body_path)` + FTS5 `document_fts(title, summary, tags, body)` (rowid = document.id;
+  `unicode61 remove_diacritics 2`) ·
+  `need(id, company_id, text, kind, status, source_id)` ·
+  `match(id, company_id, document_id, other_company_id, score, rationale,
+  status[proposed|approved|rejected|used], created_at)` ·
+  `message(id, person_id, channel[email|sms], direction[out|in], thread_id, subject, body,
+  lang, status[draft|blocked|approved|sent|failed|received], tone_version, tone_score,
+  approved_by, approved_at, sent_at, provider_id, content_sha256, match_ids_json, flags,
+  created_at)` ·
+  `work_order(id, kind, status, path, result_path, created_at, ingested_at)` ·
+  `event(id, at, actor, action, ref, detail JSON)`.
+  Foreign keys on; timestamps are UTC ISO strings from `db.now()`; version in
+  `PRAGMA user_version`. Differences from the sprint.md sketch: `start_date/end_date`
+  (not start/end), purpose `cloe_updates` (not clo_updates).
+- **Interfaces later sprints build on:**
+  `config.load(env_path=None, environ=None) -> Settings` (env overrides `.env`;
+  `CLOE_SEND` is live only when exactly `1`; canary in `CLOE_CANARY`, generated once).
+  `db.connect(path)`, `db.migrate(conn)`, `db.event(conn, actor, action, ref, detail)` —
+  detail string values > 200 chars are refused (ids and hashes, not bodies).
+  `untrusted.scrub/wrap/injection_flags/contains_canary(text, canary)`, `UNTRUSTED_RULE`.
+  The canary is passed explicitly from `Settings.canary` (no module-global `CANARY`).
+  `llm.Claude(settings, conn=None)` / `llm.FakeClaude(settings, outputs, conn=None)`:
+  `.extract(schema, system, blocks)` — each block must be exactly one `untrusted.wrap()`
+  result, else `UnwrappedInput`; `.draft(system, prompt)`; `.research(system, prompt,
+  allowed_domains=…|blocked_domains=…)` → `ResearchResult(text, sources, continues)`
+  (untrusted). Errors: `Refused`, `Truncated`, `InjectionSuspected` (all `LLMError`).
+  `bulk=True` uses `CLOE_MODEL_BULK`. FakeClaude outputs are keyed by schema class name,
+  `"draft"`, `"research"`; a list is consumed in order; callables get the request content.
+  `persona.system_prompt(task_block, canary)` → [stable cached block, task block];
+  `persona.tone_version(text)`.
+  CLI: add a module name to `cli.COMMAND_MODULES`; it defines `register(subparsers)` and
+  sets `func=handler`, `handler(args, settings) -> int`.
 
 ## Open questions for Chloe / the team
 

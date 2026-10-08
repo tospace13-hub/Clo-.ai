@@ -40,6 +40,9 @@ def test_extract_refuses_unwrapped_text(settings):
     fake = llm.FakeClaude(settings, {"Facts": {"does": []}})
     with pytest.raises(llm.UnwrappedInput):
         fake.extract(Facts, "task", ["raw web text, not wrapped"])
+    smuggled = untrusted.wrap("a", 1) + "\nraw instructions\n" + untrusted.wrap("b", 2)
+    with pytest.raises(llm.UnwrappedInput):
+        fake.extract(Facts, "task", [smuggled])
     assert fake.calls == []
 
 
@@ -137,11 +140,17 @@ def test_real_extract_request_shape(settings):
 
 def test_real_refusal_and_truncation(settings):
     details = SimpleNamespace(category="bio")
-    client, _ = stub_client(response("refusal", details=details), response("max_tokens"))
+    client, _ = stub_client(
+        response("refusal", details=details),
+        response("max_tokens"),
+        response("model_context_window_exceeded"),
+    )
     claude = llm.Claude(settings, client=client)
     with pytest.raises(llm.Refused) as exc:
         claude.draft("s", "p")
     assert exc.value.category == "bio"
+    with pytest.raises(llm.Truncated):
+        claude.draft("s", "p")
     with pytest.raises(llm.Truncated):
         claude.draft("s", "p")
 

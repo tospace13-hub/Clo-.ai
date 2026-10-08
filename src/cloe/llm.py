@@ -89,8 +89,10 @@ def as_system(system: System) -> list[dict[str, Any]]:
 def _check_wrapped(blocks: Sequence[str]) -> None:
     for block in blocks:
         b = block.strip()
-        if not (b.startswith("<untrusted source=") and b.endswith("</untrusted>")):
-            raise UnwrappedInput("extract() blocks must come from untrusted.wrap()")
+        # wrap() neutralises inner tags, so a genuine block has exactly one fence.
+        single = b.lower().count("<untrusted") == 1 and b.count("</untrusted>") == 1
+        if not (single and b.startswith("<untrusted source=") and b.endswith("</untrusted>")):
+            raise UnwrappedInput("extract() blocks must each be one untrusted.wrap() result")
 
 
 def _extract_content(blocks: Sequence[str]) -> list[dict[str, str]]:
@@ -245,8 +247,8 @@ class Claude(_Guarded):
         if response.stop_reason == "refusal":
             details = getattr(response, "stop_details", None)
             raise self._refused(getattr(details, "category", None), ref)
-        if response.stop_reason == "max_tokens":
-            raise Truncated(ref)
+        if response.stop_reason in ("max_tokens", "model_context_window_exceeded"):
+            raise Truncated(f"{ref}: {response.stop_reason}")
 
     def _extract(self, schema, system, blocks, model, effort):
         response = self.client.beta.messages.parse(
