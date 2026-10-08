@@ -205,6 +205,16 @@ def remove_raw(conn: sqlite3.Connection, raw_path: str | None) -> bool:
     return True
 
 
+def stored_raw(conn: sqlite3.Connection, kind: str, url: str) -> bytes | None:
+    """The raw copy kept for a source, if any (to compare a row with its last import)."""
+    row = conn.execute(
+        "SELECT raw_path FROM source WHERE kind = ? AND url = ?", (kind, url)
+    ).fetchone()
+    if row is None or not row["raw_path"] or not Path(row["raw_path"]).is_file():
+        return None
+    return Path(row["raw_path"]).read_bytes()
+
+
 def upsert_source(
     conn: sqlite3.Connection,
     kind: str,

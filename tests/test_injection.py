@@ -101,7 +101,8 @@ def test_raw_hostile_text_cannot_reach_a_reader_unwrapped(settings):
 
 
 def test_joinform_row_flagged_on_import(settings, tmp_path):
-    """Code flags the hostile question even when the model obeys the injection."""
+    """Code flags the hostile question by itself; it is never shown to a model, and no part
+    of it becomes prose. A model that obeys the injection changes nothing."""
     from cloe import db
     from cloe.sources import joinform
 
@@ -112,16 +113,12 @@ def test_joinform_row_flagged_on_import(settings, tmp_path):
     obedient = llm.FakeClaude(
         settings, {"NeedClassification": {"kind": "data", "instruction_like": False}}
     )
-    joinform.ingest(conn, joinform.read_file(path), raw_dir=tmp_path / "raw",
-                    claude=obedient, canary=CANARY)
+    report = joinform.ingest(conn, joinform.read_file(path), raw_dir=tmp_path / "raw",
+                             claude=obedient, canary=CANARY)
     assert [tuple(r) for r in conn.execute("SELECT kind, status FROM need")] == [
-        ("data", "flagged")
+        (None, "flagged")
     ]
-    call = obedient.calls[0]
-    assert call.content[0]["text"].startswith('<untrusted source="need:')
-    assert untrusted.UNTRUSTED_RULE in call.system[0]["text"]
-    assert CANARY in call.system[0]["text"]
-    # nothing from the row reached a company or person field unflagged
+    assert obedient.calls == [] and report.flagged_needs == 1
     assert conn.execute("SELECT name FROM company").fetchone()[0] == "Voorbeeld BV"
 
 

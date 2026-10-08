@@ -204,6 +204,14 @@ def read_sheet(sess, sheet_id: str) -> dict[str, list[list[str]]]:
 # -- writing ----------------------------------------------------------------------------
 
 
+def _json(raw: bytes | None) -> dict[str, str] | None:
+    try:
+        value = json.loads(raw) if raw else None
+    except ValueError:
+        return None
+    return value if isinstance(value, dict) else None
+
+
 def _split(value: str) -> list[str]:
     return [v.strip() for v in value.split(";") if v.strip()]
 
@@ -217,21 +225,35 @@ def _consent_value(value: str, *, empty_means: str | None) -> str | None:
     return empty_means if not v else None
 
 
-def _row_consents(conn, pid: int, rec: dict[str, str], at: str, report: Report) -> None:
+def _row_consents(
+    conn, pid: int, rec: dict[str, str], at: str, before: dict[str, str] | None, report: Report
+) -> None:
+    """A new row is dated by its `submitted_at`. A row seen before only acts on consent
+    cells that changed since the last import (the unsubscribe form edits them in place),
+    dated now, when the change was observed: re-importing never undoes a later decision."""
     when = rec["submitted_at"] or "unknown time"
     wanted = [
-        ("email", "followup", _consent_value(rec["consent_privacy"], empty_means=None),
-         f"join form {when}: consent_privacy={rec['consent_privacy'] or 'empty'}"),
-        ("email", "newsletter", _consent_value(rec["consent_newsletter"], empty_means="no"),
-         f"join form {when}: consent_newsletter={rec['consent_newsletter'] or 'empty'}"),
-    ] + [
-        ("sms", purpose, "unknown", f"join form {when}: the form collects no phone number")
-        for purpose in people.PURPOSES
+        ("email", "followup", "consent_privacy", None),
+        ("email", "newsletter", "consent_newsletter", "no"),
     ]
-    for channel, purpose, status, evidence in wanted:
-        if status and people.set_consent(conn, pid, channel, purpose, status,
-                                         source="joinform", evidence=evidence, at=at):
+    for channel, purpose, col, empty_means in wanted:
+        status = _consent_value(rec[col], empty_means=empty_means)
+        if status is None:
+            continue
+        if before is not None and before.get(col, "") == rec[col]:
+            continue
+        evidence = f"join form {when}: {col}={rec[col] or 'empty'}"
+        if before is not None:
+            evidence += " (changed in the sheet)"
+        if people.set_consent(conn, pid, channel, purpose, status, source="joinform",
+                              evidence=evidence, at=at if before is None else db.now()):
             report.consents += 1
+    if before is None:
+        for purpose in people.PURPOSES:
+            if people.set_consent(conn, pid, "sms", purpose, "unknown", source="joinform",
+                                  evidence=f"join form {when}: the form collects no phone number",
+                                  at=at):
+                report.consents += 1
 
 
 def _row_facts(conn, cid: int, sid: int, rec: dict[str, str], report: Report) -> None:
@@ -272,11 +294,10 @@ def ingest_responses(
             report.forgotten += 1
             continue
         submitted = records.clean(rec["submitted_at"], 64)
+        url = f"joinform:{submitted}:{people.email_sha256(email)}"
+        before = _json(records.stored_raw(conn, "joinform", url))
         raw = json.dumps(rec, ensure_ascii=False).encode("utf-8")
-        sid, new = records.upsert_source(
-            conn, "joinform", f"joinform:{submitted}:{people.email_sha256(email)}",
-            raw=raw, raw_dir=raw_dir,
-        )
+        sid, new = records.upsert_source(conn, "joinform", url, raw=raw, raw_dir=raw_dir)
         report.new += new
         report.seen += not new
         at = people.parse_time(submitted) or db.now()
@@ -298,7 +319,7 @@ def ingest_responses(
             conn, email, name=rec["name"], role=rec["role"], company_id=cid, overwrite=new
         )
         report.people_created += created
-        _row_consents(conn, pid, rec, at, report)
+        _row_consents(conn, pid, rec, at, None if new else before, report)
         if new and cid is not None:
             _row_facts(conn, cid, sid, rec, report)
             for text in moved:
@@ -310,34 +331,45 @@ def ingest_responses(
     conn.commit()
 
 
-def ingest_unsubscribes(conn: sqlite3.Connection, rows: list[list[str]], *, report: Report) -> None:
-    """An unsubscribe is a "no" for every email purpose, dated when it was made."""
+def ingest_unsubscribes(
+    conn: sqlite3.Connection, rows: list[list[str]], *, raw_dir: Path, report: Report
+) -> None:
+    """An unsubscribe is a "no" for every email purpose, dated when it was made. Each is
+    applied once (kept as a join-form source), so a later "yes" Chloe records stands."""
     recs, _ = to_records(rows, UNSUBSCRIBE_COLUMNS)
     for rec in recs:
         email = people.normalise_email(rec["email"])
         person = people.get_person(conn, email) if email else None
-        if person is None:
+        if person is None:  # not someone we hold data on
             continue
-        at = people.parse_time(rec["submitted_at"]) or db.now()
-        evidence = f"unsubscribe form {rec['submitted_at'] or 'unknown time'}"
+        submitted = records.clean(rec["submitted_at"], 64)
+        raw = json.dumps(rec, ensure_ascii=False).encode("utf-8")
+        _, new = records.upsert_source(
+            conn, "joinform", f"joinform-unsubscribe:{submitted}:{people.email_sha256(email)}",
+            raw=raw, raw_dir=raw_dir,
+        )
+        if not new:
+            continue
+        at = people.parse_time(submitted) or db.now()
+        evidence = f"unsubscribe form {submitted or 'unknown time'}"
         wrote = [
             people.set_consent(conn, person["id"], "email", purpose, "no",
                                source="joinform-unsubscribe", evidence=evidence, at=at)
             for purpose in people.PURPOSES
         ]
-        if any(wrote):
-            report.unsubscribes += 1
-            report.consents += sum(wrote)
-            db.event(conn, "joinform", "unsubscribe", ref=f"person:{person['id']}")
+        report.unsubscribes += 1
+        report.consents += sum(wrote)
+        db.event(conn, "joinform", "unsubscribe", ref=f"person:{person['id']}")
     conn.commit()
 
 
 def classify_needs(conn: sqlite3.Connection, claude, canary: str, report: Report) -> None:
-    """Give every unclassified need a kind. The question is wrapped as untrusted; the
-    reader has no tools and must return `NeedClassification`. Without `claude` the needs
-    stay unclassified (kind NULL) and are counted."""
+    """Give every unclassified open need a kind. The question is wrapped as untrusted; the
+    reader has no tools and must return `NeedClassification`. Needs the code already
+    flagged are never shown to a model. Without `claude` needs stay unclassified (kind
+    NULL) and are counted."""
     pending = conn.execute(
-        "SELECT id, text, status FROM need WHERE kind IS NULL ORDER BY id"
+        "SELECT id, text, status FROM need WHERE kind IS NULL AND status = 'open' ORDER BY id"
     ).fetchall()
     if claude is None:
         report.unclassified = len(pending)
@@ -374,7 +406,7 @@ def ingest(
 ) -> Report:
     report = Report()
     ingest_responses(conn, tabs.get(RESPONSES_TAB, []), raw_dir=raw_dir, report=report)
-    ingest_unsubscribes(conn, tabs.get(UNSUBSCRIBE_TAB, []), report=report)
+    ingest_unsubscribes(conn, tabs.get(UNSUBSCRIBE_TAB, []), raw_dir=raw_dir, report=report)
     classify_needs(conn, claude, canary, report)
     report.flagged_needs = conn.execute(
         "SELECT count(*) FROM need WHERE status = 'flagged'"

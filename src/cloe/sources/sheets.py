@@ -46,13 +46,33 @@ def session(service_account_file: str) -> _Session:
     return AuthorizedSession(creds)
 
 
+def _transport_errors() -> tuple[type[BaseException], ...]:
+    """Network and token errors from requests / google-auth (when installed)."""
+    errors: list[type[BaseException]] = []
+    try:
+        import requests
+
+        errors.append(requests.RequestException)
+    except ImportError:
+        pass
+    try:
+        from google.auth.exceptions import GoogleAuthError
+
+        errors.append(GoogleAuthError)
+    except ImportError:
+        pass
+    return tuple(errors)
+
+
 def _cell(value: Any) -> str:
     if isinstance(value, float) and value.is_integer():
         return str(int(value))
     return "" if value is None else str(value)
 
 
-def read_tab(sess: _Session, sheet_id: str, tab: str, *, missing_ok: bool = False) -> list[list[str]]:
+def read_tab(
+    sess: _Session, sheet_id: str, tab: str, *, missing_ok: bool = False
+) -> list[list[str]]:
     """All rows of one tab as strings. `missing_ok`: a tab that doesn't exist reads as []."""
     if not _SHEET_ID.fullmatch(sheet_id or ""):
         raise SheetsError("CLOE_JOINFORM_SHEET_ID does not look like a sheet id")
@@ -60,7 +80,10 @@ def read_tab(sess: _Session, sheet_id: str, tab: str, *, missing_ok: bool = Fals
     url = VALUES_URL.format(sheet_id=sheet_id, range=quote(a1, safe=""))
     params = {"majorDimension": "ROWS", "valueRenderOption": "FORMATTED_VALUE",
               "dateTimeRenderOption": "FORMATTED_STRING"}
-    resp = sess.get(url, params=params, timeout=TIMEOUT_S)
+    try:
+        resp = sess.get(url, params=params, timeout=TIMEOUT_S)
+    except _transport_errors() as exc:
+        raise SheetsError(f"could not reach the Sheets API: {type(exc).__name__}") from exc
     if resp.status_code == 400 and missing_ok:
         return []
     if resp.status_code != 200:

@@ -61,7 +61,12 @@ Step 3 done: `sources/tell.py` (dashboard xlsx export; `--db` read-only via
 `TELL_DB_URL` + required `TELL_DB_CA_CERT`; fills blanks only; keywords chunked ≤ 20 per
 fact, flagged `scraped`; contacts as people without consent); `cloe ingest tell`;
 fixture `tests/fixtures/tell.xlsx` (+ `make_tell_xlsx.py` to regenerate).
-Next: step 4, `profile.py`, then `cloe profile / consent set / forget / export / companies list`.
+Steps 4–5 done: `profile.py` (render + write, golden `tests/fixtures/profile_example.nl.md`),
+`cmd_network.py`: `cloe profile`, `cloe companies list [--tier --city --needs [KIND]]`,
+`cloe consent set`, `cloe forget`, `cloe export`. Consent dating fixed after self-review:
+a seen row only acts on changed consent cells (dated when observed); unsubscribes are
+applied once (kept as join-form sources); code-flagged needs are never sent to a model.
+Next: step 6, DoD run, README, STATE hand-off, final commit, push, Slack.
 
 ## Done
 
