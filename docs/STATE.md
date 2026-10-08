@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–4 done (hook; config; db; `untrusted.py`: scrub drops Cc/Cf/Co/Cs/Cn incl. tag-char smuggling, wrap neutralises tag escapes, injection_flags heuristics, contains_canary survives obfuscation). Next: step 5 llm.py.
+Sprint 0 (Foundation). Steps 1–5 done (hook; config; db; untrusted; `llm.py`: Claude.extract/draft/research + FakeClaude sharing one guard layer — wrapped-input check, refusal → Refused, max_tokens → Truncated, canary → InjectionSuspected + event; research loops pause_turn ≤5, append-only). Next: step 6 persona.py.
 
 ## Done
 
