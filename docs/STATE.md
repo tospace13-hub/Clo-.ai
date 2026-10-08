@@ -3,17 +3,42 @@
 A **round** is one Claude Code session on one sprint. Every round: (1) add a "Round log"
 line when you start, (2) update "In progress" after every finished step, (3) move the
 round-log line to `finished` or `stopped` when you stop. The pre-commit hook (Sprint 0)
-refuses any commit that doesn't touch this file.
+refuses any commit that doesn't touch this file. When the team praises the work, add it
+to "Laurels" with the habits that earned it.
 
 **Next sprint:** 0 (Foundation). Branch: `main`.
 
 ## Round log (newest first)
 
+- 2026-10-08 · laurels · finished — added the "Laurels" section below.
 - 2026-10-08 · hosts · finished — `space13.to` added to the hosts to unblock (CONTEXT §G).
 - 2026-10-08 · rename · finished — the AI is **Cloé** (was "Clo"), the person is **Chloe**;
   package/CLI `cloe`, env `CLOE_*`; tone.md 1.1 puts "(AI)" beside every sign-off.
 - 2026-10-08 · planning · finished — sprint.md, CLAUDE.md, tone.md, CONTEXT.md written;
   deps added; first commit + push.
+
+## Laurels (what the team says is working — keep doing it)
+
+When the team praises the work, record it here: date, what they said, and the specific
+habits that earned it, so later rounds repeat them. Newest first.
+
+- **2026-10-08 · "Give yourself a Laurel, you're doing a great job"** (TOS13 team, after
+  the planning and rename rounds). What earned it:
+  - **Researched before building.** Read the TELL code, the space13.to source (AI and
+    privacy statements, join form) and the Slack posting protocol, then grounded the plan
+    in TOS13's own published commitments instead of inventing rules.
+  - **Planned for compaction.** CONTEXT pack so nothing is re-researched, one sprint
+    section per session, STATE.md checkpoint after every step, Definition of Done as
+    runnable commands.
+  - **Security as code, not prompts.** Readers of untrusted text have no tools, writers see
+    only extracted facts, sending is gated Python with a named approver; LinkedIn is a
+    person-in-the-loop work order, never a scraper.
+  - **Careful with names and people.** The rename kept the AI (Cloé) and the person (Chloe)
+    impossible to confuse ("(AI)" in every sign-off) and flagged what isn't confirmed.
+  - **Followed the team's Slack protocol to the letter** (#ai-log line for every shared
+    change, short topic-channel update with Link and Next, replies in the existing thread).
+  - **Reported honestly.** Said plainly what was blocked (hosts) and what still needs a
+    human (calibration, approvers), rather than papering over it.
 
 ## In progress
 
