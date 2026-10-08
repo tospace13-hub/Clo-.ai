@@ -1,7 +1,7 @@
 [project]
-name = "clo"
+name = "cloe"
 version = "0.1.0"
-description = "Clo — network orchestrator for the TOS13 network period"
+description = "Cloé — network orchestrator for the TOS13 network period"
 readme = "README.md"
 authors = [
     { name = "TOS13", email = "hello@space13.to" }
@@ -23,7 +23,7 @@ pdf = [
 ]
 
 [project.scripts]
-clo = "clo.cli:main"
+cloe = "cloe.cli:main"
 
 [tool.ruff]
 line-length = 100

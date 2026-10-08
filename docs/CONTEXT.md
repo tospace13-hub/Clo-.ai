@@ -9,7 +9,7 @@ Last verified: 2026-10-08. Each section says which sprint needs it.
   CLICKNL. 18 partner organisations. Central question: use data to create a sector-level
   digital orchestration layer for Dutch textile SMEs.
 - Three work packages: **01 Encode / Connect** (orchestration platform that connects partners
-  through TELL, matches SME questions to knowledge and capacity — *Clo lives here*),
+  through TELL, matches SME questions to knowledge and capacity — *Cloé lives here*),
   02 Distill / Make (Hollanders, Vlisco, Vodde, TextielLab, Saxion), 03 Elevate / Retain
   value (ValueSort.ai, United Repair Centre, TexPlus, NXP, Saxion, ArtEZ, VNYX).
 - Lineage: **WoTO** (BYBORRE's showroom) → **NewTexEco** (national network; TELL
@@ -21,14 +21,14 @@ Last verified: 2026-10-08. Each section says which sprint needs it.
 - Contact: hello@space13.to, privacy@space13.to.
 - Website repo: `tospace13-hub/tos13website` (Jekyll). Cloned read-only at
   `/home/user/tospace13-hub/tos13website` in the session that wrote this; re-clone if needed.
-- Site statements that bind Clo: the **AI statement** (`ai.md`) says no AI talks to you on
+- Site statements that bind Cloé: the **AI statement** (`ai.md`) says no AI talks to you on
   the site today and "when a system built in the fieldlab interacts with people or
   generates content, we say so". The **privacy statement** (`privacy.md`) says join-form
   answers are used "to answer your request and involve you in the fieldlab", newsletter only
-  with the tick, name/email/role never shared with NewTexEco. Both must be updated before Clo
+  with the tick, name/email/role never shared with NewTexEco. Both must be updated before Cloé
   messages anyone (Sprint 7).
 
-## B. WoTO and Cloé (Sprint 0 persona, Sprint 4 composing)
+## B. WoTO and Chloe (Sprint 0 persona, Sprint 4 composing)
 
 - **WoTO = Window of Textile Opportunities**, launched by BYBORRE on 28 Oct 2021 at
   Naritaweg 70, Amsterdam: a physical walk-through of the textile supply chain, each stage
@@ -40,8 +40,10 @@ Last verified: 2026-10-08. Each section says which sprint needs it.
   **Trevira**; founding partner **Avery Dennison**; exhibitors **The Woolmark Company**,
   **Parley for the Oceans**; universities FIT, Parsons, AMFI, Saxion, London College of
   Fashion. Borre Akkersdijk is BYBORRE's co-founder.
-- **Cloé** is the person who brought these companies together. The assistant is **Clo**
-  (short for Cloé). Spelling: *Cloé* for the human, *Clo* for the assistant. Her actual
+- **Chloe** is the person who brought these companies together. The AI is **Cloé**, named
+  after and modelled on her (the repo is "Cloé.ai"; GitHub turned the é into `-`, hence
+  `Clo-.ai`). Spelling: *Chloe* for the human, *Cloé* for the AI, always signed
+  "Cloé (AI)". Code identifiers are ASCII: package and CLI `cloe`, env vars `CLOE_*`. Her actual
   surname, role and writing samples are still to be collected (Sprint 0 open question).
 - The full press-release text could not be read from the cloud session (host blocked, see
   section G). Read it on the MacBook and drop a copy into `docs/sources/woto-press-release.md`.
@@ -50,7 +52,7 @@ Last verified: 2026-10-08. Each section says which sprint needs it.
 
 Backend: Google Apps Script (`_tools/join-form/Code.gs`) → first tab of the Google Sheet
 "TOS13 join form responses" + notification email to hello@space13.to. Export as CSV/XLSX
-for Clo (`clo ingest joinform <file>`). Columns, in order:
+for Cloé (`cloe ingest joinform <file>`). Columns, in order:
 
 ```
 submitted_at, name, email, role,
@@ -73,7 +75,7 @@ tell_match, team_notes
 - `consent_privacy` = "Yes" (required; "stores my answers to follow up on this request").
   `consent_newsletter` = "Yes" or empty; the unsubscribe form sets it to "No". **This is the
   consent ledger's seed.** No SMS consent exists on the form yet — phone numbers are not
-  even collected. Clo may only SMS people who gave a number and said yes (Sprint 5 policy).
+  even collected. Cloé may only SMS people who gave a number and said yes (Sprint 5 policy).
 
 ## D. TELL — tell.newtexeco.nl (Sprint 1, Sprint 3)
 
@@ -98,9 +100,9 @@ tell_match, team_notes
   → columns Company, City, Region, Website, Employees, Surface (m2), Founded, Legal form,
   Status, Product category, Supply chain tier, Company class, Email contacts, Keywords.
   Empty `f` exports everything. Prefer this export over DB access for v1.
-- Contribution form at `/contribute/` writes `additions`, `edits`, `comments` tables — Clo
+- Contribution form at `/contribute/` writes `additions`, `edits`, `comments` tables — Cloé
   can propose edits there instead of writing to TELL directly.
-- Identity key for matching Clo ↔ TELL: normalised website domain, then trade_name + city.
+- Identity key for matching Cloé ↔ TELL: normalised website domain, then trade_name + city.
 
 ## E. Research library sources (Sprint 2)
 
@@ -124,8 +126,8 @@ tell_match, team_notes
   for work orders that need a person nearby or a logged-in browser (LinkedIn, blocked hosts,
   reading the WoTO press release). Cloud sessions execute sprints; the MacBook executes
   `docs/workorders/`.
-- Runtime API calls from Clo (research, summaries, drafting) need an `ANTHROPIC_API_KEY`
-  — separate from Max. Every LLM job in Clo must also be runnable as a work order so a
+- Runtime API calls from Cloé (research, summaries, drafting) need an `ANTHROPIC_API_KEY`
+  — separate from Max. Every LLM job in Cloé must also be runnable as a work order so a
   Max session can do it instead (sprint.md → "Two engines, one contract").
 - Slack workspace channels: #ai-log (AI session updates), #ai, #wp1 (Encode), #coordination,
   #core-partners (private), #associate-partners, #communications.

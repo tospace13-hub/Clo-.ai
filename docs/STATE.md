@@ -9,6 +9,8 @@ refuses any commit that doesn't touch this file.
 
 ## Round log (newest first)
 
+- 2026-10-08 · rename · finished — the AI is **Cloé** (was "Clo"), the person is **Chloe**;
+  package/CLI `cloe`, env `CLOE_*`; tone.md 1.1 puts "(AI)" beside every sign-off.
 - 2026-10-08 · planning · finished — sprint.md, CLAUDE.md, tone.md, CONTEXT.md written;
   deps added; first commit + push.
 
@@ -20,7 +22,7 @@ refuses any commit that doesn't touch this file.
 
 - 2026-10-08 (planning): `uv init --lib`; deps `anthropic`, `pydantic`, `beautifulsoup4`;
   extras `tell` (pymysql, openpyxl), `pdf` (pypdf); dev `pytest`, `ruff`. `.gitignore`,
-  `.env.example`, `pyproject` script entry `clo = clo.cli:main`. Wrote `sprint.md`,
+  `.env.example`, `pyproject` script entry `cloe = cloe.cli:main`. Wrote `sprint.md`,
   `CLAUDE.md`, `tone.md` (v1.0, calibration pending), `docs/CONTEXT.md`, `docs/LESSONS.md`.
   Verified SDK 1.12.1 surface: `beta.messages.parse(output_format=…, fallbacks=…)`,
   `tool_runner`, `beta_tool` all present.
@@ -28,11 +30,15 @@ refuses any commit that doesn't touch this file.
 ## Decisions
 
 - Language: Python 3.12 + uv. Store: SQLite (stdlib) with FTS5 for the library.
-- Clo's runtime model: `claude-opus-5-5` for every call (`CLO_MODEL`; `CLO_MODEL_BULK`
+- Cloé's runtime model: `claude-opus-5-5` for every call (`CLOE_MODEL`; `CLOE_MODEL_BULK`
   defaults to the same). Sprints are executed by Opus 5.5 sessions; planning was done by
   a Fable 5.1 session.
-- Voice: Clo writes on Cloé's behalf, is open about being her AI assistant, and nothing is
-  sent without Cloé's approval. `tone.md` is the single source of truth; code loads it
+- Naming: the AI is **Cloé** (product "Cloé.ai"; the GitHub repo shows as `Clo-.ai`
+  because GitHub replaces é). The person she is modelled on is **Chloe** (spelling to be
+  confirmed — open question 1). Code identifiers are ASCII: package and CLI `cloe`,
+  env vars `CLOE_*`, skill `cloe-workorder`.
+- Voice: Cloé writes on Chloe's behalf, always signs "Cloé (AI)", and nothing is
+  sent without Chloe's approval. `tone.md` is the single source of truth; code loads it
   verbatim.
 - Every LLM job has two engines: API (`--engine api`) or a work order executed by a
   Claude Code session on the MacBook (`--engine workorder`). Same schemas, same outputs.
@@ -41,10 +47,11 @@ refuses any commit that doesn't touch this file.
 - LinkedIn is never scraped. It is a work order a person performs in their own browser,
   recording business-role facts only.
 
-## Open questions for Cloé / the team
+## Open questions for Chloe / the team
 
-1. Cloé's surname, role, and 5–10 real messages she has sent (for `tone.md` §9).
-2. Who approves messages when Cloé is away? (second approver in `CLO_APPROVERS`)
+1. Chloe's name as she writes it (Chloe / Chloé / Cloé), surname, role, OK to have the AI
+   carry her name, and 5–10 real messages she has sent (for `tone.md` §9).
+2. Who approves messages when Chloe is away? (second approver in `CLOE_APPROVERS`)
 3. Read-only TELL DB credentials, or rely on the public xlsx export? (default: export)
 4. Phone number + SMS-consent field on the join form? Until then SMS is limited to people
    who gave a number and consent elsewhere.
