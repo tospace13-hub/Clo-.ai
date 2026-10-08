@@ -52,7 +52,12 @@ Sprint 1. Done so far: `records.py` (identity rules, company/source/fact/need wr
 join form be read straight from the "TOS13 join form responses" Google Sheet: header row
 checked on 2026-10-08, it matches CONTEXT §C exactly (24 columns, tab `Responses`); a
 second tab `Unsubscribe` has `submitted_at, email, responses_updated`.
-Next: `sources/sheets.py` + `sources/joinform.py` (sheet and file), fixtures, tests.
+Step 2 done: `sources/sheets.py` (Sheets API, read-only service account, formatted values
+only) and `sources/joinform.py` (sheet or CSV/XLSX; header detection; quarantine of
+instruction-like name/header cells; consent seed; unsubscribe tab; needs classified via
+`extract`, unclassified without a key); `cloe ingest joinform [file]`; fixture
+`tests/fixtures/joinform.csv`; injection placeholder for Sprint 1 is now a real test.
+Next: step 3, `sources/tell.py` + `tests/fixtures/tell.xlsx`.
 
 ## Done
 

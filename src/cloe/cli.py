@@ -15,9 +15,11 @@ from pathlib import Path
 
 from cloe import config, db, persona
 
-COMMAND_MODULES: tuple[str, ...] = ()
+COMMAND_MODULES: tuple[str, ...] = ("cloe.cmd_network",)
 
-OPTIONAL_EXTRAS = {"openpyxl": "tell", "pymysql": "tell", "pypdf": "pdf"}
+OPTIONAL_EXTRAS = {
+    "openpyxl": "tell", "pymysql": "tell", "pypdf": "pdf", "google.auth": "sheets",
+}
 PLACEHOLDER_DOMAINS = ("example.org", "example.com", "example.net")
 
 
@@ -58,6 +60,13 @@ class _Report:
         print(f"FAIL {msg}")
 
 
+def _installed(module: str) -> bool:
+    try:
+        return importlib.util.find_spec(module) is not None
+    except ModuleNotFoundError:  # a dotted name whose parent package is missing
+        return False
+
+
 def _hooks_path() -> str:
     try:
         out = subprocess.run(
@@ -88,6 +97,15 @@ def cmd_doctor(args: argparse.Namespace, settings: config.Settings) -> int:
         r.ok("ANTHROPIC_API_KEY set (API engine available)")
     else:
         r.warn("ANTHROPIC_API_KEY not set: only the work-order engine can run LLM jobs")
+
+    if settings.joinform_sheet_id and settings.google_service_account_file:
+        if Path(settings.google_service_account_file).is_file():
+            r.ok("join form: Google Sheet + service account key configured")
+        else:
+            r.fail("GOOGLE_SERVICE_ACCOUNT_FILE does not point to a file")
+    else:
+        r.warn("join form sheet not configured (CLOE_JOINFORM_SHEET_ID, "
+               "GOOGLE_SERVICE_ACCOUNT_FILE): only file exports can be ingested")
 
     real = [a for a in settings.approvers if not a.endswith(PLACEHOLDER_DOMAINS)]
     if real:
@@ -124,7 +142,7 @@ def cmd_doctor(args: argparse.Namespace, settings: config.Settings) -> int:
         r.fail("this sqlite has no FTS5 (the research library needs it)")
 
     for module, extra in OPTIONAL_EXTRAS.items():
-        if importlib.util.find_spec(module):
+        if _installed(module):
             r.ok(f"optional {module} ({extra} extra)")
         else:
             r.warn(f"optional {module} missing: uv sync --extra {extra}")
