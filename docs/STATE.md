@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Step 1 of 9: hooks + branch.
+Sprint 0 (Foundation). Step 1 done (branch already `main`; `.githooks/pre-commit` refuses commits without docs/STATE.md, runs ruff + pytest; `.env.example` CLOE_DB fixed to data/cloe.db). Next: step 2 config.py.
 
 ## Done
 

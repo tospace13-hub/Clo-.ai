@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Cloé pre-commit hook. Enable once per clone: git config core.hooksPath .githooks
+# 1) docs/STATE.md must be part of every commit (it is the compaction checkpoint).
+# 2) ruff and pytest must pass.
+set -euo pipefail
+
+if ! git diff --cached --name-only | grep -qx 'docs/STATE.md'; then
+  echo "pre-commit: refused — docs/STATE.md is not staged." >&2
+  echo "Update 'Round log' / 'In progress' in docs/STATE.md and stage it." >&2
+  exit 1
+fi
+
+uv run --quiet ruff check src tests
+
+set +e
+uv run --quiet pytest -q
+rc=$?
+set -e
+# 5 = no tests collected (only possible before the first test exists).
+if [ "$rc" -ne 0 ] && [ "$rc" -ne 5 ]; then
+  echo "pre-commit: refused — pytest failed." >&2
+  exit "$rc"
+fi

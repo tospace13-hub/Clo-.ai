@@ -14,7 +14,7 @@ modelled on Chloe, who brought the WoTO companies together.
 ```
 uv sync --all-extras
 cp .env.example .env          # fill in what you have; CLOE_SEND stays 0 until launch
-git config core.hooksPath .githooks   # after Sprint 0
+git config core.hooksPath .githooks   # pre-commit: STATE.md staged, ruff, pytest
 uv run cloe doctor
 ```
 
