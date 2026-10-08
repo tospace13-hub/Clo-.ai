@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–8 done (hook; config; db; untrusted; llm; persona; cli; tests: `test_hygiene` (keys, Twilio SIDs, emails outside docs/fixtures with an allowlist), `test_injection` with 6 hostile fixtures in tests/fixtures/injection/ + 4 skipped placeholders for Sprints 1/4/5). Next: step 9 README, then DoD + hand-off.
+Sprint 0 (Foundation). Steps 1–9 done (all build steps). Next: Definition of Done + hand-off (schema into Decisions).
 
 ## Done
 
