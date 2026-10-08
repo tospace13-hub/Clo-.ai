@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–3 done (hook; config; `db.py` migration 1 = full schema incl. FTS5, user_version tracking, rollback on failure, `event()` refuses long text values). Next: step 4 untrusted.py.
+Sprint 0 (Foundation). Steps 1–4 done (hook; config; db; `untrusted.py`: scrub drops Cc/Cf/Co/Cs/Cn incl. tag-char smuggling, wrap neutralises tag escapes, injection_flags heuristics, contains_canary survives obfuscation). Next: step 5 llm.py.
 
 ## Done
 
