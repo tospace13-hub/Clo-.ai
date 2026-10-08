@@ -109,12 +109,12 @@ src/cloe/
 **Data model (SQLite).** `company(id, name, domain, website, city, postcode, kvk, tier,
 category, employees, year_start, tell_id, lang, created_at, updated_at)` ·
 `person(id, company_id, name, email, phone, role, lang, created_at)` ·
-`consent(id, person_id, channel[email|sms], purpose[followup|newsletter|clo_updates],
+`consent(id, person_id, channel[email|sms], purpose[followup|newsletter|cloe_updates],
 status[yes|no|unknown], source, evidence, at)` · `source(id, url, kind[joinform|tell|web|
 pdf|cordis|workorder|inbound|manual], fetched_at, sha256, raw_path)` ·
 `fact(id, company_id, kind[does|makes|needs|has_data|project|event|contact|other], text,
 confidence, source_id, observed_at, expires_at, flags)` · `project(id, acronym, title,
-programme, cordis_id, url, start, end, partners_nl_json)` · `document(id, source_id,
+programme, cordis_id, url, start_date, end_date, partners_nl_json)` · `document(id, source_id,
 project_id, title, summary, tags_json, lang, published_at, body_path)` + FTS5
 `document_fts(title, summary, tags, body)` · `need(id, company_id, text, kind, status,
 source_id)` · `match(id, company_id, document_id, other_company_id, score, rationale,
@@ -559,7 +559,7 @@ statements). `tone.md` §9–§11.
    it, and require the approver email to equal the OS user's `CLOE_APPROVER_SELF` env on
    the MacBook); secret leakage; PII over-collection; model refusal/fallback behaviour.
 3. GDPR pack: `docs/PRIVACY-OPS.md` — lawful basis per message purpose (follow-up on a
-   request = the consent they gave; `clo_updates` needs a new tick), retention, deletion,
+   request = the consent they gave; `cloe_updates` needs a new tick), retention, deletion,
    export, where data lives (MacBook disk, `data/` encrypted volume — recommend FileVault
    + an encrypted sparse bundle), who has access. Draft the **AI statement** and
    **privacy statement** changes for space13.to as a ready-to-paste diff in

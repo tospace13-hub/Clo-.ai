@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Steps 1–2 done (hook; `config.py` with .env parser, env overrides file, canary generated + appended to .env with 0600). Next: step 3 db.py.
+Sprint 0 (Foundation). Steps 1–3 done (hook; config; `db.py` migration 1 = full schema incl. FTS5, user_version tracking, rollback on failure, `event()` refuses long text values). Next: step 4 untrusted.py.
 
 ## Done
 
