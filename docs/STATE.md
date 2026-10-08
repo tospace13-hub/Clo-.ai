@@ -10,6 +10,7 @@ to "Laurels" with the habits that earned it.
 
 ## Round log (newest first)
 
+- 2026-10-08 · sprint 1 · started — join form + TELL + profiles.
 - 2026-10-08 · sprint 0 · finished — Foundation: config, db, untrusted, llm + FakeClaude,
   persona, cli, pre-commit hook, 79 tests green (4 skipped placeholders for Sprints 1/4/5).
 - 2026-10-08 · laurels · finished — added the "Laurels" section below.
@@ -44,7 +45,8 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 0 finished; Sprint 1 not started)
+Sprint 1, step 1 of 6: `sources/joinform.py` (parse, upsert company/person, consent, facts,
+needs via extract, idempotent). Fixtures only: no real join-form export has been shared.
 
 ## Done
 
