@@ -43,7 +43,7 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 0 (Foundation). Step 1 done (branch already `main`; `.githooks/pre-commit` refuses commits without docs/STATE.md, runs ruff + pytest; `.env.example` CLOE_DB fixed to data/cloe.db). Next: step 2 config.py.
+Sprint 0 (Foundation). Steps 1–2 done (hook; `config.py` with .env parser, env overrides file, canary generated + appended to .env with 0600). Next: step 3 db.py.
 
 ## Done
 
