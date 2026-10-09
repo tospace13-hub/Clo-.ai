@@ -139,6 +139,9 @@ tell_match, team_notes
 
 `m-dpp.nl`, `news.byborre.com`, `thenextcartel.com`, `www.byborre.com`, `space13.to`,
 `www.space13.to` returned "blocked by the network egress proxy" (re-tested 2026-10-08).
+On 2026-10-09 the Sprint 2 session also found `cordis.europa.eu`, `ec.europa.eu` (where
+CORDIS deliverables download from), `zenodo.org` and `data.europa.eu` blocked (proxy 403).
+The research-library sources are therefore MacBook-only until the environment allows them.
 The team has asked for them to be allowed. For space13.to, the site's source is the
 `tospace13-hub/tos13website` repo on GitHub, which is reachable — read that instead of the
 live site. Either add them under *Allowed domains* in the

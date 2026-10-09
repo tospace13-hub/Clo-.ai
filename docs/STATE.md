@@ -6,11 +6,14 @@ round-log line to `finished` or `stopped` when you stop. The pre-commit hook (Sp
 refuses any commit that doesn't touch this file. When the team praises the work, add it
 to "Laurels" with the habits that earned it.
 
-**Next sprint:** 2 (Research library: EU projects → research material). Branch: `main`.
+**Next sprint:** 3 (Dynamic company profiles: own scraper + research + work orders). Branch: `main`.
+Before or alongside it, work order 001 (MacBook) brings the real funding page; see open question 13.
 
 ## Round log (newest first)
 
-- 2026-10-09 · sprint 2 · started — research library.
+- 2026-10-09 · sprint 2 · finished — research library: guarded fetcher, funding + CORDIS
+  parsers (hand-written fixtures: hosts blocked), cards + FTS5 search, work-order engine;
+  226 tests. Work order 001 open for the MacBook.
 - 2026-10-09 · sprint 1 follow-up · finished — the team's answers to open questions 8, 11,
   12: rejoiners, people from one company kept individually, colleague links; 157 tests.
 - 2026-10-08 · sprint 1 · finished — join form (Google Sheet or export) + TELL + profiles,
@@ -49,54 +52,34 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 2 (research library). m-dpp.nl **and cordis.europa.eu** are blocked from this cloud
-session (proxy 403, checked 2026-10-09), and `tests/fixtures/funding/` did not exist, so the
-parsers are built on hand-written fixtures (sprint.md's fallback) and work order 001 asks
-the MacBook to save the real pages.
-- [x] Step 1: `sources/fetch.py` — `Fetcher.fetch(url) -> Fetched(url, final_url,
-  content_type, content, sha256, raw_path, charset)`; every address vetted before
-  connecting and after each of ≤ 3 redirects, connection pinned to the vetted address;
-  robots.txt per site (RFC 9309: 4xx allow, 5xx/blocked disallow); 1 s per host; 15 s;
-  2 MB / PDF 20 MB; octet-stream accepted only when it starts with `%PDF-`; no proxy
-  support (direct connections are what the address check needs). `FixtureFetcher(dir)`
-  serves saved pages from `dir/index.json`. `html_to_text`, `html_title`, `pdf_to_text`
-  (60 pages), `to_text`. `records._write_raw` is now public as `records.write_raw`.
-  `tests/test_fetch.py` (29) against a local http.server; `tests/pdfgen.py` writes PDFs.
-- [x] Step 2: `docs/workorders/001-fetch-funding-page.md` (MacBook: save the real page,
-  3 CORDIS projects + results pages, 1 deliverable PDF into `tests/fixtures/funding_real/`
-  with an `index.json`, describe the structure here). Hand-written stand-ins in
-  `tests/fixtures/funding/` (README says so; fictional projects, ids 999000001…).
-  `sources/funding.py`: `parse_funding_page(html, base_url) -> list[ProjectRef]` — no
-  layout assumed: tables with a header row (Dutch/English header keywords), headed sections
-  and list items; a block is a project only with a CORDIS link, or an acronym plus a
-  programme or year range. `sources/cordis.py`: `cordis_id_of`, `project_url`,
-  `results_url`, `programme_of`, `iso_date`, `parse_project(content, url, content_type) ->
-  CordisProject` (labels + headings + the `Title | ACRONYM | Project | …` page title; JSON
-  in the CORDIS open-data record shape), `parse_results -> list[ResultLink(title, url,
-  kind)]` (PDFs, EC downloadPublic, Zenodo, DOIs). No public per-project CORDIS JSON could
-  be confirmed (the data API needs EU Login), so HTML is the main path.
-  `tests/test_funding.py` (18).
-- [x] Step 3: migration 4 (`document.one_line, doc_type, card_json, flags, added_at,
-  source_sha256`; unique `document(source_id)`; index `project(acronym)`). `library.py`:
-  `DocumentCard` (closed `Topic` taxonomy of 25 in `TAXONOMY`, closed `Tier` in `TIERS`,
-  `NeedKind` from the join form; validators trim instead of failing), `CARD_TASK`,
-  `check_card` (strips links / emails / phone numbers from card prose; flags when the model,
-  the document or the card reads like instructions), `add_document` (skips sources whose
-  card is current; InjectionSuspected → flagged stub, never re-sent), `store`, `search`
-  (BM25 title 10 / summary 5 / tags 5 / body 1; all terms first, then any; ≥ 4-letter
-  words as prefixes; `--tier` takes a slug, a word or a TELL tier label; flagged excluded
-  unless asked), `get`, `stats`, `standin_card` (keyword stand-in for CLOE_FAKE=1).
-- [x] Step 4–5: `scrape.py` (`scrape_funding`, `scrape_project`, `scrape_url`,
-  `upsert_project` — CORDIS wins over the page for title/dates, partners merged), 
-  `workorders.py` (basic: `write_funding_batch` → `docs/workorders/NNN-funding-batch.md`
-  with the JSON Schema of `FundingBatchResult`; `ingest_funding_batch` validates, strips,
-  flags), `cmd_library.py` (`scrape funding|url`, `library search|show|stats`, `workorder
-  ingest`). Setting `CLOE_FAKE=1` (`Settings.fake_llm`; doctor warns; the join form then
-  leaves needs unclassified). Tests: `test_library` (14), `test_cmd_library` (6), two PDF
-  payload tests in `test_injection`. `uv run pytest -q` → 226 passed, 3 skipped.
-- [ ] Step 6: Definition of Done; hand-off.
+(none — Sprint 2 finished; Sprint 3 not started. Work order 001 is open for the MacBook.)
 
 ## Done
+
+- 2026-10-09 (sprint 2): Definition of Done, run with `CLOE_DB` in a scratch folder and
+  `CLOE_FAKE=1`: `uv run pytest -q` → `226 passed, 3 skipped`; ruff → `All checks passed!`;
+  `cloe scrape funding --fixture tests/fixtures/funding --max-projects 3` → `projects listed
+  5, processed 3 (3 new), on CORDIS 2/3, CORDIS pages read 2` · `documents: 6 new` ·
+  `document types: 2 project_page, 2 deliverable, 1 publication, 1 project_site`;
+  `cloe library search "digital product passport knitwear"` → 3 cards (KNITPASS project
+  page, D2.1 deliverable, Zenodo field study); `cloe library stats` → `projects 3 (on CORDIS
+  2/3, with documents 3)`, `documents 6 (flagged 0)`. Modules: `sources/fetch.py`,
+  `sources/funding.py`, `sources/cordis.py`, `library.py`, `scrape.py`, `workorders.py`,
+  `cmd_library.py`. Tests: `test_fetch` (29, local http.server), `test_funding` (18),
+  `test_library` (14), `test_cmd_library` (6), PDF-payload tests in `test_injection`.
+  **Hand-off (sprint.md asks for these):**
+  - *Real page structure:* **not seen.** m-dpp.nl, cordis.europa.eu, ec.europa.eu,
+    zenodo.org and data.europa.eu are all blocked from cloud sessions (proxy 403, 2026-10-09),
+    and `tests/fixtures/funding/` did not exist. Following sprint.md's fallback, the
+    parsers were built on hand-written stand-ins (`tests/fixtures/funding/README.md`) and
+    `docs/workorders/001-fetch-funding-page.md` asks the MacBook to save the real pages
+    into `tests/fixtures/funding_real/`.
+  - *How many projects it lists:* unknown until work order 001 runs (the stand-in lists 5).
+  - *CORDIS resolution rate:* 2/3 on the stand-in (the third project has only its own
+    site). The real rate comes from step 6 of work order 001.
+  - *Document types:* on the stand-in, deliverables and project pages, then a
+    publication and a project site. The real mix is unknown.
+  - No live scrape was run, from this session or any other.
 
 - 2026-10-09 (sprint 1 follow-up): migration 3 (`person.flags`, `colleague_link`);
   rejoin detection; join form fills company blanks only; colleague links; profile names
@@ -267,6 +250,51 @@ the MacBook to save the real pages.
   `GOOGLE_SERVICE_ACCOUNT_FILE`; extra `sheets` (google-auth). Sheets are read with
   `FORMATTED_VALUE` only (never formulas).
 
+- **Fetcher (Sprint 2, `sources/fetch.py`):** the only way Cloé reads the web. http(s)
+  only; every DNS answer must be public (`ipaddress.is_global`, IPv4-mapped unwrapped) before
+  connecting and after each of ≤ 3 redirects; the socket goes to the vetted address (no
+  rebinding); robots.txt per origin (RFC 9309: 4xx = allow, 5xx / blocked = disallow),
+  user agent `CloeBot/0.1`; 1 s per host; 15 s timeouts and body deadline; 2 MB, PDF 20 MB,
+  60 PDF pages; types html / plain / pdf / json, octet-stream only when it starts with
+  `%PDF-`; `Accept-Encoding: identity`; raw bytes in `data/raw/<sha256>` (0600). No HTTP
+  proxy support, by design (the address check needs a direct connection). Live scrapes run
+  on the MacBook.
+- **Library (migration 4):** one document per source. `card_json` holds the full
+  `DocumentCard`; `tags_json` = topic labels + free tags; FTS5 `document_fts` (rowid =
+  document.id) indexes title, one_line + summary + data_offered, tags, and body (≤ 200k
+  characters). The reader sees ≤ 60k characters. A card is remade only when the source's
+  sha256 changes. Card prose never carries links, emails or phone numbers (the source URL
+  is the only link). Documents flagged `instruction_like` stay out of search unless
+  `--include-flagged`, and Sprint 4 writers must skip them. `doc_type` is one of
+  `project_page deliverable publication report project_site page document other`.
+- **Taxonomy and tiers:** `library.TAXONOMY`, 25 topics (dpp, espr, epr, recycling,
+  sorting, repair, reuse, fibres, biobased, dyeing_printing, knitting, weaving, finishing,
+  nonwovens, traceability, lca, business_models, digital_twins, small_batch, textile_waste,
+  circular_design, data_standards, policy, smart_textiles, workwear).
+  `library.TIERS`: fibre, yarn_textile, finishing, garment, brand, retail,
+  collection_sorting, recycling, repair, services. `tier_slugs(label)` maps a TELL tier
+  label onto them; Sprint 4 matching should use it.
+- **Projects:** one row per CORDIS id, else per acronym. CORDIS wins over the funding page
+  for title and dates; Dutch partners are merged into `partners_nl_json`. Flagged titles
+  are stored as `[flagged text]`.
+- **CLOE_FAKE=1** (`Settings.fake_llm`): library cards come from `library.standin_card`, a
+  keyword stand-in run through FakeClaude. It is for dry runs and the DoD only; the doctor
+  warns. Under it, the join form leaves needs unclassified.
+- **Work orders (basic):** `docs/workorders/NNN-<kind>.md`, numbered after the highest
+  existing number. The result sits next to it as `NNN-<kind>.result.json` (git-ignored).
+  Each has a `work_order` row (`funding-batch`: open → ingested). Results are untrusted:
+  Pydantic `FundingBatchResult` (extra=forbid), card checks as for the API engine, and
+  documents without a valid http(s) URL are skipped.
+- **Sprint 2 interfaces:** `fetch.Fetcher(raw_dir).fetch(url) -> Fetched`,
+  `fetch.FixtureFetcher(dir, raw_dir)`, `fetch.to_text / html_to_text / pdf_to_text`;
+  `funding.parse_funding_page(html, base_url)`; `cordis.parse_project / parse_results /
+  programme_of / iso_date`; `library.add_document(conn, claude, canary, source_id=, text=,
+  project_id=, doc_type=, title_hint=)`, `library.store`, `library.check_card`,
+  `library.search(conn, query, k, tier=, topic=, include_flagged=)`, `library.get`,
+  `library.stats`, `library.tier_slugs`; `scrape.scrape_funding / scrape_url /
+  upsert_project`; `workorders.write_funding_batch / ingest_funding_batch`;
+  `records.write_raw` (was `_write_raw`).
+
 ## Open questions for Chloe / the team
 
 1. Chloe's name as she writes it (Chloe / Chloé / Cloé), surname, role, OK to have the AI
@@ -292,3 +320,16 @@ the MacBook to save the real pages.
 11. ~~Rejoining after a forget~~ — decided 2026-10-09: welcome them back (see Decisions).
 12. ~~Several people from one company~~ — decided 2026-10-09: each person kept
     individually, with colleague links (see Decisions).
+13. **Work order 001** (MacBook): save the real funding page, 3 CORDIS projects and one
+    deliverable into `tests/fixtures/funding_real/`, and describe the page here. The next
+    session then checks the parsers against them. Alternatively, an environment owner
+    allows `m-dpp.nl`, `cordis.europa.eu`, `ec.europa.eu` and `zenodo.org`. That alone
+    won't let a cloud session scrape: the fetcher makes direct connections only (Decisions
+    → Fetcher).
+14. Chloe / the team: review the closed topic list (`library.TAXONOMY`, 25 topics) and the
+    tiers (`library.TIERS`). The tier mapping is based on the 7 TELL "Supply chain tier"
+    labels seen in the fixtures; TELL's full list should be checked against it.
+15. CORDIS: no public per-project JSON could be confirmed (the data extraction API needs
+    an EU Login), so the parser reads HTML. If the team has EU Login API access, or
+    prefers the CORDIS open-data bulk files (data.europa.eu), `cordis._from_json` already
+    reads that record shape.
