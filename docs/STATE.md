@@ -10,6 +10,7 @@ to "Laurels" with the habits that earned it.
 
 ## Round log (newest first)
 
+- 2026-10-09 · sprint 2 · started — research library.
 - 2026-10-09 · sprint 1 follow-up · finished — the team's answers to open questions 8, 11,
   12: rejoiners, people from one company kept individually, colleague links; 157 tests.
 - 2026-10-08 · sprint 1 · finished — join form (Google Sheet or export) + TELL + profiles,
@@ -48,7 +49,8 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 1 and its follow-up finished; Sprint 2 not started)
+Sprint 2, step 0: check whether the work-order fixtures exist (`tests/fixtures/funding/`)
+and whether m-dpp.nl / CORDIS are reachable from this session.
 
 ## Done
 
