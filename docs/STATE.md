@@ -10,6 +10,8 @@ to "Laurels" with the habits that earned it.
 
 ## Round log (newest first)
 
+- 2026-10-09 · sprint 1 follow-up · started — the team's answers to open questions 8, 11,
+  12: rejoiners, people from one company kept individually, colleague links.
 - 2026-10-08 · sprint 1 · finished — join form (Google Sheet or export) + TELL + profiles,
   consent / forget / export / companies list; 151 tests green (3 skipped: Sprints 4/5).
 - 2026-10-08 · sprint 0 · finished — Foundation: config, db, untrusted, llm + FakeClaude,
@@ -46,7 +48,9 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 1 finished; Sprint 2 not started)
+Sprint 1 follow-up (team answers, 2026-10-09). Step 1 of 3: migration 3
+(`person.flags`, `colleague_link`), rejoin detection, company fill-blanks for the join
+form, colleague-link detection. Then profile + tests, then sprint.md Sprint 4/5 notes.
 
 ## Done
 
