@@ -22,8 +22,9 @@ def data_dir(settings: config.Settings) -> Path:
 
 
 def make_claude(settings: config.Settings, conn: sqlite3.Connection, no_llm: bool):
-    """The API engine when a key is set; None means 'leave model work for later'."""
-    if no_llm or not settings.anthropic_api_key:
+    """The API engine when a key is set; None means 'leave model work for later'
+    (also under CLOE_FAKE=1, whose stand-in only makes library cards)."""
+    if no_llm or settings.fake_llm or not settings.anthropic_api_key:
         return None
     return llm.Claude(settings, conn)
 

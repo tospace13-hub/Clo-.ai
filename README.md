@@ -21,7 +21,19 @@ uv run cloe profile example.nl        # prints, and saves data/profiles/example.
 uv run cloe consent set someone@example.org email followup yes --evidence "how and when"
 uv run cloe export someone@example.org   # everything held about one person (JSON)
 uv run cloe forget someone@example.org   # erase them; future imports skip them
+
+uv run cloe scrape funding --max-projects 3    # m-dpp.nl EU projects → CORDIS → documents (MacBook)
+uv run cloe scrape funding --engine workorder  # …or write a work order for Claude Code instead
+uv run cloe workorder ingest 002               # read that work order's result
+uv run cloe scrape url https://…               # one page or PDF into the library
+uv run cloe library search "digital product passport knitwear" --tier yarn
+uv run cloe library show 2 · uv run cloe library stats
 ```
+
+The research library fetches only through a guarded fetcher (public addresses only, robots.txt,
+1 s per site, size and type caps). Live scrapes run on the MacBook: cloud sessions can't
+reach m-dpp.nl or CORDIS. `--fixture tests/fixtures/funding` runs on saved pages instead,
+and `CLOE_FAKE=1` makes cards with a keyword stand-in rather than the model (dry runs only).
 
 Reading the Google Sheet needs a Google Cloud service account: share the sheet with its
 address as **Viewer**, put the JSON key outside the repo (or under `secrets/`, ignored),

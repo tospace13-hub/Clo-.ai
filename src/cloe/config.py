@@ -84,6 +84,7 @@ class Settings:
     joinform_sheet_id: str = ""
     google_service_account_file: str = ""
     canary: str = field(default="", repr=False)
+    fake_llm: bool = False
     env_path: Path = DEFAULT_ENV_PATH
 
 
@@ -158,5 +159,6 @@ def load(
         joinform_sheet_id=get("CLOE_JOINFORM_SHEET_ID"),
         google_service_account_file=get("GOOGLE_SERVICE_ACCOUNT_FILE"),
         canary=canary,
+        fake_llm=get("CLOE_FAKE", "0").strip() == "1",
         env_path=path,
     )

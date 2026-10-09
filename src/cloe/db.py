@@ -197,6 +197,21 @@ MIGRATIONS: list[str] = [
         UNIQUE (newcomer_id, existing_id)
     );
     """,
+    # 4 — Sprint 2: the research library card (library.DocumentCard) next to each document:
+    # one line, the kind of document, the full card as JSON (topics, data offered, tiers,
+    # needs — filtered with json_each), flags (instruction_like), when it was added and the
+    # source hash it was made from (a changed source gets a new card). One document per
+    # source.
+    """
+    ALTER TABLE document ADD COLUMN one_line TEXT;
+    ALTER TABLE document ADD COLUMN doc_type TEXT;
+    ALTER TABLE document ADD COLUMN card_json TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE document ADD COLUMN flags TEXT NOT NULL DEFAULT '';
+    ALTER TABLE document ADD COLUMN added_at TEXT;
+    ALTER TABLE document ADD COLUMN source_sha256 TEXT;
+    CREATE UNIQUE INDEX document_source ON document(source_id);
+    CREATE INDEX project_acronym ON project(acronym);
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

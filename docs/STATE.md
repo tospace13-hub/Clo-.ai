@@ -76,10 +76,25 @@ the MacBook to save the real pages.
   kind)]` (PDFs, EC downloadPublic, Zenodo, DOIs). No public per-project CORDIS JSON could
   be confirmed (the data API needs EU Login), so HTML is the main path.
   `tests/test_funding.py` (18).
-- [ ] Step 3: `library.py` (migration 4, DocumentCard, FTS5 search).
-- [ ] Step 4–5: CLI (`scrape funding|url`, `library search|show|stats`, `--engine
-  workorder`, `workorder ingest`), `CLOE_FAKE=1`.
-- [ ] Step 6: tests incl. injection PDF; Definition of Done; hand-off.
+- [x] Step 3: migration 4 (`document.one_line, doc_type, card_json, flags, added_at,
+  source_sha256`; unique `document(source_id)`; index `project(acronym)`). `library.py`:
+  `DocumentCard` (closed `Topic` taxonomy of 25 in `TAXONOMY`, closed `Tier` in `TIERS`,
+  `NeedKind` from the join form; validators trim instead of failing), `CARD_TASK`,
+  `check_card` (strips links / emails / phone numbers from card prose; flags when the model,
+  the document or the card reads like instructions), `add_document` (skips sources whose
+  card is current; InjectionSuspected → flagged stub, never re-sent), `store`, `search`
+  (BM25 title 10 / summary 5 / tags 5 / body 1; all terms first, then any; ≥ 4-letter
+  words as prefixes; `--tier` takes a slug, a word or a TELL tier label; flagged excluded
+  unless asked), `get`, `stats`, `standin_card` (keyword stand-in for CLOE_FAKE=1).
+- [x] Step 4–5: `scrape.py` (`scrape_funding`, `scrape_project`, `scrape_url`,
+  `upsert_project` — CORDIS wins over the page for title/dates, partners merged), 
+  `workorders.py` (basic: `write_funding_batch` → `docs/workorders/NNN-funding-batch.md`
+  with the JSON Schema of `FundingBatchResult`; `ingest_funding_batch` validates, strips,
+  flags), `cmd_library.py` (`scrape funding|url`, `library search|show|stats`, `workorder
+  ingest`). Setting `CLOE_FAKE=1` (`Settings.fake_llm`; doctor warns; the join form then
+  leaves needs unclassified). Tests: `test_library` (14), `test_cmd_library` (6), two PDF
+  payload tests in `test_injection`. `uv run pytest -q` → 226 passed, 3 skipped.
+- [ ] Step 6: Definition of Done; hand-off.
 
 ## Done
 

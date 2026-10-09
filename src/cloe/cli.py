@@ -15,7 +15,7 @@ from pathlib import Path
 
 from cloe import config, db, persona
 
-COMMAND_MODULES: tuple[str, ...] = ("cloe.cmd_network",)
+COMMAND_MODULES: tuple[str, ...] = ("cloe.cmd_network", "cloe.cmd_library")
 
 OPTIONAL_EXTRAS = {
     "openpyxl": "tell", "pymysql": "tell", "pypdf": "pdf", "google.auth": "sheets",
@@ -97,6 +97,8 @@ def cmd_doctor(args: argparse.Namespace, settings: config.Settings) -> int:
         r.ok("ANTHROPIC_API_KEY set (API engine available)")
     else:
         r.warn("ANTHROPIC_API_KEY not set: only the work-order engine can run LLM jobs")
+    if settings.fake_llm:
+        r.warn("CLOE_FAKE=1: no model calls; library cards come from a keyword stand-in")
 
     if settings.joinform_sheet_id and settings.google_service_account_file:
         if Path(settings.google_service_account_file).is_file():
