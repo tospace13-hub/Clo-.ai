@@ -46,11 +46,48 @@ def parse_time(value: object) -> str | None:
     return dt.astimezone(UTC).replace(microsecond=0).isoformat()
 
 
-def is_forgotten(conn: sqlite3.Connection, email: str) -> bool:
+def forgotten_at(conn: sqlite3.Connection, email: str) -> str | None:
+    """When this email was last forgotten, or None."""
     row = conn.execute(
-        "SELECT 1 FROM forgotten WHERE email_sha256 = ?", (email_sha256(email),)
+        "SELECT at FROM forgotten WHERE email_sha256 = ?", (email_sha256(email),)
     ).fetchone()
-    return row is not None
+    return row["at"] if row else None
+
+
+def is_forgotten(conn: sqlite3.Connection, email: str) -> bool:
+    return forgotten_at(conn, email) is not None
+
+
+def add_flag(conn: sqlite3.Connection, person_id: int, flag: str) -> bool:
+    """Add a person flag (e.g. `rejoined`). Returns True if it was not there yet."""
+    row = conn.execute("SELECT flags FROM person WHERE id = ?", (person_id,)).fetchone()
+    flags = {f for f in (row["flags"] or "").split(",") if f}
+    if flag in flags:
+        return False
+    conn.execute("UPDATE person SET flags = ? WHERE id = ?",
+                 (",".join(sorted(flags | {flag})), person_id))
+    return True
+
+
+def link_colleagues(conn: sqlite3.Connection, company_id: int, newcomer_id: int) -> int:
+    """Record a pending link between a newcomer and everyone from the same company who
+    registered through the join form before them. Nothing is shared yet: Cloé tells the
+    newcomer that someone from their company is registered, asks both whether they may be
+    connected, and shares names only when both said yes. Returns links created."""
+    others = conn.execute(
+        "SELECT DISTINCT p.id FROM person p JOIN consent c ON c.person_id = p.id "
+        "AND c.source = 'joinform' WHERE p.company_id = ? AND p.id != ? ORDER BY p.id",
+        (company_id, newcomer_id),
+    ).fetchall()
+    created = 0
+    for other in others:
+        cur = conn.execute(
+            "INSERT OR IGNORE INTO colleague_link(company_id, newcomer_id, existing_id, "
+            "created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+            (company_id, newcomer_id, other["id"], db.now(), db.now()),
+        )
+        created += cur.rowcount
+    return created
 
 
 def get_person(conn: sqlite3.Connection, email: str) -> sqlite3.Row | None:
@@ -157,13 +194,14 @@ def forget(
     """Erase a person: their row and consents, their join-form submissions (source rows,
     raw copies, and the facts and needs taken from them), their messages, companies left
     with nothing but what they told us, and cached profiles that showed them. The email's
-    hash goes on the suppression list so no import brings them back."""
+    hash goes on the suppression list so no import brings them back — except a join-form
+    submission made after this moment, which is a rejoin."""
     norm = normalise_email(email)
     if not norm:
         raise ValueError("not a valid email address")
     counts = dict.fromkeys(
-        ("person", "consents", "sources", "facts", "needs", "messages", "companies",
-         "profiles"), 0,
+        ("person", "consents", "colleague_links", "sources", "facts", "needs", "messages",
+         "companies", "profiles"), 0,
     )
     person = get_person(conn, norm)
     sources = _person_sources(conn, norm)
@@ -189,6 +227,10 @@ def forget(
             counts["consents"] = conn.execute(
                 "SELECT count(*) FROM consent WHERE person_id = ?", (person["id"],)
             ).fetchone()[0]
+            counts["colleague_links"] = conn.execute(
+                "SELECT count(*) FROM colleague_link WHERE newcomer_id = ? OR existing_id = ?",
+                (person["id"], person["id"]),
+            ).fetchone()[0]
             counts["messages"] = conn.execute(
                 "DELETE FROM message WHERE person_id = ?", (person["id"],)
             ).rowcount
@@ -207,7 +249,8 @@ def forget(
                 conn.execute("DELETE FROM company WHERE id = ?", (cid,))
                 counts["companies"] += 1
         conn.execute(
-            "INSERT OR IGNORE INTO forgotten(email_sha256, at) VALUES (?, ?)",
+            "INSERT INTO forgotten(email_sha256, at) VALUES (?, ?) "
+            "ON CONFLICT(email_sha256) DO UPDATE SET at = excluded.at",
             (email_sha256(norm), db.now()),
         )
     ref = f"person:{person['id']}" if person is not None else ""
@@ -269,5 +312,12 @@ def export(conn: sqlite3.Connection, email: str) -> dict[str, Any] | None:
             f"SELECT * FROM need WHERE source_id IN ({marks}) ORDER BY id", src_ids
         ) if by_source else [],
         "messages": rows("SELECT * FROM message WHERE person_id = ? ORDER BY id", (pid,)),
+        # Links name no other person: who the colleague is stays theirs to share.
+        "colleague_links": rows(
+            "SELECT id, company_id, CASE WHEN newcomer_id = ? THEN 'newcomer' ELSE 'existing' "
+            "END AS role, CASE WHEN newcomer_id = ? THEN newcomer_ok ELSE existing_ok END "
+            "AS my_answer, status, created_at FROM colleague_link "
+            "WHERE newcomer_id = ? OR existing_id = ? ORDER BY id", (pid, pid, pid, pid)
+        ),
         "events": rows("SELECT * FROM event WHERE ref = ? ORDER BY id", (f"person:{pid}",)),
     }

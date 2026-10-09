@@ -175,6 +175,28 @@ MIGRATIONS: list[str] = [
         at           TEXT NOT NULL
     );
     """,
+    # 3 — Sprint 1 follow-up (team decisions 2026-10-09): person flags (`rejoined`: the
+    # welcome says so and shows what we know about their company) and colleague links:
+    # two people from one company who registered separately. Names are shared only when
+    # both said yes.
+    """
+    ALTER TABLE person ADD COLUMN flags TEXT NOT NULL DEFAULT '';
+    CREATE TABLE colleague_link (
+        id           INTEGER PRIMARY KEY,
+        company_id   INTEGER NOT NULL REFERENCES company(id) ON DELETE CASCADE,
+        newcomer_id  INTEGER NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+        existing_id  INTEGER NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+        newcomer_ok  TEXT NOT NULL DEFAULT 'unknown'
+                     CHECK (newcomer_ok IN ('yes', 'no', 'unknown')),
+        existing_ok  TEXT NOT NULL DEFAULT 'unknown'
+                     CHECK (existing_ok IN ('yes', 'no', 'unknown')),
+        status       TEXT NOT NULL DEFAULT 'detected'
+                     CHECK (status IN ('detected', 'asked', 'connected', 'declined')),
+        created_at   TEXT NOT NULL,
+        updated_at   TEXT NOT NULL,
+        UNIQUE (newcomer_id, existing_id)
+    );
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

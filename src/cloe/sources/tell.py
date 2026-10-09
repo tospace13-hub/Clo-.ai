@@ -225,7 +225,7 @@ def _row(conn, rec: dict[str, str], sid: int, report: Report) -> None:
         email = people.normalise_email(raw)
         if not email:
             report.emails_invalid += 1
-        elif people.is_forgotten(conn, email):
+        elif people.is_forgotten(conn, email) and people.get_person(conn, email) is None:
             report.emails_forgotten += 1
         else:
             _, created = people.upsert_person(conn, email, company_id=cid)

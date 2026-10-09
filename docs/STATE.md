@@ -10,8 +10,8 @@ to "Laurels" with the habits that earned it.
 
 ## Round log (newest first)
 
-- 2026-10-09 · sprint 1 follow-up · started — the team's answers to open questions 8, 11,
-  12: rejoiners, people from one company kept individually, colleague links.
+- 2026-10-09 · sprint 1 follow-up · finished — the team's answers to open questions 8, 11,
+  12: rejoiners, people from one company kept individually, colleague links; 157 tests.
 - 2026-10-08 · sprint 1 · finished — join form (Google Sheet or export) + TELL + profiles,
   consent / forget / export / companies list; 151 tests green (3 skipped: Sprints 4/5).
 - 2026-10-08 · sprint 0 · finished — Foundation: config, db, untrusted, llm + FakeClaude,
@@ -48,12 +48,17 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 1 follow-up (team answers, 2026-10-09). Step 1 of 3: migration 3
-(`person.flags`, `colleague_link`), rejoin detection, company fill-blanks for the join
-form, colleague-link detection. Then profile + tests, then sprint.md Sprint 4/5 notes.
+(none — Sprint 1 and its follow-up finished; Sprint 2 not started)
 
 ## Done
 
+- 2026-10-09 (sprint 1 follow-up): migration 3 (`person.flags`, `colleague_link`);
+  rejoin detection; join form fills company blanks only; colleague links; profile names
+  the person behind each join-form source and lists colleague links; `forget` counts links
+  and moves the forget date on a repeat. `uv run pytest -q` → `157 passed, 3 skipped`;
+  ruff clean. New `tests/test_rejoin_colleagues.py`; golden profile regenerated. Sprint 4
+  and 5 sections of `sprint.md` now carry the `welcome` / `colleague_ask` /
+  `colleague_intro` formats and the inbox rules for them.
 - 2026-10-08 (sprint 1): Definition of Done (run with `CLOE_DB` in a scratch folder so the
   fixtures stay out of `data/cloe.db`) — `uv run pytest -q` → `151 passed, 3 skipped`;
   ruff → `All checks passed!`; `cloe ingest joinform tests/fixtures/joinform.csv` → 5 rows,
@@ -161,9 +166,25 @@ form, colleague-link detection. Then profile + tests, then sprint.md Sprint 4/5 
   city with accents, punctuation and legal-form words (B.V., N.V., v.o.f., …) removed. A
   name+city match is taken only when the two records don't carry *different* domains.
   People by lowercased email; invalid emails skipped; forgotten emails never imported.
-  Join form overwrites company/person fields on a new row (the company told us; the newest
-  row wins) and only fills blanks on a seen row; TELL only fills blanks and never changes a
-  known person. TELL rows without an id get `tell_id = "export:<identity_key>"`.
+  **Each person is kept individually** (team, 2026-10-09): the join form only fills empty
+  company fields (the first registrant's details stand), each submission's answers stay
+  facts with that submission as source (the profile names whose submission it is), and a
+  person's own new row updates their own name/role. TELL only fills blanks and never
+  changes a known person. TELL rows without an id get `tell_id = "export:<identity_key>"`.
+- **Colleague links (migration 3, team 2026-10-09):** when a new person registers through
+  the join form at a company where others already registered (people with join-form
+  consent rows — TELL contacts don't count), a `colleague_link(newcomer_id, existing_id,
+  status=detected)` is recorded per earlier registrant. Cloé (Sprint 4/5) tells the
+  newcomer someone from their company is registered and asks both whether they may be
+  connected; neither ask names the other; names are shared only when both `*_ok = yes`
+  (`connected`); any no → `declined`. `export` shows a person's links without naming the
+  colleague; `forget` removes them (cascade).
+- **Rejoining (team, 2026-10-09):** a forgotten email whose join-form row is dated after
+  the forget (`forgotten.at`) is a rejoin: imported again, person flag `rejoined`, event
+  `rejoin`. Rows dated before the forget, or undated, stay out. TELL skips a forgotten
+  email unless the person has rejoined. Forgetting again moves `forgotten.at`. The
+  Sprint 4 `welcome` says it looks like they're rejoining and shows what we know about
+  their company; Sprint 5 clears the flag once that welcome is sent.
 - **Consent ledger:** rows dated by when the person acted; latest `at` wins (ties: newest
   row). New join-form row: `followup` from `consent_privacy`, `newsletter` from
   `consent_newsletter` (empty = no), `sms/*` = unknown, all dated `submitted_at`. A row
@@ -191,7 +212,8 @@ form, colleague-link detection. Then profile + tests, then sprint.md Sprint 4/5 
   (id, created)`, `records.lookup_company(conn, query)`, `records.upsert_source(conn,
   kind, url, raw=…, raw_dir=… | digest=…)`, `records.add_fact(…, flags=…)`,
   `records.add_need(…)`, `records.quarantine(values, keys, label)`;
-  `people.upsert_person`, `people.set_consent(…, at=…)`, `people.current_consent`,
+  `people.forgotten_at`, `people.add_flag(conn, pid, flag)`,
+  `people.link_colleagues(conn, company_id, newcomer_id)`, `people.upsert_person`, `people.set_consent(…, at=…)`, `people.current_consent`,
   `people.consents`, `people.forget`, `people.export`; `joinform.ingest(conn, tabs,
   raw_dir, claude, canary) -> Report` (tabs from `read_file` or `read_sheet`);
   `tell.ingest(conn, recs, origin, digest)`; `profile.render(conn, company_id)`,
@@ -214,15 +236,13 @@ form, colleague-link detection. Then profile + tests, then sprint.md Sprint 4/5 
 7. Unblock `m-dpp.nl`, `news.byborre.com`, `byborre.com`, `space13.to` in the cloud environment's
    network settings, or run work order 001 on the MacBook before Sprint 2.
 8. Join-form sheet access: who creates the Google Cloud service account, shares "TOS13 join
-   form responses" with it as Viewer, and keeps the key on the MacBook? The sheet is owned
-   by a personal Google account; consider moving it to the TOS13 Workspace. The sheet id
-   stays in `.env` (`CLOE_JOINFORM_SHEET_ID`), not in the repo.
+   form responses" (in the TOS13 workspace) with it as Viewer, and keeps the key on the
+   MacBook? The sheet id stays in `.env` (`CLOE_JOINFORM_SHEET_ID`), not in the repo.
 9. Cloé treats an unsubscribe as "no" for *every* email purpose (follow-up, newsletter,
    Cloé updates), not only the newsletter. Chloe to confirm.
 10. `cloe ingest tell --db`: the SQL (`tell.DB_QUERY`) was written from the table list in
     CONTEXT §D; TELL's own `query_org` could not be read this session. TELL team to check
     the joins before first use; the xlsx export remains the default.
-11. Someone who was forgotten and later submits the join form again is still skipped (there
-    is no "un-forget"). Decide the policy (e.g. a newer submission lifts the suppression).
-12. When several people from one company submit, the newest row's company fields win
-    (e.g. `website`). OK, or should the team's edits in TELL win?
+11. ~~Rejoining after a forget~~ — decided 2026-10-09: welcome them back (see Decisions).
+12. ~~Several people from one company~~ — decided 2026-10-09: each person kept
+    individually, with colleague links (see Decisions).

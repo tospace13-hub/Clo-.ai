@@ -433,6 +433,18 @@ voice, in the right format, and the tone check blocks drift.
    approved `match` rows pointing at each other and both persons' `yes` recorded as a
    fact of kind `other` "agreed_to_intro"), `data_drop`, `digest` (monthly; collects
    `digest_item` picks).
+   Added by the team on 2026-10-09 (data from Sprint 1, see STATE "Decisions"):
+   - `welcome`: the first message to someone who registered — what Cloé knows about their
+     company, from the profile's facts (people like seeing this "intelligence scan"). If
+     the person has the flag `rejoined`, it says it looks like they're rejoining (their
+     earlier personal details were deleted as they asked; only a fingerprint of their
+     email was kept so imports respect that) and welcomes them back.
+   - `colleague_ask`: for each `colleague_link(status=detected)` — to the newcomer: someone
+     from their company is already registered, would they like to be connected? To the
+     existing person: someone else from their company registered, may Cloé tell you about
+     each other? **Neither ask names the other person.** Sets the link to `asked`.
+   - `colleague_intro`: only when `newcomer_ok = existing_ok = 'yes'` (`connected`): tells
+     each of them who the other is. Refuses otherwise.
 5. Tests: golden examples from tone.md §7 pass `tonecheck` with FakeClaude configured to
    score by rules implemented in code (banned words, caps, signature) + canned model
    judgement; anti-examples fail; a draft with a non-allowlisted link is stripped and
@@ -478,7 +490,9 @@ questions 2, 4, 5 (answers may be in STATE.md by now).
    placeholder constant), no model; (b) else `Claude.extract(InboundIntent)` with closed
    enum {yes, no, question, info, unsubscribe, other} over the wrapped body; (c) creates a
    `task` for Chloe (`cloe tasks list`) — never an outbound. `yes` on an intro → fact
-   `agreed_to_intro`.
+   `agreed_to_intro`. A yes/no reply to a `colleague_ask` sets that person's
+   `newcomer_ok`/`existing_ok`; both yes → `connected`, any no → `declined`. When a
+   `welcome` to a person flagged `rejoined` is sent, remove the flag.
 5. Thread continuity: `thread_id` per person+topic; replies drafted with `email_reply`
    format and `In-Reply-To`.
 6. Tests: every gate has a failing test; dry-run path; Twilio signature valid/invalid

@@ -26,12 +26,21 @@ def _md(text: str) -> str:
     return re.sub(r"([\\`\[\]<>])", r"\\\1", text)
 
 
-def _source_label(src: sqlite3.Row) -> str:
+LINK_STATUS = {
+    "detected": "not asked yet",
+    "asked": "asked · newcomer: {newcomer_ok}, colleague: {existing_ok}",
+    "connected": "connected: both said yes",
+    "declined": "declined: keep them apart",
+}
+
+
+def _source_label(src: sqlite3.Row, who: dict[str, str]) -> str:
     url = src["url"] or ""
     imported = (src["fetched_at"] or "")[:10]
     if src["kind"] == "joinform":
         submitted = url.split(":", 1)[1].rsplit(":", 1)[0] if url.count(":") >= 2 else "?"
-        label = f"Join form, submitted {submitted or '?'}"
+        name = who.get(url.rsplit(":", 1)[-1])
+        label = f"Join form{f' from {name}' if name else ''}, submitted {submitted or '?'}"
     elif src["kind"] == "tell":
         origin = url.removeprefix("tell:").split("#", 1)[0]
         label = "TELL database" if origin == "db" else f"TELL export {origin}"
@@ -41,15 +50,18 @@ def _source_label(src: sqlite3.Row) -> str:
 
 
 class _Sources:
-    def __init__(self, conn: sqlite3.Connection):
-        self.conn, self.used = conn, {}
+    """Numbers the sources a profile cites. `who` maps an email hash to the person's name,
+    so each join-form submission shows whose answers it holds."""
+
+    def __init__(self, conn: sqlite3.Connection, who: dict[str, str]):
+        self.conn, self.who, self.used = conn, who, {}
 
     def ref(self, source_id: int | None) -> str:
         if source_id is None:
             return "[no source]"
         if source_id not in self.used:
             row = self.conn.execute("SELECT * FROM source WHERE id = ?", (source_id,)).fetchone()
-            self.used[source_id] = _source_label(row) if row else "deleted source"
+            self.used[source_id] = _source_label(row, self.who) if row else "deleted source"
         return f"[S{source_id}]"
 
 
@@ -92,7 +104,11 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
     if c is None:
         raise KeyError(company_id)
     now = db.now()
-    src = _Sources(conn)
+    persons = conn.execute(
+        "SELECT * FROM person WHERE company_id = ? ORDER BY id", (company_id,)
+    ).fetchall()
+    src = _Sources(conn, {people.email_sha256(p["email"]): p["name"] or "a colleague"
+                          for p in persons})
     facts = _facts(conn, company_id, now)
     prose = [f for f in facts if records.INSTRUCTION_LIKE not in records.flags_of(f)]
     flagged: list[tuple[str, int | None, str]] = [
@@ -124,9 +140,6 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
     out += ["", "## Data they have", *fact_lines(("has_data",))]
     out += ["", "## Other facts", *fact_lines(OTHER_KINDS)]
 
-    persons = conn.execute(
-        "SELECT * FROM person WHERE company_id = ? ORDER BY id", (company_id,)
-    ).fetchall()
     with_consent, without = [], []
     for p in persons:
         state = people.consents(conn, p["id"])
@@ -138,12 +151,33 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
         out.append(f"  - email: {_consent_text(state, 'email')}")
         out.append(f"  - sms: {_consent_text(state, 'sms')}"
                    + ("" if p["phone"] else " (no phone number)"))
+        if "rejoined" in (p["flags"] or "").split(","):
+            out.append("  - rejoined after being forgotten: the welcome says it looks like "
+                       "they're rejoining and shows what we know about their company")
     if not with_consent:
         out.append("- (nobody yet)")
     if without:
         out += ["", ("Contacts without consent — Cloé may not write to them until Chloe "
                      "records consent (`cloe consent set`):")]
         out += [f"- {_md(p['email'])}" for p, _ in without]
+
+    links = conn.execute(
+        "SELECT l.*, n.name AS n_name, n.email AS n_email, e.name AS e_name, "
+        "e.email AS e_email FROM colleague_link l JOIN person n ON n.id = l.newcomer_id "
+        "JOIN person e ON e.id = l.existing_id WHERE l.company_id = ? ORDER BY l.id",
+        (company_id,),
+    ).fetchall()
+    out += ["", "## Colleagues who registered separately"]
+    if links:
+        out.append("Cloé tells the newcomer that someone from their company is already "
+                   "registered, asks both whether they may be connected, and shares names "
+                   "only when both say yes.")
+        for link in links:
+            status = LINK_STATUS[link["status"]].format(**dict(link))
+            out.append(f"- {_md(link['n_name'] or link['n_email'])} registered after "
+                       f"{_md(link['e_name'] or link['e_email'])} — {status}")
+    else:
+        out.append("- (none)")
 
     out += ["", "## Flagged text"]
     if flagged:

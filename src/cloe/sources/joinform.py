@@ -6,6 +6,12 @@ or a CSV/XLSX export of it. Columns: docs/CONTEXT.md §C. Every row is untrusted
 Idempotent: a row is keyed by `submitted_at` + email. A row seen before only updates
 consent (the unsubscribe form edits it in place) and fills empty company fields (the team
 adds `kvk` later); its facts and needs are not added twice.
+
+Each person is kept individually (team decision 2026-10-09): a later submission from the
+same company only fills empty company fields, its answers stay facts of that submission,
+and a newcomer gets a pending colleague link to everyone already registered there. A
+forgotten person who submits again after the forget is a rejoin: imported again and
+flagged `rejoined`; their rows from before the forget stay out.
 """
 
 from __future__ import annotations
@@ -86,6 +92,8 @@ class Report:
     seen: int = 0
     invalid: int = 0
     forgotten: int = 0
+    rejoined: int = 0
+    colleague_links: int = 0
     companies_created: int = 0
     people_created: int = 0
     consents: int = 0
@@ -106,6 +114,8 @@ class Report:
             (f"companies +{self.companies_created} · people +{self.people_created} · "
              f"consent rows +{self.consents} · facts +{self.facts} · needs +{self.needs} · "
              f"unsubscribes applied {self.unsubscribes}"),
+            (f"rejoined after being forgotten {self.rejoined} · colleague links (people from "
+             f"one company who registered separately) +{self.colleague_links}"),
             f"needs classified {self.classified}, still unclassified {self.unclassified}",
             (f"flagged as instruction-like (whole database): {self.flagged_needs} needs, "
              f"{self.flagged_facts} facts"),
@@ -290,10 +300,15 @@ def ingest_responses(
         if not email:
             report.invalid += 1
             continue
-        if people.is_forgotten(conn, email):
-            report.forgotten += 1
-            continue
         submitted = records.clean(rec["submitted_at"], 64)
+        forgot = people.forgotten_at(conn, email)
+        rejoin = False
+        if forgot is not None:
+            when = people.parse_time(submitted)
+            if when is None or when <= forgot:  # their old rows, or undated: stay out
+                report.forgotten += 1
+                continue
+            rejoin = True
         url = f"joinform:{submitted}:{people.email_sha256(email)}"
         before = _json(records.stored_raw(conn, "joinform", url))
         raw = json.dumps(rec, ensure_ascii=False).encode("utf-8")
@@ -310,7 +325,7 @@ def ingest_responses(
             "year_start": rec["year_start"], "tier": rec["tier"], "category": rec["category"],
         }
         try:
-            cid, created = records.upsert_company(conn, company, overwrite=new)
+            cid, created = records.upsert_company(conn, company)  # fill blanks only
             report.companies_created += created
         except ValueError:
             pass  # no trade name and no usable website: the person is kept without a company
@@ -320,6 +335,11 @@ def ingest_responses(
         )
         report.people_created += created
         _row_consents(conn, pid, rec, at, None if new else before, report)
+        if rejoin and people.add_flag(conn, pid, "rejoined"):
+            report.rejoined += 1
+            db.event(conn, "joinform", "rejoin", ref=f"person:{pid}")
+        if created and cid is not None:
+            report.colleague_links += people.link_colleagues(conn, cid, pid)
         if new and cid is not None:
             _row_facts(conn, cid, sid, rec, report)
             for text in moved:

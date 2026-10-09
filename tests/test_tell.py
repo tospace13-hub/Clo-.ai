@@ -39,7 +39,7 @@ def test_tell_after_joinform_matches_and_fills_blanks(conn, tmp_path):
     assert (report.rows, report.companies_created, report.companies_matched) == (10, 6, 4)
     # join-form values win; TELL fills what was empty
     row = conn.execute("SELECT * FROM company WHERE domain = 'example.nl'").fetchone()
-    assert row["name"] == before["example.nl"] == "Voorbeeld Weverij"
+    assert row["name"] == before["example.nl"] == "Voorbeeld Weverij B.V."
     assert row["company_class"] == "SME" and row["tell_id"].startswith("export:")
     # kringloop had no website: matched on name + city, domain filled in
     assert one(conn, "SELECT domain FROM company WHERE name = 'Kringloop Textiel'") == (
