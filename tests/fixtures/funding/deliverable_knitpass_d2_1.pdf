@@ -1,0 +1,79 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1007 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+40 800 Td
+(KNITPASS - Deliverable D2.1) Tj T*
+(Data model for digital product passports in knitwear) Tj T*
+(Work package 2 - Version 1.0 - Public - 28 February 2025) Tj T*
+() Tj T*
+(1. Summary) Tj T*
+(This deliverable defines the data model for a digital product passport \(DPP\) for knitwear.) Tj T*
+(It lists 42 data points grouped in six blocks: identity, materials, production steps,) Tj T*
+(use and care, repair, and end of life. For each data point it states whether small and) Tj T*
+(medium-sized knitwear makers already hold the data, and which source can provide it.) Tj T*
+() Tj T*
+(2. Why knitwear needs its own passport profile) Tj T*
+(Knitted garments are often made in small batches, with yarns bought from several spinners) Tj T*
+(and dyed in separate lots. The Ecodesign for Sustainable Products Regulation \(ESPR\)) Tj T*
+(requires passports for textiles once the delegated act applies. Traceability of yarn lots) Tj T*
+(is the hardest part for small producers.) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 857 >>
+stream
+BT
+/F1 10 Tf
+13 TL
+40 800 Td
+(3. Data points) Tj T*
+(Identity: GTIN or internal article number, batch number, production country.) Tj T*
+(Materials: fibre composition by weight, recycled content, yarn spinner, yarn lot number.) Tj T*
+(Production steps: knitting technique \(flat, circular, whole garment\), dyeing method,) Tj T*
+(finishing chemicals, factory location.) Tj T*
+(Use and care: washing temperature, drying, pilling class.) Tj T*
+(Repair: spare yarn availability, repair service contact role.) Tj T*
+(End of life: take-back scheme, sorting code, recyclability score.) Tj T*
+() Tj T*
+(4. Open template) Tj T*
+(An open spreadsheet template and a JSON schema implementing this model are published with) Tj T*
+(this deliverable. The pilot knitters in the Netherlands and Portugal filled in passports) Tj T*
+(for 120 styles in three months.) Tj T*
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000317 00000 n 
+0000001376 00000 n 
+0000001502 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+2410
+%%EOF

@@ -1,0 +1,19 @@
+SORTWISE - Deliverable D3.2
+Pilot results of NIR sorting lines
+Work package 3 - Public - 15 March 2024
+
+Executive summary
+Two pilot sorting lines combined near-infrared (NIR) spectroscopy with colour cameras to
+sort post-consumer textiles by fibre type and colour. Over 18 months the lines sorted
+1,450 tonnes. Fibre purity of the cotton fraction reached 96 percent and of the polyester
+fraction 93 percent at a throughput of 900 kg per hour.
+
+Results per fraction
+Cotton (white and light colours): 31 percent of input, sold to a mechanical recycler.
+Polyester: 18 percent, sent to chemical recycling trials.
+Blends: 27 percent, no stable outlet yet.
+Wool: 4 percent, sold to a Prato spinner.
+
+Data offered
+The anonymised spectra library (12,000 labelled garments) and the monthly fraction
+statistics are published as an open dataset for sorters and recyclers.

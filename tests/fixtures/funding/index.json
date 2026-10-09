@@ -1,0 +1,38 @@
+{
+  "https://m-dpp.nl/nl_funding_network.html": {
+    "file": "nl_funding_network.html",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "https://cordis.europa.eu/project/id/999000001": {
+    "file": "cordis_999000001.html",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "https://cordis.europa.eu/project/id/999000001/results": {
+    "file": "cordis_999000001_results.html",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "https://cordis.europa.eu/project/id/999000002": {
+    "file": "cordis_999000002.html",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "https://cordis.europa.eu/project/id/999000002/results": {
+    "file": "cordis_999000002_results.html",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "https://ec.europa.eu/research/participants/documents/downloadPublic?documentIds=080166e5a0000001&appId=PPGMS": {
+    "file": "deliverable_knitpass_d2_1.pdf",
+    "content_type": "application/pdf"
+  },
+  "https://ec.europa.eu/research/participants/documents/downloadPublic?documentIds=080166e5a0000002&appId=PPGMS": {
+    "file": "deliverable_sortwise_d3_2.pdf",
+    "content_type": "application/pdf"
+  },
+  "https://zenodo.org/records/9990001": {
+    "file": "zenodo_9990001.html",
+    "content_type": "text/html; charset=utf-8"
+  },
+  "https://fibreloop.example/": {
+    "file": "fibreloop_site.html",
+    "content_type": "text/html; charset=utf-8"
+  }
+}

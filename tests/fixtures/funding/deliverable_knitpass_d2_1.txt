@@ -1,0 +1,29 @@
+KNITPASS - Deliverable D2.1
+Data model for digital product passports in knitwear
+Work package 2 - Version 1.0 - Public - 28 February 2025
+
+1. Summary
+This deliverable defines the data model for a digital product passport (DPP) for knitwear.
+It lists 42 data points grouped in six blocks: identity, materials, production steps,
+use and care, repair, and end of life. For each data point it states whether small and
+medium-sized knitwear makers already hold the data, and which source can provide it.
+
+2. Why knitwear needs its own passport profile
+Knitted garments are often made in small batches, with yarns bought from several spinners
+and dyed in separate lots. The Ecodesign for Sustainable Products Regulation (ESPR)
+requires passports for textiles once the delegated act applies. Traceability of yarn lots
+is the hardest part for small producers.
+
+3. Data points
+Identity: GTIN or internal article number, batch number, production country.
+Materials: fibre composition by weight, recycled content, yarn spinner, yarn lot number.
+Production steps: knitting technique (flat, circular, whole garment), dyeing method,
+finishing chemicals, factory location.
+Use and care: washing temperature, drying, pilling class.
+Repair: spare yarn availability, repair service contact role.
+End of life: take-back scheme, sorting code, recyclability score.
+
+4. Open template
+An open spreadsheet template and a JSON schema implementing this model are published with
+this deliverable. The pilot knitters in the Netherlands and Portugal filled in passports
+for 120 styles in three months.

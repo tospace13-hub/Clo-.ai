@@ -62,7 +62,20 @@ the MacBook to save the real pages.
   serves saved pages from `dir/index.json`. `html_to_text`, `html_title`, `pdf_to_text`
   (60 pages), `to_text`. `records._write_raw` is now public as `records.write_raw`.
   `tests/test_fetch.py` (29) against a local http.server; `tests/pdfgen.py` writes PDFs.
-- [ ] Step 2: work order 001, hand-written fixtures, `sources/funding.py`, `sources/cordis.py`.
+- [x] Step 2: `docs/workorders/001-fetch-funding-page.md` (MacBook: save the real page,
+  3 CORDIS projects + results pages, 1 deliverable PDF into `tests/fixtures/funding_real/`
+  with an `index.json`, describe the structure here). Hand-written stand-ins in
+  `tests/fixtures/funding/` (README says so; fictional projects, ids 999000001…).
+  `sources/funding.py`: `parse_funding_page(html, base_url) -> list[ProjectRef]` — no
+  layout assumed: tables with a header row (Dutch/English header keywords), headed sections
+  and list items; a block is a project only with a CORDIS link, or an acronym plus a
+  programme or year range. `sources/cordis.py`: `cordis_id_of`, `project_url`,
+  `results_url`, `programme_of`, `iso_date`, `parse_project(content, url, content_type) ->
+  CordisProject` (labels + headings + the `Title | ACRONYM | Project | …` page title; JSON
+  in the CORDIS open-data record shape), `parse_results -> list[ResultLink(title, url,
+  kind)]` (PDFs, EC downloadPublic, Zenodo, DOIs). No public per-project CORDIS JSON could
+  be confirmed (the data API needs EU Login), so HTML is the main path.
+  `tests/test_funding.py` (18).
 - [ ] Step 3: `library.py` (migration 4, DocumentCard, FTS5 search).
 - [ ] Step 4–5: CLI (`scrape funding|url`, `library search|show|stats`, `--engine
   workorder`, `workorder ingest`), `CLOE_FAKE=1`.
