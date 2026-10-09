@@ -49,8 +49,24 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 2, step 0: check whether the work-order fixtures exist (`tests/fixtures/funding/`)
-and whether m-dpp.nl / CORDIS are reachable from this session.
+Sprint 2 (research library). m-dpp.nl **and cordis.europa.eu** are blocked from this cloud
+session (proxy 403, checked 2026-10-09), and `tests/fixtures/funding/` did not exist, so the
+parsers are built on hand-written fixtures (sprint.md's fallback) and work order 001 asks
+the MacBook to save the real pages.
+- [x] Step 1: `sources/fetch.py` — `Fetcher.fetch(url) -> Fetched(url, final_url,
+  content_type, content, sha256, raw_path, charset)`; every address vetted before
+  connecting and after each of ≤ 3 redirects, connection pinned to the vetted address;
+  robots.txt per site (RFC 9309: 4xx allow, 5xx/blocked disallow); 1 s per host; 15 s;
+  2 MB / PDF 20 MB; octet-stream accepted only when it starts with `%PDF-`; no proxy
+  support (direct connections are what the address check needs). `FixtureFetcher(dir)`
+  serves saved pages from `dir/index.json`. `html_to_text`, `html_title`, `pdf_to_text`
+  (60 pages), `to_text`. `records._write_raw` is now public as `records.write_raw`.
+  `tests/test_fetch.py` (29) against a local http.server; `tests/pdfgen.py` writes PDFs.
+- [ ] Step 2: work order 001, hand-written fixtures, `sources/funding.py`, `sources/cordis.py`.
+- [ ] Step 3: `library.py` (migration 4, DocumentCard, FTS5 search).
+- [ ] Step 4–5: CLI (`scrape funding|url`, `library search|show|stats`, `--engine
+  workorder`, `workorder ingest`), `CLOE_FAKE=1`.
+- [ ] Step 6: tests incl. injection PDF; Definition of Done; hand-off.
 
 ## Done
 

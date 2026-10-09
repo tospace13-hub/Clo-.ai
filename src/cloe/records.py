@@ -184,7 +184,8 @@ def profile_filename(company: sqlite3.Row) -> str:
 # -- sources ----------------------------------------------------------------------------
 
 
-def _write_raw(raw_dir: Path, data: bytes) -> tuple[str, str]:
+def write_raw(raw_dir: Path, data: bytes) -> tuple[str, str]:
+    """Store bytes as `raw_dir/<sha256>` (0600). Raw copies are data: never executed."""
     digest = sha256(data)
     raw_dir.mkdir(parents=True, exist_ok=True)
     path = raw_dir / digest
@@ -231,7 +232,7 @@ def upsert_source(
     if raw is not None:
         if raw_dir is None:
             raise ValueError("raw_dir is required to store raw content")
-        digest, raw_path = _write_raw(raw_dir, raw)
+        digest, raw_path = write_raw(raw_dir, raw)
     row = conn.execute(
         "SELECT id, sha256, raw_path FROM source WHERE kind = ? AND url = ?", (kind, url)
     ).fetchone()
