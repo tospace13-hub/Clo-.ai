@@ -11,6 +11,8 @@ Before or alongside it, work order 001 (MacBook) brings the real funding page; s
 
 ## Round log (newest first)
 
+- 2026-10-13 · sprint 2 follow-up · started — the team pointed to the M-DPP repository
+  (github.com/MDPP-ops/MDPP_Website): the funding page's real data, read from there.
 - 2026-10-09 · sprint 2 · finished — research library: guarded fetcher, funding + CORDIS
   parsers (hand-written fixtures: hosts blocked), cards + FTS5 search, work-order engine;
   226 tests. Work order 001 open for the MacBook.
@@ -52,7 +54,13 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 2 finished; Sprint 3 not started. Work order 001 is open for the MacBook.)
+Sprint 2 follow-up. The real m-dpp.nl source is the public repo `MDPP-ops/MDPP_Website`
+(Jekyll on GitHub Pages; cloned read-only at commit 836204b). `nl_funding_network.html` is a
+D3 network drawn in the browser from three JSON datasets in that repo (CORDIS, Erasmus+,
+NWO); its HTML holds no project list, so the HTML parser built on stand-ins could never work.
+- [ ] Read the datasets (`sources/funding.py` rewritten), migration 5 (project ext_id etc.).
+- [ ] `scrape funding --mdpp <checkout>`: import every Dutch project, card the top N.
+- [ ] Real sample fixtures, tests, DoD, hand-off with the real numbers.
 
 ## Done
 
