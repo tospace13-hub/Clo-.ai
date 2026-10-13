@@ -1,0 +1,112 @@
+{
+ "meta": {
+  "note": "Sample for Cloé's tests: records copied from github.com/MDPP-ops/MDPP_Website at commit 836204b (see README.md).",
+  "total_erasmus": 4684372,
+  "matched_projects": 6631,
+  "total_ec_grant": 876725462.0799998
+ },
+ "projects": [
+  {
+   "project_id": "2022-3-NL02-KA152-YOU-000098803",
+   "title_en": "Sustainable Fashion Practices",
+   "funding_scheme": "KA1 2022",
+   "programme": "Erasmus+",
+   "key_action": "Learning Mobility of Individuals",
+   "action_type": "Mobility  of young people",
+   "call_year": "2022",
+   "start_date": "",
+   "end_date": "",
+   "status": "",
+   "ec_grant": "35690.00",
+   "objective": "<< Objectives >>\n\n“Sustainable Fashion Practices” was created by young people in response to fast fashion issues and overconsumption of clothing. The project aimed to educate participants on sustainable fashion and environmental protection, as well as provide them with practical skills in clothing alterations such as remaking, redesigning, repairing, and upcycling. To inspire participants to make ethical decisions and become responsible consumers, and to encourage them to develop national and international initiatives as ambassadors for sustainable living on a national and international scale, the ultimate goal of the project was to inspire ethical choices and responsible consumption. Environmental activists from countries that had previously participated in Erasmus+ projects initiated and developed the project. In addition to the topic of sustainable fashion, partners joined the project for various other reasons. An action plan was developed to achieve several specific objectives of the \" Sustainable Fashion Practices \" project. The objectives included creating a safe, empowering learning space for participants to share competences and practices; and promoting sustainable fashion ",
+   "topics": "Creativity, arts and culture; Environment and climate change; Green skills",
+   "participating_countries": "NL,BG,IT,PT,LV,MK",
+   "_pi_institution": "Active Youth 4 Sustainability Goals",
+   "_pi_country": "NL",
+   "_pi_name": "",
+   "_matched_terms": [
+    "fashion",
+    "fabric"
+   ],
+   "project_members": [
+    {
+     "organisation": "Active Youth 4 Sustainability Goals",
+     "orgType": "Group of young people active in youth work",
+     "country": "NL",
+     "region": "Noord-Brabant",
+     "role": "Coordinator"
+    },
+    {
+     "organisation": "Take Action for the Sustainable Development Goals",
+     "orgType": "Group of young people active in youth work",
+     "country": "BG",
+     "region": "Ямбол (Yambol)",
+     "role": "Partner"
+    },
+    {
+     "organisation": "Be The Change",
+     "orgType": "Non-governmental organisation/association/social enterprise",
+     "country": "IT",
+     "region": "Sicilia",
+     "role": "Partner"
+    },
+    {
+     "organisation": "Collippo - Associação Juvenil",
+     "orgType": "Non-governmental organisation/association/social enterprise",
+     "country": "PT",
+     "region": "Centro (PT)",
+     "role": "Partner"
+    },
+    {
+     "organisation": "Young Folks LV",
+     "orgType": "Non-governmental organisation/association/social enterprise",
+     "country": "LV",
+     "region": "Rīga",
+     "role": "Partner"
+    },
+    {
+     "organisation": "YOUTH COUNCIL NEXT GENERATION SKOPJE",
+     "orgType": "Non-governmental organisation/association/social enterprise",
+     "country": "MK",
+     "region": "Скопски (Skopski)",
+     "role": "Partner"
+    }
+   ],
+   "project_page_url": "https://erasmus-plus.ec.europa.eu/projects/search/details/2022-3-NL02-KA152-YOU-000098803",
+   "project_website": ""
+  },
+  {
+   "project_id": "101047533",
+   "title_en": "GreenTexEd - EU Practices in Green Textiles: from Focused Education to Circular Economy",
+   "funding_scheme": "Jean Monnet",
+   "programme": "Erasmus+",
+   "key_action": "Jean Monnet Activities",
+   "action_type": "Jean Monnet Modules",
+   "call_year": "2021",
+   "start_date": "",
+   "end_date": "",
+   "status": "terminated",
+   "ec_grant": "30000.00",
+   "objective": "Textile industry is a priority for sustainability due to its high impact on environment. Although textiles are not on top of the global ecological agenda as compared with carbon footprint or global warming, they are among the worst pressure categories in these effects. The EU Commission includes the EU Textile Strategy into the Circular Economy Action Plan setting the goals for the future. Expertise in green textiles comes from academics and initiatives in EU universities.\nAlthough building awareness of environmental sustainability in HEIs, many countries like Russia are behind the EU in infusing sustainability in university agenda and engineering curricula. The focus on green transformations and circular economy in textile engineering programs is still poor.\nThe module objective is to offer courses on European green deal and circular economy to engineering students and scientists so they can expand their expertise in both the environmental and social impacts of the textile industry and create green textiles in line with sustainable development goals as their European colleagues do.\nThe module intends to add the EU dimension to the textile engineering degree programs, which are mos",
+   "topics": "",
+   "participating_countries": "RU",
+   "_pi_institution": "KAZAN NATIONAL RESEARCH TECHNOLOGICAL UNIVERSITY",
+   "_pi_country": "RU",
+   "_pi_name": "",
+   "_matched_terms": [
+    "textile"
+   ],
+   "project_members": [
+    {
+     "organisation": "KAZAN NATIONAL RESEARCH TECHNOLOGICAL UNIVERSITY",
+     "orgType": "",
+     "country": "RU",
+     "region": "",
+     "role": "Coordinator"
+    }
+   ],
+   "project_page_url": "https://erasmus-plus.ec.europa.eu/projects/search/details/101047533",
+   "project_website": ""
+  }
+ ]
+}

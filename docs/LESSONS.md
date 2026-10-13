@@ -5,13 +5,21 @@ why it matters. Record corrections and confirmed approaches alike. Don't repeat 
 history or STATE.md already says. Update an existing entry rather than adding a duplicate;
 delete entries that turn out to be wrong.
 
-## 2026-10-09 — Parse unseen pages by labels and headings, and send for the real page
+## 2026-10-13 — Before building on stand-ins, ask who made the source
 
-The funding page and CORDIS were unreachable, so the parsers were built on hand-written
-fixtures. A parser fitted to CSS classes I invented would only confirm my own guess. So
-read pages by what they say ("Start date", an "Objective" heading, a header row containing
-"Acroniem", a CORDIS link), test several plausible layouts, label the fixtures as
-hand-written, and write a work order for the real page. The next round checks against it.
+The m-dpp.nl funding page was blocked, so Sprint 2 built a label-based HTML parser on
+hand-written pages. The page turned out to be the team's own site, with a public repo
+(`MDPP-ops/MDPP_Website`). It is a D3 network over JSON datasets, so no HTML parser could
+ever have worked. When a source is blocked, first ask whether the team owns it or has its
+data or repo. A site's IP can hint (185.199.108–111.x = GitHub Pages). Hand-written
+fixtures are the last resort, not the first.
+
+## 2026-10-13 — Run text heuristics over real data before trusting them
+
+`injection_flags` had "act as" as a fake-system-prompt signal. On 2,530 real project
+abstracts it flagged 16, all ordinary prose ("will act as a hub"), and flagged items drop
+out of search. Run each heuristic over a real corpus, and add the false positives found
+as regression tests.
 
 ## 2026-10-08 — Date consent by when the person acted; re-imports act only on changes
 

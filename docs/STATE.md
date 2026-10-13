@@ -7,12 +7,13 @@ refuses any commit that doesn't touch this file. When the team praises the work,
 to "Laurels" with the habits that earned it.
 
 **Next sprint:** 3 (Dynamic company profiles: own scraper + research + work orders). Branch: `main`.
-Before or alongside it, work order 001 (MacBook) brings the real funding page; see open question 13.
+Work order 001 (MacBook, narrowed) still asks for three real CORDIS results pages; see open question 13.
 
 ## Round log (newest first)
 
-- 2026-10-13 · sprint 2 follow-up · started — the team pointed to the M-DPP repository
-  (github.com/MDPP-ops/MDPP_Website): the funding page's real data, read from there.
+- 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
+  M-DPP repo (github.com/MDPP-ops/MDPP_Website): 2,530 Dutch projects imported, cards
+  most-textile-first; 228 tests.
 - 2026-10-09 · sprint 2 · finished — research library: guarded fetcher, funding + CORDIS
   parsers (hand-written fixtures: hosts blocked), cards + FTS5 search, work-order engine;
   226 tests. Work order 001 open for the MacBook.
@@ -54,16 +55,48 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 2 follow-up. The real m-dpp.nl source is the public repo `MDPP-ops/MDPP_Website`
-(Jekyll on GitHub Pages; cloned read-only at commit 836204b). `nl_funding_network.html` is a
-D3 network drawn in the browser from three JSON datasets in that repo (CORDIS, Erasmus+,
-NWO); its HTML holds no project list, so the HTML parser built on stand-ins could never work.
-- [ ] Read the datasets (`sources/funding.py` rewritten), migration 5 (project ext_id etc.).
-- [ ] `scrape funding --mdpp <checkout>`: import every Dutch project, card the top N.
-- [ ] Real sample fixtures, tests, DoD, hand-off with the real numbers.
+(none — Sprint 2 and its follow-up finished; Sprint 3 not started.)
 
 ## Done
 
+- 2026-10-13 (sprint 2 follow-up): the team pointed to the source of m-dpp.nl,
+  `github.com/MDPP-ops/MDPP_Website` (public; cloned read-only at 836204b). The real page
+  is a D3 network over three JSON datasets (CONTEXT §E). The HTML parser built on
+  stand-ins could never have worked on it: the page's HTML has no project list.
+  `sources/funding.py` now reads the datasets (`load(dir) -> (refs, counts)`, the page's
+  filter: EU projects with a Dutch member, plus NWO's filtered file). `scrape funding
+  --mdpp <checkout>` imports every project (no model calls) and cards the next N without
+  a card, most textile-specific first. Migration 5 (`project.ext_id` unique,
+  `funding_scheme`, `ec_grant`, `keywords_json`, `nl_orgs_json`). The CORDIS project-page
+  parser was removed (the dataset has those fields); `parse_results` stays for
+  deliverables. The work-order engine writes an input file of the chosen projects.
+  Fixtures are real sample records from the repo plus the fictional KNITPASS chain for
+  the results-page path. `untrusted`'s "act as" heuristic was narrowed: it flagged 16
+  real abstracts ("will act as a hub").
+  **Definition of Done** (`CLOE_FAKE=1`, scratch DB): `uv run pytest -q` → `228 passed,
+  3 skipped`; ruff clean; `cloe scrape funding --fixture tests/fixtures/funding
+  --max-projects 3` → `projects imported 8 (8 new): 5 CORDIS (of 6), 1 Erasmus+ (of 2),
+  2 NWO/SIA (of 2)` · `projects carded 3` · `documents: 3 new` · `pages the fixture has no
+  copy of: 3`; `library search "digital product passport knitwear"` → 3 cards (AUTOLOOP,
+  CISUTAC, PESCO-UP); `library stats` → `projects 8 (on CORDIS 5/8, with documents 3)`.
+  **Real data:** `cloe scrape funding --mdpp <MDPP_Website checkout> --max-projects 10
+  --max-docs-per-project 0` → `projects imported 2530 (2530 new): 1983 CORDIS (of 8429),
+  423 Erasmus+ (of 6631), 124 NWO/SIA (of 124)` in 4 s, 10 cards (the stand-in), 0 flagged.
+  **Hand-off, now with real numbers:**
+  - *Page structure:* D3 network (d3 7.9.0) over `cordis_textile_projects.json`,
+    `erasmus_textile_projects.json` and `nwo_textile_raw.json`, filtered in the browser to
+    projects with a Dutch member, plus programme, year and keyword toggles. Cloé uses NWO's
+    filtered file (124 projects); the page loads the unfiltered one (4,090, including
+    non-textile projects).
+  - *Projects listed:* 2,530 with a Dutch partner (1,983 CORDIS: 1,102 H2020, 881 Horizon
+    Europe; 423 Erasmus+; 124 NWO/SIA). Only 785 mention a textile term and 117 are
+    strongly textile-specific. 1,765 distinct Dutch organisations.
+  - *CORDIS resolution:* 1,983/1,983 CORDIS projects carry their grant id (100%; no page
+    lookup needed); 1,983/2,530 overall.
+  - *Document types:* the datasets give one abstract per project (median 1,200 characters,
+    M-DPP's cut). Further material: 241 open-access publication links (26 NWO projects),
+    26 Erasmus+ project websites. CORDIS deliverables are only on results pages, which are
+    still unseen (work order 001).
 - 2026-10-09 (sprint 2): Definition of Done, run with `CLOE_DB` in a scratch folder and
   `CLOE_FAKE=1`: `uv run pytest -q` → `226 passed, 3 skipped`; ruff → `All checks passed!`;
   `cloe scrape funding --fixture tests/fixtures/funding --max-projects 3` → `projects listed
@@ -282,9 +315,24 @@ NWO); its HTML holds no project list, so the HTML parser built on stand-ins coul
   `library.TIERS`: fibre, yarn_textile, finishing, garment, brand, retail,
   collection_sorting, recycling, repair, services. `tier_slugs(label)` maps a TELL tier
   label onto them; Sprint 4 matching should use it.
-- **Projects:** one row per CORDIS id, else per acronym. CORDIS wins over the funding page
-  for title and dates; Dutch partners are merged into `partners_nl_json`. Flagged titles
-  are stored as `[flagged text]`.
+- **Funding network (follow-up, migration 5):** the source is M-DPP's datasets, read
+  from a checkout of `github.com/MDPP-ops/MDPP_Website` (`--mdpp`, or `CLOE_MDPP_DIR`; no
+  web fetch, and the files are 20–28 MB). The page's filter is applied (EU projects with a
+  Dutch member, plus NWO's filtered file). A project is keyed by `ext_id` (`cordis:<id>`,
+  `erasmus:<id>`, `nwo:<id>`), then CORDIS id, then acronym. The dataset is the authority
+  for a project's facts. `nl_orgs_json` holds the Dutch organisations with CORDIS
+  activity type (PRC/HES/REC/PUB/OTH) or Erasmus+ orgType, and role; `partners_nl_json`
+  holds their names. No people: NWO researchers' names and ORCIDs are dropped and only
+  their organisation's top level is kept. A natural person registered as a CORDIS
+  participant (a sole trader) appears as CORDIS lists them. Cards: each run cards the
+  next `--max-projects` projects without a `project_page` document, ordered by
+  `ProjectRef.core_score()` (textile terms in title ×3, keywords ×2, abstract ×1), then
+  newest. The card's text is `scrape.project_text` (title, programme, dates, abstract,
+  keywords, Dutch partners). Material: CORDIS results page (fetched) → deliverables and
+  publications; NWO open-access publications (DOIs); Erasmus+ project website.
+- **`untrusted.injection_flags` (follow-up):** "act as" counts only when followed by an
+  AI/admin role ("act as an AI", "act as admin"). On its own it flagged 16 real CORDIS and
+  Erasmus+ abstracts.
 - **CLOE_FAKE=1** (`Settings.fake_llm`): library cards come from `library.standin_card`, a
   keyword stand-in run through FakeClaude. It is for dry runs and the DoD only; the doctor
   warns. Under it, the join form leaves needs unclassified.
@@ -295,13 +343,18 @@ NWO); its HTML holds no project list, so the HTML parser built on stand-ins coul
   documents without a valid http(s) URL are skipped.
 - **Sprint 2 interfaces:** `fetch.Fetcher(raw_dir).fetch(url) -> Fetched`,
   `fetch.FixtureFetcher(dir, raw_dir)`, `fetch.to_text / html_to_text / pdf_to_text`;
-  `funding.parse_funding_page(html, base_url)`; `cordis.parse_project / parse_results /
-  programme_of / iso_date`; `library.add_document(conn, claude, canary, source_id=, text=,
+`library.add_document(conn, claude, canary, source_id=, text=,
   project_id=, doc_type=, title_hint=)`, `library.store`, `library.check_card`,
   `library.search(conn, query, k, tier=, topic=, include_flagged=)`, `library.get`,
-  `library.stats`, `library.tier_slugs`; `scrape.scrape_funding / scrape_url /
-  upsert_project`; `workorders.write_funding_batch / ingest_funding_batch`;
-  `records.write_raw` (was `_write_raw`).
+  `library.stats`, `library.tier_slugs`; `scrape.scrape_funding(conn, refs, sources,
+  fetcher, claude, canary, …)`, `scrape.import_projects`, `scrape.to_card`,
+  `scrape.project_text`, `scrape.scrape_url`, `scrape.upsert_project(conn, ref)`;
+  `funding.load(dir)`, `funding.priority`, `funding.ProjectRef` (ext_id, source, nl_orgs,
+  abstract, keywords, publications, …); `cordis.parse_results / results_url /
+  cordis_id_of / iso_date`; `workorders.write_funding_batch(conn, dir, refs, max_docs=)`
+  (+ `NNN-funding-batch.input.json`), `workorders.ingest_funding_batch` (documents name
+  their project by `project_ext_id`); `records.write_raw` (was `_write_raw`). Removed
+  in the follow-up: `funding.parse_funding_page`, `cordis.parse_project`.
 
 ## Open questions for Chloe / the team
 
@@ -328,16 +381,15 @@ NWO); its HTML holds no project list, so the HTML parser built on stand-ins coul
 11. ~~Rejoining after a forget~~ — decided 2026-10-09: welcome them back (see Decisions).
 12. ~~Several people from one company~~ — decided 2026-10-09: each person kept
     individually, with colleague links (see Decisions).
-13. **Work order 001** (MacBook): save the real funding page, 3 CORDIS projects and one
-    deliverable into `tests/fixtures/funding_real/`, and describe the page here. The next
-    session then checks the parsers against them. Alternatively, an environment owner
-    allows `m-dpp.nl`, `cordis.europa.eu`, `ec.europa.eu` and `zenodo.org`. That alone
-    won't let a cloud session scrape: the fetcher makes direct connections only (Decisions
-    → Fetcher).
+13. **Work order 001** (MacBook, narrowed 2026-10-13): save three real CORDIS results
+    pages (CISUTAC, PESCO-UP, TCBL) and one deliverable into
+    `tests/fixtures/funding_real/`. Then the next session checks `cordis.parse_results`
+    against them. The funding page itself is no longer needed (M-DPP repo).
 14. Chloe / the team: review the closed topic list (`library.TAXONOMY`, 25 topics) and the
     tiers (`library.TIERS`). The tier mapping is based on the 7 TELL "Supply chain tier"
     labels seen in the fixtures; TELL's full list should be checked against it.
-15. CORDIS: no public per-project JSON could be confirmed (the data extraction API needs
-    an EU Login), so the parser reads HTML. If the team has EU Login API access, or
-    prefers the CORDIS open-data bulk files (data.europa.eu), `cordis._from_json` already
-    reads that record shape.
+15. ~~CORDIS JSON~~: resolved 2026-10-13. M-DPP already uses the CORDIS open-data bulk
+    files; Cloé reads M-DPP's result.
+16. How many projects to card, and with which engine? About 785 mention a textile term
+    (117 strongly). Carding them all with the API is ~785 calls; the work-order engine
+    does it under Claude Max. Default per run: 3.

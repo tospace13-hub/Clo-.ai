@@ -38,7 +38,11 @@ _INJECTION_PATTERNS: dict[str, re.Pattern[str]] = {
         r"\b(instructions?|rules|prompts?|directions)\b",
         "ignore_instructions_nl": r"\b(negeer|vergeet)\b.{0,40}\b(instructies|regels|opdrachten)\b",
         "role_claim": r"(^|\n)\s*(system|assistant|developer)\s*:",
-        "fake_system_prompt": r"\b(system prompt|new instructions|you are now|act as)\b",
+        # "act as" alone is everyday English in project abstracts ("will act as a hub"):
+        # only "act as" + an AI/admin role counts.
+        "fake_system_prompt": r"\b(system prompt|new instructions|you are now)\b|"
+        r"\bact as (an? |the |my |your )?(ai|assistant|admin\w*|system|developer|root|"
+        r"chatbot|bot|jailbroken|unrestricted)\b",
         "tag_escape": r"<\s*/?\s*(untrusted|system|instructions?)\b",
         "exfiltration": r"\b(send|email|e-mail|forward|mail|post)\b.{0,60}"
         r"\b(contact list|all contacts|email addresses|database|api key|password|"

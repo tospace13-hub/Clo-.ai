@@ -1,269 +1,226 @@
-"""The m-dpp.nl EU-projects page → `ProjectRef`s.
+"""M-DPP's Dutch textile research-funding network → projects.
 
-Nobody in a cloud session has seen the real page (CONTEXT §G), so the parser makes no
-assumption about its layout. It reads project rows from any table with a header row
-(Dutch or English headers) and project entries from repeated blocks (cards, list items,
-headed sections). A block counts as a project only if it links to CORDIS, or if it shows an
-acronym together with a programme or a year range. Work order 001 saves the real page so a
-later session can check this against it.
+m-dpp.nl/nl_funding_network.html is a D3 network drawn in the browser; its HTML holds no
+project list. The data are three JSON datasets in the site's public repository,
+github.com/MDPP-ops/MDPP_Website (Jekyll on GitHub Pages):
 
-Everything on the page is untrusted: text is scrubbed, and instruction-like cells are
-flagged and kept out of titles and partner lists.
+- `cordis_textile_projects.json`, built by its `fetch_cordis_bulk.py` from the official
+  CORDIS open-data archives (H2020 + Horizon Europe), filtered for textile and fashion
+  keywords. One record per project: id, acronym, title, programme, funding scheme, dates,
+  EU grant, objective (cut at 1,200 characters), topics, and every participating
+  organisation with its country, role and activity type.
+- `erasmus_textile_projects.json`: the same for Erasmus+ project lists.
+- `nwo_fashion_textile_filtered.json`: NWO/SIA projects (Dutch by definition).
+
+The page shows the EU projects with at least one Dutch member, plus the NWO projects.
+Cloé reads the same files from a checkout of that repository and keeps the same projects.
+For NWO she uses the repo's filtered textile file; the page loads the unfiltered one.
+
+The datasets are third-party text (abstracts, organisation names): scrubbed, capped,
+instruction-like text flagged and kept out of titles. And no people: NWO lists researchers
+by name, and Cloé keeps only their organisations.
 """
 
 from __future__ import annotations
 
-import re
+import json
+from pathlib import Path
 
-from bs4 import Tag
 from pydantic import BaseModel, Field
 
 from cloe.records import INSTRUCTION_LIKE, clean
-from cloe.sources import cordis
-from cloe.sources.cordis import programme_of
-from cloe.sources.fetch import absolute_link, soup_of
+from cloe.sources.cordis import ResultLink, cordis_id_of, iso_date
 from cloe.untrusted import injection_flags
 
-FUNDING_URL = "https://m-dpp.nl/nl_funding_network.html"
+REPO_URL = "https://github.com/MDPP-ops/MDPP_Website"
+PAGE_URL = "https://m-dpp.nl/nl_funding_network.html"
+DATASETS = (
+    ("cordis", "cordis_textile_projects.json"),
+    ("erasmus", "erasmus_textile_projects.json"),
+    ("nwo", "nwo_fashion_textile_filtered.json"),
+)
+SOURCE_LABELS = {"cordis": "CORDIS", "erasmus": "Erasmus+", "nwo": "NWO/SIA"}
+MAX_DATASET_BYTES = 100_000_000
+NL_CODES = frozenset({"NL"})
 FLAGGED_TITLE = "[flagged text]"
+# Words that make a project textile-specific (the datasets' own keyword match is broad:
+# "value chain", "coating", "supply chain"). Used to choose which projects to card first.
+CORE_TERMS = ("textile", "textiel", "fabric", "fibre", "fiber", "garment", "apparel",
+              "clothing", "kleding", "fashion", "yarn", "knit", "breien",
+              "weav", "denim", "wool", "cotton", "polyester", "nonwoven", "leather",
+              "footwear")
 
-YEARS = re.compile(r"\b((?:19|20)\d{2})\s*(?:[-–—/]|tot|to|t/m)\s*((?:19|20)\d{2})\b")
-YEAR = re.compile(r"\b((?:19|20)\d{2})\b")
-ACRONYM = re.compile(r"\b[A-Z][A-Z0-9]*(?:[-+][A-Z0-9]+)*[A-Z0-9]\b")
-NOT_ACRONYMS = frozenset({
-    "EU", "H2020", "HEU", "FP7", "LIFE", "COSME", "ERC", "MSCA", "EIT", "NWO", "SIA", "RVO",
-    "NL", "BV", "NV", "VOF", "SA", "GMBH", "SME", "SMES", "CORDIS", "PDF", "DPP", "ESPR",
-    "EPR", "UPV", "LCA", "HTML", "URL", "KVK", "AMFI", "HVA", "WP", "II", "III",
-})
-GRANT = re.compile(r"(?:cordis|grant(?:\s+agreement)?(?:\s+id)?|GA)\D{0,15}(\d{6,9})\b", re.IGNORECASE)
-PARTNERS_LABEL = re.compile(
-    r"(?:nederlandse\s+partners?|dutch\s+partners?|nl[\s-]partners?|partners?|deelnemers)"
-    r"\s*[:：]\s*(.+)", re.IGNORECASE)
-SPLIT_PARTNERS = re.compile(r"\s*(?:[;,·|/]|\ben\b|\band\b)\s*")
 
-HEADER_KEYS = {
-    "acronym": ("acroniem", "acronym", "afkorting", "kortenaam", "short name"),
-    "title": ("titel", "title", "naam", "name", "projecttitel", "project title"),
-    "programme": ("programma", "programme", "program", "funding", "financiering", "regeling",
-                  "call", "fonds", "fund"),
-    "years": ("looptijd", "periode", "period", "jaar", "jaren", "years", "year", "duration",
-              "start"),
-    "partners": ("partner", "deelnemer", "participant", "consortium"),
-    "link": ("link", "website", "url", "cordis", "meer info", "more info"),
-}
+class Organisation(BaseModel):
+    name: str
+    type: str = ""   # CORDIS activity type (PRC, HES, REC, PUB, OTH) or Erasmus+ orgType
+    role: str = ""
 
 
 class ProjectRef(BaseModel):
+    ext_id: str | None = None        # "cordis:101060375", "erasmus:…", "nwo:…"
+    source: str = ""                 # cordis | erasmus | nwo
     acronym: str | None = None
     title: str = ""
-    urls: list[str] = Field(default_factory=list)
+    urls: list[str] = Field(default_factory=list)  # project page first, then its website
     programme: str | None = None
-    start_year: int | None = None
-    end_year: int | None = None
-    partners_nl: list[str] = Field(default_factory=list)
+    funding_scheme: str | None = None
+    start_date: str | None = None    # ISO date, or a year
+    end_date: str | None = None
+    ec_grant: float | None = None
+    abstract: str = ""
+    keywords: list[str] = Field(default_factory=list)
+    nl_orgs: list[Organisation] = Field(default_factory=list)
     cordis_id: str | None = None
+    publications: list[ResultLink] = Field(default_factory=list)
     flags: list[str] = Field(default_factory=list)
 
     @property
-    def key(self) -> str:
-        return self.cordis_id or f"{self.acronym or ''}|{self.title.lower()}"
+    def partners_nl(self) -> list[str]:
+        return [o.name for o in self.nl_orgs]
 
     @property
     def label(self) -> str:
         return self.acronym or self.title or "(untitled)"
 
-
-# -- field readers ----------------------------------------------------------------------
-
-
-def years_of(text: str) -> tuple[int | None, int | None]:
-    m = YEARS.search(text)
-    if m:
-        return int(m.group(1)), int(m.group(2))
-    m = YEAR.search(text)
-    return (int(m.group(1)), None) if m else (None, None)
+    def core_score(self) -> int:
+        """How textile-specific the project reads: title counts most, then keywords."""
+        title, keys, text = (self.title.lower(), " ".join(self.keywords).lower(),
+                             self.abstract.lower())
+        return sum(3 * (t in title) + 2 * (t in keys) + (t in text) for t in CORE_TERMS)
 
 
-def acronym_of(text: str) -> str | None:
-    for m in ACRONYM.finditer(text):
-        token = m.group(0)
-        if len(token) >= 3 and token.upper() not in NOT_ACRONYMS and not token.isdigit():
-            return token
-    return None
+def has_dutch_member(record: dict) -> bool:
+    if str(record.get("_pi_country") or "").upper() in NL_CODES:
+        return True
+    return any(str(m.get("country") or "").upper() in NL_CODES
+               for m in record.get("project_members") or [] if isinstance(m, dict))
 
 
-def partners_of(text: str) -> list[str]:
-    out = []
-    for name in SPLIT_PARTNERS.split(text):
-        name = clean(name, 200).strip(" .")
-        if len(name) >= 2 and not injection_flags(name) and name not in out:
-            out.append(name)
-    return out
+def _orgs(record: dict, source: str) -> list[Organisation]:
+    found: dict[str, Organisation] = {}
+    for m in record.get("project_members") or []:
+        if not isinstance(m, dict):
+            continue
+        if source != "nwo" and str(m.get("country") or "").upper() not in NL_CODES:
+            continue
+        # NWO members are people: keep their organisation (top level), never their name.
+        name = clean(str(m.get("organisation") or "").split("||")[0], 200)
+        if not name or injection_flags(name):
+            continue
+        kind = clean(m.get("activityType") or m.get("orgType") or "", 80)
+        role = clean(m.get("role") or "", 60) if source != "nwo" else ""
+        found.setdefault(name.lower(), Organisation(name=name, type=kind, role=role))
+    return list(found.values())
 
 
-def _cordis_id(urls: list[str], text: str) -> str | None:
-    for url in urls:
-        cid = cordis.cordis_id_of(url)
-        if cid:
-            return cid
-    m = GRANT.search(text)
-    return m.group(1) if m else None
+def _grant(record: dict, source: str) -> float | None:
+    value = record.get("award_amount") if source == "nwo" else \
+        record.get("ec_grant_num", record.get("ec_grant"))
+    try:
+        number = float(str(value).replace(" ", "").replace(",", ".")) if value not in (
+            None, "") else None
+    except ValueError:
+        return None
+    return number if number and number > 0 else None
 
 
-def _links(tag: Tag, base_url: str) -> list[str]:
-    urls = (absolute_link(a.get("href"), base_url) for a in tag.find_all("a"))
-    return list(dict.fromkeys(u for u in urls if u))
+def _publications(record: dict) -> list[ResultLink]:
+    links = []
+    for product in record.get("products") or []:
+        if not isinstance(product, dict):
+            continue
+        url = str(product.get("url_open_access") or "").strip()
+        if url.startswith("10."):
+            url = "https://doi.org/" + url
+        if not url.startswith(("https://", "http://")):
+            continue
+        title = clean(product.get("title") or url, 300)
+        links.append(ResultLink(title=FLAGGED_TITLE if injection_flags(title) else title,
+                                url=url, kind="publication"))
+    return links
 
 
-def _text(tag: Tag) -> str:
-    return clean(tag.get_text(" "), 2000)
-
-
-def _finish(ref: ProjectRef, raw_texts: list[str]) -> ProjectRef:
-    if any(injection_flags(t) for t in raw_texts if t):
+def to_ref(record: dict, source: str) -> ProjectRef:
+    pid = clean(record.get("project_id") or "", 80)
+    title = clean(record.get("title_en") or record.get("title") or "", 500)
+    abstract = clean(record.get("objective") or record.get("summary_en") or
+                     record.get("summary_nl") or "", 5000)
+    acronym = clean(record.get("acronym") or "", 40) or None
+    page = str(record.get("project_page_url") or "").strip()
+    if not page and source == "nwo" and pid:
+        page = f"https://www.nwo.nl/projecten/{pid}"
+    website = str(record.get("project_website") or "").strip()
+    urls = [u for u in (page, website) if u.startswith(("https://", "http://"))]
+    keywords = [k for k in (clean(k, 80) for k in
+                            str(record.get("topics") or "").replace(";", ",").split(","))
+                if k][:20]
+    ref = ProjectRef(
+        ext_id=f"{source}:{pid}" if pid else None,
+        source=source,
+        acronym=acronym,
+        title=title or acronym or "",
+        urls=urls,
+        programme=clean(record.get("programme") or "", 80) or
+        ("NWO/SIA" if source == "nwo" else None),
+        funding_scheme=clean(record.get("funding_scheme") or record.get("key_action") or "",
+                             120) or None,
+        start_date=iso_date(str(record.get("start_date") or "")) or
+        (clean(record.get("call_year") or "", 4) or None),
+        end_date=iso_date(str(record.get("end_date") or "")),
+        ec_grant=_grant(record, source),
+        abstract=abstract,
+        keywords=keywords,
+        nl_orgs=_orgs(record, source),
+        cordis_id=(pid if source == "cordis" and pid.isdigit() else None) or
+        cordis_id_of(page),
+        publications=_publications(record),
+    )
+    if any(injection_flags(t) for t in (title, abstract, acronym or "", *keywords)):
         ref.flags.append(INSTRUCTION_LIKE)
         if injection_flags(ref.title):
             ref.title = FLAGGED_TITLE
         if ref.acronym and injection_flags(ref.acronym):
             ref.acronym = None
+        ref.keywords = [k for k in ref.keywords if not injection_flags(k)]
     return ref
 
 
-# -- tables -----------------------------------------------------------------------------
+def read_dataset(path: Path) -> list[dict]:
+    """The records of one dataset file: `{"projects": [...]}` or a bare list."""
+    if path.stat().st_size > MAX_DATASET_BYTES:
+        raise ValueError(f"{path.name} is larger than {MAX_DATASET_BYTES} bytes")
+    try:
+        data = json.loads(path.read_bytes())
+    except json.JSONDecodeError:
+        raise ValueError(f"{path.name} is not valid JSON") from None
+    projects = data.get("projects") if isinstance(data, dict) else data
+    if not isinstance(projects, list):
+        raise TypeError(f"{path.name} has no project list")
+    return [p for p in projects if isinstance(p, dict)]
 
 
-def _header_map(cells: list[str]) -> dict[str, int]:
-    found: dict[str, int] = {}
-    for i, cell in enumerate(cells):
-        low = cell.lower()
-        for field, keys in HEADER_KEYS.items():
-            if field not in found and any(k in low for k in keys):
-                found[field] = i
-                break
-        else:
-            if low.strip() == "project" and "title" not in found:
-                found["title"] = i
-    return found
-
-
-def _from_table(table: Tag, base_url: str) -> list[ProjectRef]:
-    rows = table.find_all("tr")
-    if len(rows) < 2:
-        return []
-    header = [_text(c) for c in rows[0].find_all(["th", "td"])]
-    cols = _header_map(header)
-    if not ({"acronym", "title"} & cols.keys()):
-        return [ref for row in rows if (ref := _from_block(row, base_url))]
-    refs = []
-    for row in rows[1:]:
-        cells = row.find_all(["td", "th"])
-        if not cells:
-            continue
-
-        def cell(field: str, cells=cells) -> str:
-            i = cols.get(field)
-            return _text(cells[i]) if i is not None and i < len(cells) else ""
-
-        urls = _links(row, base_url)
-        row_text = _text(row)
-        title = cell("title")
-        acronym = cell("acronym") or acronym_of(title) or None
-        start, end = years_of(cell("years") or row_text)
-        ref = ProjectRef(
-            acronym=acronym if acronym and len(acronym) <= 40 else acronym_of(acronym or ""),
-            title=title or (acronym or ""),
-            urls=urls,
-            programme=programme_of(cell("programme")) or (clean(cell("programme"), 80) or None),
-            start_year=start,
-            end_year=end,
-            partners_nl=partners_of(cell("partners")),
-            cordis_id=_cordis_id(urls, row_text),
-        )
-        if ref.title or ref.acronym:
-            refs.append(_finish(ref, [title, acronym or "", cell("partners")]))
-    return refs
-
-
-# -- blocks (cards, list items, sections) -----------------------------------------------
-
-
-HEADINGS = ("h2", "h3", "h4", "h5", "h6")
-
-
-def _from_block(tag: Tag | list[Tag], base_url: str, heading: str = "") -> ProjectRef | None:
-    parts = tag if isinstance(tag, list) else [tag]
-    text = clean(" ".join(p.get_text(" ") for p in parts), 2000)
-    urls = list(dict.fromkeys(u for p in parts for u in _links(p, base_url)))
-    cid = _cordis_id(urls, text)
-    explicit = bool(heading)
-    heading = heading or text[:200]
-    acronym = acronym_of(heading) or acronym_of(text)
-    programme = programme_of(text)
-    start, end = years_of(text)
-    if not cid and not (acronym and (programme or start)):
-        return None
-    title = heading
-    if acronym and title.startswith(acronym):
-        title = title[len(acronym):].lstrip(" :–—-|·").strip()
-    if (not title or not explicit) and acronym and acronym in text:  # "ACRONYM – Title (…)"
-        rest = text[text.index(acronym) + len(acronym):].lstrip(" :–—-|·")
-        title = re.split(r"\s*\(|\.\s", rest, maxsplit=1)[0].strip()
-    partners_text = ""
-    for part in parts:  # the label's value ends with its element, or at the next field
-        m = PARTNERS_LABEL.search(clean(part.get_text(" "), 2000))
-        if m:
-            partners_text = m.group(1)
-            break
-    for stop in (" · ", " | ", ". "):
-        partners_text = partners_text.split(stop, 1)[0]
-    ref = ProjectRef(acronym=acronym, title=clean(title, 300) or (acronym or ""), urls=urls,
-                     programme=programme, start_year=start, end_year=end,
-                     partners_nl=partners_of(partners_text), cordis_id=cid)
-    return _finish(ref, [heading, partners_text])
-
-
-def _section(heading: Tag) -> list[Tag] | None:
-    """The heading and its following siblings up to the next heading of the same or a
-    higher level. None when the section holds sub-headings, tables or lists: then it is a
-    container, and its parts are read on their own."""
-    level = int(heading.name[1])
-    parts = [heading]
-    for sib in heading.find_next_siblings():
-        if sib.name in HEADINGS and int(sib.name[1]) <= level:
-            break
-        if sib.name in HEADINGS or sib.name in ("table", "ul", "ol") or \
-                sib.find(["table", "ul", "ol", *HEADINGS]):
-            return None
-        parts.append(sib)
-    return parts
-
-
-def _blocks(soup: Tag, base_url: str) -> list[ProjectRef]:
-    refs = []
-    for h in soup.find_all(HEADINGS):
-        if h.find_parent(["table", "li"]):
-            continue
-        parts = _section(h)
-        if parts and (ref := _from_block(parts, base_url, heading=_text(h))):
-            refs.append(ref)
-    for li in soup.find_all("li"):
-        if li.find_parent("table") or li.find("li"):
-            continue
-        head = li.find(["strong", "b", "a", *HEADINGS])
-        if ref := _from_block(li, base_url, heading=_text(head) if head else ""):
-            refs.append(ref)
-    return refs
-
-
-def parse_funding_page(html: str | bytes, base_url: str = FUNDING_URL) -> list[ProjectRef]:
-    soup = soup_of(html)
-    for tag in soup.find_all(["script", "style", "noscript", "nav", "template", "footer"]):
-        tag.decompose()
+def load(directory: Path) -> tuple[list[ProjectRef], dict[str, tuple[int, int]]]:
+    """Every project the page shows: (refs, {source: (records, kept)}). Missing files
+    are skipped; at least one must exist."""
     refs: list[ProjectRef] = []
-    for table in soup.find_all("table"):
-        refs += _from_table(table, base_url)
-    refs += _blocks(soup, base_url)
+    counts: dict[str, tuple[int, int]] = {}
+    for source, name in DATASETS:
+        path = Path(directory) / name
+        if not path.is_file():
+            continue
+        records = read_dataset(path)
+        kept = [r for r in records if source == "nwo" or has_dutch_member(r)]
+        refs += [to_ref(r, source) for r in kept]
+        counts[source] = (len(records), len(kept))
+    if not counts:
+        raise ValueError(f"no M-DPP datasets in {directory} (clone {REPO_URL})")
     unique: dict[str, ProjectRef] = {}
     for ref in refs:
-        unique.setdefault(ref.key, ref)
-    return list(unique.values())
+        unique.setdefault(ref.ext_id or f"{ref.source}|{ref.title}", ref)
+    return list(unique.values()), counts
+
+
+def priority(refs: list[ProjectRef]) -> list[ProjectRef]:
+    """Which projects to card first: the most textile-specific, then the newest."""
+    return sorted(refs, key=lambda r: (r.core_score(), r.start_date or ""), reverse=True)

@@ -43,7 +43,7 @@ def make_pdf(pages: list[str]) -> bytes:
 
 def write_fixtures() -> None:
     funding = FIXTURES / "funding"
-    for name in ("deliverable_knitpass_d2_1", "deliverable_sortwise_d3_2"):
+    for name in ("deliverable_knitpass_d2_1",):
         pages = (funding / f"{name}.txt").read_text(encoding="utf-8").split("\n\f\n")
         (funding / f"{name}.pdf").write_bytes(make_pdf(pages))
 

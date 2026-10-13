@@ -1,0 +1,824 @@
+{
+ "meta": {
+  "note": "Sample for Cloé's tests: records copied from github.com/MDPP-ops/MDPP_Website at commit 836204b (see README.md).",
+  "total_he": 19706,
+  "total_h2020": 35389,
+  "total_cordis": 55095,
+  "matched_projects": 8429
+ },
+ "projects": [
+  {
+   "project_id": "101060375",
+   "title_en": "Circular & Sustainable Textiles & Clothing",
+   "acronym": "CISUTAC",
+   "funding_scheme": "HORIZON-IA",
+   "programme": "Horizon Europe",
+   "start_date": "2022-09-01",
+   "end_date": "2026-09-30",
+   "status": "SIGNED",
+   "total_cost": "9199678",
+   "ec_grant": "7972753",
+   "ec_grant_num": 7972753.0,
+   "objective": "CISUTAC will tackle current bottlenecks in the transition to circular textiles and clothing. For scale and significance, we focus on polyester, cotton & cellulosic fibres (together ca. 90% of textile materials) and products from 3 sub-sectors: garments, active goods and workwear. In this way, we will have a representative view on the challenges the textile sector is facing for circular transition. CISUTAC follows a holistic approach covering the technical, sectoral and socio-economic levels. We will provide systemic innovations at these levels and perform 3 pilots to demonstrate their feasibility and value: (i) Repair and disassembly; (ii) Sorting for reuse and recycling; (iii) Circular garments through fibre to fibre recycling and design for circularity. To realise these pilots, we will develop semi-automated workstations, analyse infrastructure and material flow, digitally enhance sorting operations and setup interventions with consumers. After the piloting phase, attention will be on the uptake of the results, by the sector, by the wider stakeholder group as well by the consumers.With (worldwide) leading brands and companies, CSOs, RTOs and EU associations, CISUTAC is truly EU-w",
+   "topics": "polyester, cotton, repair, textile sorting, textile recycling, dismantling, social economy, AI, digital product passport, consumer interaction",
+   "_pi_institution": "CENTRE SCIENTIFIQUE ET TECHNIQUE DE L INDUSTRIE TEXTILE BELGE",
+   "_pi_country": "BE",
+   "_pi_name": "",
+   "_matched_terms": [
+    "textile",
+    "garment",
+    "cotton",
+    "fibre",
+    "polyester",
+    "circular textile",
+    "value chain"
+   ],
+   "project_members": [
+    {
+     "organisation": "PLATE-FORME TECHNOLOGIQUE EUROPEENNE POUR LE FUTURE DU TEXTILE ET DE L'HABILLEMENT",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "WARGON INNOVATION AB",
+     "country": "SE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "EREMA ENGINEERING RECYCLING MASCHINEN UND ANLAGEN GESELLSCHAFT MBH",
+     "country": "AT",
+     "role": "thirdParty",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "SIOEN NV",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "PVH EUROPE BV",
+     "country": "NL",
+     "role": "associatedPartner",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "GENTLE SYSTEMS GMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "CENTRE SCIENTIFIQUE ET TECHNIQUE DE L INDUSTRIE TEXTILE BELGE",
+     "country": "BE",
+     "role": "coordinator",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "DECATHLON PRODUZIONE ITALIA SRL",
+     "country": "IT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "OXFAM REPUBLIC OF IRELAND",
+     "country": "IE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "EREMA GROUP GMBH",
+     "country": "AT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "CIRCULAR SYSTEMS BV",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "AIMPLAS - ASOCIACION DE INVESTIGACION DE MATERIALES PLASTICOS Y CONEXAS",
+     "country": "ES",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "INDUSTRIA DE DISENO TEXTIL SA",
+     "country": "ES",
+     "role": "associatedPartner",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "Texaid-Textilverwertungs-AG",
+     "country": "CH",
+     "role": "associatedPartner",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "ASSOCIATION OF CITIES AND REGIONS FOR SUSTAINABLE RESOURCE MANAGEMENT",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "RISE RESEARCH INSTITUTES OF SWEDEN AB",
+     "country": "SE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "TEXAID BETEILIGUNGSVERWALTUNG DEUTSCHLAND GMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "DE KRINGWINKEL ANTWERPEN",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "OXFAM SOLIDARITE - OXFAM SOLIDARITEIT",
+     "country": "BE",
+     "role": "thirdParty",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "CONFEDERACION DE LA INDUSTRIA TEXTIL ASOCIACION",
+     "country": "ES",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "SODRA SKOGSAGARNA EKONOMISK FORENING",
+     "country": "SE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "LENZING AKTIENGESELLSCHAFT",
+     "country": "AT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "EARTH PROTEX PORTUGAL UNIPESSOAL LDA",
+     "country": "PT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "INLECOM COMMERCIAL PATHWAYS COMPANYLIMITED BY GUARANTEE",
+     "country": "IE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "EUROPEAN APPAREL AND TEXTILE CONFEDERATION AISBL",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "GLOBAL TEXTILE SCHEME GMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "ECO TLC",
+     "country": "FR",
+     "role": "associatedPartner",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "RE-USE AND RECYCLING EUROPEAN UNION SOCIAL ENTERPRISES VZW",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "VUB a.s.",
+     "country": "CZ",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "STAM SRL",
+     "country": "IT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "STICHTING WAGENINGEN RESEARCH",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "REC"
+    }
+   ],
+   "project_page_url": "https://cordis.europa.eu/project/id/101060375"
+  },
+  {
+   "project_id": "101138367",
+   "title_en": "Textile fibre recycling from mixed streams of PESCO textiles",
+   "acronym": "PESCO-UP",
+   "funding_scheme": "HORIZON-RIA",
+   "programme": "Horizon Europe",
+   "start_date": "2024-01-01",
+   "end_date": "2027-12-31",
+   "status": "SIGNED",
+   "total_cost": "0",
+   "ec_grant": "10775305,8",
+   "ec_grant_num": 10775305.8,
+   "objective": "Europe has an extensive textile waste problem - annually 7 –7.5 million tons of textile waste is generated, but only about 30 - 35 % of the generated waste is collected separately and less than 1% is recycled into new clothing. Collection of textile waste will become mandatory in EU member states by 2025.  Most of the textile are cotton, polyester, or their blends. Considerable amounts of CO/PES blends are disposed every year due to the technical challenge and/or economic viability of recycling.  The objective of PESCO-UP is to develop a sustainable and economically and technologically viable process of the mixed CO/PES textile waste to be upcycled into cotton originated and polyester products. The processes should enable for production of new products without quality restriction and of products with identical properties and performances as those produced using primary resources. The main tools to achieve this are the development of automated identification and sorting methods for textiles, Digital Product Passport with a marketplace-style dataspace for sharing data describing material streams to support matching of supply and demand of textile materials, and the process developmen",
+   "topics": "textile recycling, circularity, blend textile, cotton, polyester, PES, digital product passport, chemical recycling, LCA, life-cycle assessment, value chain, business potential, business case",
+   "_pi_institution": "TEKNOLOGIAN TUTKIMUSKESKUS VTT OY",
+   "_pi_country": "FI",
+   "_pi_name": "",
+   "_matched_terms": [
+    "textile",
+    "cotton",
+    "fiber",
+    "fibre",
+    "polyester",
+    "value chain"
+   ],
+   "project_members": [
+    {
+     "organisation": "PLATE-FORME TECHNOLOGIQUE EUROPEENNE POUR LE FUTURE DU TEXTILE ET DE L'HABILLEMENT",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "CURE TECHNOLOGY BV",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "VLAAMSE INSTELLING VOOR TECHNOLOGISCH ONDERZOEK N.V.",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "NORDIC BIOPRODUCTS GROUP OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "RIGAS TEHNISKA UNIVERSITATE",
+     "country": "LV",
+     "role": "participant",
+     "activityType": "HES"
+    },
+    {
+     "organisation": "CENTRE SCIENTIFIQUE ET TECHNIQUE DE L INDUSTRIE TEXTILE BELGE",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "IOS, INSTITUT ZA OKOLJEVARSTVO IN SENZORJE, PROIZVODNJA, TRGOVINA IN STORITVE DOO",
+     "country": "SI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "RESTER OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "REVERSE RESOURCES OU",
+     "country": "EE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "CENTRE FOR EUROPEAN POLICY STUDIES",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "VEGEA SRL",
+     "country": "IT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "INEOS COMPOSITES FINLAND OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "INEOS COMPOSITES FINLAND OY",
+     "country": "FI",
+     "role": "thirdParty",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "TEKNOLOGIAN TUTKIMUSKESKUS VTT OY",
+     "country": "FI",
+     "role": "coordinator",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "VALMET TECHNOLOGIES OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "SAECHSISCHES TEXTILFORSCHUNGSINSTITUT E .V.",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "MITWILL TEXTILES EUROPE",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "VALMET AKTIEBOLAG",
+     "country": "SE",
+     "role": "thirdParty",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "STICHTING TEXROAD",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "MTU CIVITTA FOUNDATION",
+     "country": "EE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "INEOS COMPOSITES HISPANIA SL",
+     "country": "ES",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "INEOS COMPOSITES HISPANIA SL",
+     "country": "ES",
+     "role": "thirdParty",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "TEXTILE4EVER B.V.",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "PRC"
+    }
+   ],
+   "project_page_url": "https://cordis.europa.eu/project/id/101138367"
+  },
+  {
+   "project_id": "101181624",
+   "title_en": "Next generation automated sorting, tracing and closed-loop recycling technologies for non-rewearable textiles",
+   "acronym": "AUTOLOOP",
+   "funding_scheme": "HORIZON-RIA",
+   "programme": "Horizon Europe",
+   "start_date": "2025-09-01",
+   "end_date": "2029-08-31",
+   "status": "SIGNED",
+   "total_cost": "4999334,75",
+   "ec_grant": "4999334,75",
+   "ec_grant_num": 4999334.75,
+   "objective": "AUTOLOOP’s primary ambition is to become a transformative force in the European Textile and Clothing Industry, supporting its transition towards a sustainable circular economy by effectively addressing its current critical challenges. Its overall objective is to develop cutting-edge and scalable technology to build the next generation system for intelligent automated sorting and advanced chemical recycling of non-rewearable textiles (NRT), science-based additive tracing and digitalisation of the textile value chain. Technology development is at the core of the project bringing artificial intelligence powered automated sorting, advanced chemical recycling and additive tracing technologies from their current Technology Readiness Level (TRL) 3 to TRL 5. The textile Data Hub will collect and process data from each recycling step in a Digital Product Passport-compatible format, facilitating transparency, data accessibility and interoperability. The AUTOLOOP chemical recycling technologies are pollutant-resistant and can extract pollutants from the NRT feedstock to deliver a clean and safe fibre product stream through the value chain to the customers. Preliminary modelling suggests that ",
+   "topics": "chemical textile recycling; automated sorting; tracing technologies",
+   "_pi_institution": "FRAUNHOFER GESELLSCHAFT ZUR FORDERUNG DER ANGEWANDTEN FORSCHUNG EV",
+   "_pi_country": "DE",
+   "_pi_name": "",
+   "_matched_terms": [
+    "textile",
+    "fibre",
+    "polyester",
+    "value chain",
+    "wearable"
+   ],
+   "project_members": [
+    {
+     "organisation": "TRASBORG STEEN",
+     "country": "DK",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "TEMAS SOLUTIONS GMBH",
+     "country": "CH",
+     "role": "associatedPartner",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "Stuff4Life Ltd",
+     "country": "UK",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "TEKNOLOGIAN TUTKIMUSKESKUS VTT OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "FRAUNHOFER GESELLSCHAFT ZUR FORDERUNG DER ANGEWANDTEN FORSCHUNG EV",
+     "country": "DE",
+     "role": "coordinator",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "LGI SUSTAINABLE INNOVATION",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "East London Textiles Limited",
+     "country": "UK",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "AALTO KORKEAKOULUSAATIO SR",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "HES"
+    },
+    {
+     "organisation": "TAILORLUX GMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "UNIVERSITY OF LEEDS",
+     "country": "UK",
+     "role": "participant",
+     "activityType": "HES"
+    },
+    {
+     "organisation": "SKZ-KFE GGMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "STICHTING TEXROAD",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "ZORI TEX LTD",
+     "country": "UK",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "NORION CONSULT APS",
+     "country": "DK",
+     "role": "participant",
+     "activityType": "PRC"
+    }
+   ],
+   "project_page_url": "https://cordis.europa.eu/project/id/101181624"
+  },
+  {
+   "project_id": "101181988",
+   "title_en": "SORT4CIRC - Intelligent Textile SORting for enable CIRCularity",
+   "acronym": "SORT4CIRC",
+   "funding_scheme": "HORIZON-RIA",
+   "programme": "Horizon Europe",
+   "start_date": "2025-12-01",
+   "end_date": "2028-11-30",
+   "status": "SIGNED",
+   "total_cost": "5097767",
+   "ec_grant": "4999999",
+   "ec_grant_num": 4999999.0,
+   "objective": "The EU generates 12.6 million tonnes of textile waste per year, with only 22% currently collected for reuse or recycling—the rest often incinerated or landfilled. With mandating separate textile collection across the EU by 2025, the collected amount is expected to increase and we must upscale sorting and recycling capacity and efficiency to ensure sustainable recovery of the material. SORT4CIRC’s overall ambition is to improve value creation and cost efficiency through automated sorting and innovative recycling. This will generate new revenue streams for sorters and recyclers by turning non-re-wearable textiles into valuable feedstock for high-value recycling. The project will strive to unlock the current technological gaps for textile identification and value-chain traceability, while providing an overall sound business case driving circularity within the textile value chain (TVC). The use of modern digital technology in the sorting process will make it easier to achieve comprehensive information of the materials and fabrication process steps and integrate it to automated presorting and sorting for recycling processes. The different & complementary techonolgies are interlinked wit",
+   "topics": "Textile recycling, circular economy, Digital Product Passport, Near InfraRed, Material Recognition, Multisensor, AI, tokenized Radio Frequency IDentification tag",
+   "_pi_institution": "CONSTRUCTOR UNIVERSITY BREMEN GGMBH",
+   "_pi_country": "DE",
+   "_pi_name": "",
+   "_matched_terms": [
+    "textile",
+    "fabric",
+    "circular textile",
+    "value chain",
+    "wearable",
+    "supply chain"
+   ],
+   "project_members": [
+    {
+     "organisation": "Circularity Gap Solutions B.V.",
+     "country": "NL",
+     "role": "thirdParty",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "INTERZERO CIRCULAR SOLUTIONS GERMANY GMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "REGENERATION",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "COMMISSARIAT A L ENERGIE ATOMIQUE ET AUX ENERGIES ALTERNATIVES",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "TEXTILE HOUSE FOR EURO TRADE, S.R.O.",
+     "country": "SK",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "TEXTILE RECYCLING ASSOCIATION LIMITED",
+     "country": "UK",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "CONSTRUCTOR UNIVERSITY BREMEN GGMBH",
+     "country": "DE",
+     "role": "coordinator",
+     "activityType": "HES"
+    },
+    {
+     "organisation": "REVERSE.FASHION GMBH",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "SEMSO",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "IZ Circular Textiles Gmbh",
+     "country": "DE",
+     "role": "thirdParty",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "RECYC ELIT SAS",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "LEIBNIZ-INSTITUT FUR OBERFLACHENMODIFIZIERUNG EV",
+     "country": "DE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "STICHTING CIRCLE ECONOMY",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "PARIS SCHOOL OF BUSINESS",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "ARISTENG SARL",
+     "country": "LU",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "PURFI MANUFACTURING BELGIUM",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "IRIS TECHNOLOGY SOLUTIONS, SOCIEDAD LIMITADA",
+     "country": "ES",
+     "role": "participant",
+     "activityType": "PRC"
+    }
+   ],
+   "project_page_url": "https://cordis.europa.eu/project/id/101181988"
+  },
+  {
+   "project_id": "101091575",
+   "title_en": "Knowledge Based Framework for Extended Textile Circulation​",
+   "acronym": "tExtended",
+   "funding_scheme": "HORIZON-IA",
+   "programme": "Horizon Europe",
+   "start_date": "2022-12-01",
+   "end_date": "2026-11-30",
+   "status": "SIGNED",
+   "total_cost": "14860675,25",
+   "ec_grant": "12345596",
+   "ec_grant_num": 12345596.0,
+   "objective": "The tExtended project will achieve its overall objective of reduction of textile waste by 80% by within industrial-urbal symbiosis developing and demonstrating effective textile recovery, waste valorisation and recycling processes combined with digital tools, sensing systems and data-driven solutions to support sustainable circularity of textiles. We will develop a knowledge-based Blueprint, i.e. a master plan for a sustainable textile ecosystem. The basis of the Blueprint is a Conceptual Framework which determines the optimized utilization of textile flows, aiming for retention of value of materials in a safe and sustainable way. Based on the Blueprint, we will implement a real scale demonstrator, verifying its replicability and potential to reduce textile waste. tExtended brings together a multidisciplinary group of experts with complementary skills needed for twin transition in sustainable textile sector. Different types of organizations, research, industry, and non-profit organizations such as NGOs and municipal waste management are included.  The consortium consists of actors with different roles in the textile recycling ecosystem: waste management, recycling, textile material",
+   "topics": "industrial-urban symbiosis, real scale demonstrator, textile recycling, waste valorisation, textile waste recovery, digital tools, sensing systems, data-driven solution, social innovation spin-off",
+   "_pi_institution": "TEKNOLOGIAN TUTKIMUSKESKUS VTT OY",
+   "_pi_country": "FI",
+   "_pi_name": "",
+   "_matched_terms": [
+    "textile"
+   ],
+   "project_members": [
+    {
+     "organisation": "UTEXBEL NV",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "MTEX NEW SOLUTION SA",
+     "country": "PT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "ZALA BRIVIBA BIEDRIBA",
+     "country": "LV",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "Tally Weijl Trading AG",
+     "country": "CH",
+     "role": "associatedPartner",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "CENTRE SCIENTIFIQUE ET TECHNIQUE DE L INDUSTRIE TEXTILE BELGE",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "RESTER OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "TEKNOLOGIAN TUTKIMUSKESKUS VTT OY",
+     "country": "FI",
+     "role": "coordinator",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "AIMPLAS - ASOCIACION DE INVESTIGACION DE MATERIALES PLASTICOS Y CONEXAS",
+     "country": "ES",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "INESC TEC - INSTITUTO DE ENGENHARIADE SISTEMAS E COMPUTADORES, TECNOLOGIA E CIENCIA",
+     "country": "PT",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "RISE RESEARCH INSTITUTES OF SWEDEN AB",
+     "country": "SE",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "CENTRO TECNOLOGICO DAS INDUSTRIAS TEXTIL E DO VESTUARIO DE PORTUGAL",
+     "country": "PT",
+     "role": "participant",
+     "activityType": "REC"
+    },
+    {
+     "organisation": "DE KRINGLOOPWINKEL DELTAGROEP",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "Greenway Lo",
+     "country": "SE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "ERT TEXTIL PORTUGAL SA",
+     "country": "PT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "LOUNAIS-SUOMEN JATEHUOLTO OY",
+     "country": "FI",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "SOPREMA",
+     "country": "FR",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "NARODNA RECYKLACNA AGENTURA SLOVENSKO",
+     "country": "SK",
+     "role": "participant",
+     "activityType": "OTH"
+    },
+    {
+     "organisation": "TEXTEIS J. F. ALMEIDA S.A.",
+     "country": "PT",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "PURFI MANUFACTURING BELGIUM",
+     "country": "BE",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "CARR COMMUNICATIONS LIMITED",
+     "country": "IE",
+     "role": "participant",
+     "activityType": "PRC"
+    }
+   ],
+   "project_page_url": "https://cordis.europa.eu/project/id/101091575"
+  },
+  {
+   "project_id": "999000001",
+   "title_en": "Knitwear product passports for circular SMEs (fictional test record)",
+   "acronym": "KNITPASS",
+   "funding_scheme": "HORIZON-RIA",
+   "programme": "Horizon Europe",
+   "start_date": "2023-09-01",
+   "end_date": "2026-08-31",
+   "status": "SIGNED",
+   "total_cost": "3000000",
+   "ec_grant": "3000000",
+   "ec_grant_num": 3000000.0,
+   "objective": "FICTIONAL TEST RECORD written for Cloé's tests, not a real project. KNITPASS develops a digital product passport (DPP) for knitwear made by small and medium-sized enterprises: fibre composition, yarn origin, dyeing and finishing steps, care and repair instructions and recycled content, with open tools so small-batch knitters can create passports from their production data.",
+   "topics": "digital product passport, knitwear, traceability, small-batch production",
+   "_pi_institution": "UNIVERSIDADE EXEMPLO",
+   "_pi_country": "PT",
+   "_pi_name": "",
+   "_matched_terms": [
+    "knit",
+    "textile"
+   ],
+   "project_members": [
+    {
+     "organisation": "UNIVERSIDADE EXEMPLO",
+     "country": "PT",
+     "role": "coordinator",
+     "activityType": "HES"
+    },
+    {
+     "organisation": "BREIATELIER VOORBEELD BV",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "PRC"
+    },
+    {
+     "organisation": "HOGESCHOOL VOORBEELDSTAD",
+     "country": "NL",
+     "role": "participant",
+     "activityType": "HES"
+    }
+   ],
+   "project_page_url": "https://cordis.europa.eu/project/id/999000001"
+  }
+ ]
+}

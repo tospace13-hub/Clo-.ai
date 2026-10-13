@@ -109,13 +109,31 @@ tell_match, team_notes
 
 ## E. Research library sources (Sprint 2)
 
-- **m-dpp.nl/nl_funding_network.html** — the M-DPP project's page listing EU-funded textile
-  projects with Dutch involvement (space13.to cites "€700M+ EU research funding … over the
-  past 10 years"). M-DPP (Molecular Digital Physical Product Passport) is NWO/SIA-funded,
-  HvA-led, partners incl. BYBORRE, Dutch Circular Textile Valley, Knitwear Lab. Page
-  structure not yet seen (host blocked from the cloud — section G). First job of Sprint 2
-  on the MacBook: save the page to `tests/fixtures/funding/nl_funding_network.html` and
-  describe its structure in STATE.md.
+- **m-dpp.nl/nl_funding_network.html**: M-DPP's "NL Textile Research Funding Network —
+  All Sources" page. M-DPP (Molecular Digital Physical Product Passport) is NWO/SIA-funded
+  and HvA-led; partners include BYBORRE, Dutch Circular Textile Valley and Knitwear Lab.
+  The site's source is the **public repo `github.com/MDPP-ops/MDPP_Website`** (Jekyll on
+  GitHub Pages, CNAME m-dpp.nl, made by the TOS13 team; checked 2026-10-13 at commit
+  836204b). The page is a **D3 network drawn in the browser**; its HTML has no project list.
+  Its data are three JSON files in the repo:
+  - `cordis_textile_projects.json` (28 MB): 8,429 H2020 and Horizon Europe projects. Built
+    by `fetch_cordis_bulk.py` from the official CORDIS open-data ZIPs
+    (`cordis.europa.eu/data/cordis-HORIZONprojects-xlsx.zip`, `…h2020projects…`), filtered
+    on a textile/fashion keyword list. Fields: `project_id, acronym, title_en, programme,
+    funding_scheme, start_date, end_date, status, total_cost, ec_grant(_num), objective`
+    (cut at 1,200 characters), `topics, project_members[{organisation, country, role,
+    activityType}], project_page_url`, plus `_pi_*` and `_matched_terms`.
+  - `erasmus_textile_projects.json` (21 MB): 6,631 Erasmus+ projects, the same shape plus
+    `key_action, call_year, project_website`.
+  - `nwo_textile_raw.json` (4,090 NWO/SIA projects, not filtered) and
+    `nwo_fashion_textile_filtered.json` (124 projects). Members are named researchers with
+    ORCIDs; `products` lists publications, with DOIs.
+
+  The page keeps EU projects with a Dutch member: **1,983 CORDIS** (1,102 H2020, 881
+  Horizon Europe) and **423 Erasmus+**, plus the NWO projects. M-DPP's keyword match is
+  broad ("value chain", "coating"), so only 785 of the 2,530 mention a textile term.
+  There are 1,765 distinct Dutch organisations. Nothing in the datasets lists
+  deliverables; those are on CORDIS results pages.
 - Expect project entries to resolve to **CORDIS** (`https://cordis.europa.eu/project/id/<id>`;
   results/deliverables under `/project/id/<id>/results`; CORDIS also has a JSON API and
   bulk datasets). Other likely sources: project websites, Zenodo, OpenAIRE.

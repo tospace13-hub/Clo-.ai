@@ -212,6 +212,18 @@ MIGRATIONS: list[str] = [
     CREATE UNIQUE INDEX document_source ON document(source_id);
     CREATE INDEX project_acronym ON project(acronym);
     """,
+    # 5 — Sprint 2 follow-up: projects come from M-DPP's datasets (CORDIS, Erasmus+, NWO),
+    # so a project is keyed by `ext_id` ("cordis:<id>", "erasmus:<id>", "nwo:<id>") and
+    # keeps its funding scheme, EU grant, keywords and its Dutch organisations with their
+    # type and role (Sprint 4 matches those against the network's companies).
+    """
+    ALTER TABLE project ADD COLUMN ext_id TEXT;
+    ALTER TABLE project ADD COLUMN funding_scheme TEXT;
+    ALTER TABLE project ADD COLUMN ec_grant REAL;
+    ALTER TABLE project ADD COLUMN keywords_json TEXT NOT NULL DEFAULT '[]';
+    ALTER TABLE project ADD COLUMN nl_orgs_json TEXT NOT NULL DEFAULT '[]';
+    CREATE UNIQUE INDEX project_ext ON project(ext_id);
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

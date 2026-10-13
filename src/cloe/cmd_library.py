@@ -11,7 +11,7 @@ from pathlib import Path
 
 from cloe import config, library, llm, scrape, workorders
 from cloe.cmd_network import data_dir, open_db
-from cloe.sources import fetch
+from cloe.sources import fetch, funding
 
 
 def _err(msg: str) -> int:
@@ -40,40 +40,46 @@ def _fetcher(args: argparse.Namespace, raw_dir: Path):
 
 
 def cmd_scrape_funding(args: argparse.Namespace, settings: config.Settings) -> int:
-    if args.max_projects < 1 or args.max_docs_per_project < 0:
-        return _err("--max-projects must be ≥ 1 and --max-docs-per-project ≥ 0")
+    if args.max_projects < 0 or args.max_docs_per_project < 0:
+        return _err("--max-projects and --max-docs-per-project must be ≥ 0")
+    folder = args.mdpp or args.fixture or settings.mdpp_dir
+    if not folder:
+        return _err(f"clone {funding.REPO_URL} and pass --mdpp <folder> (or set "
+                    "CLOE_MDPP_DIR); --fixture <folder> runs on saved test data")
+    try:
+        refs, sources = funding.load(Path(folder).expanduser())
+    except (OSError, ValueError, TypeError) as exc:
+        return _err(f"M-DPP datasets: {exc}")
     conn = open_db(settings)
     try:
         if args.engine == "workorder":
-            path = workorders.write_funding_batch(
-                conn, workorders.WORKORDER_DIR, max_projects=args.max_projects,
-                max_docs=args.max_docs_per_project)
-            print(f"OK   work order written: {path}")
+            report = scrape.Report(sources=sources)
+            ids = scrape.import_projects(conn, refs, report)
+            chosen = scrape.to_card(conn, refs, ids, args.max_projects)
+            path = workorders.write_funding_batch(conn, workorders.WORKORDER_DIR, chosen,
+                                                  max_docs=args.max_docs_per_project)
+            print(f"OK   {report.lines()[0]}")
+            print(f"OK   work order written for {len(chosen)} projects: {path}")
             print("     run it on the MacBook, then: uv run cloe workorder ingest "
                   f"{path.name[:3]}")
             return 0
         reader = make_reader(settings, conn)
-        if reader is None:
-            return _err(NO_READER)
         raw_dir = data_dir(settings) / "raw"
         try:
             fetcher = _fetcher(args, raw_dir)
         except fetch.FetchError as exc:
             return _err(str(exc))
-        report = scrape.scrape_funding(conn, fetcher, reader, settings.canary, raw_dir=raw_dir,
-                                       max_projects=args.max_projects,
-                                       max_docs=args.max_docs_per_project)
+        report = scrape.scrape_funding(conn, refs, sources, fetcher, reader, settings.canary,
+                                       raw_dir=raw_dir, max_projects=args.max_projects,
+                                       max_docs=args.max_docs_per_project, origin=str(folder))
     finally:
         conn.close()
-    if not report.listed:
-        for e in report.errors:
-            print(f"WARN {e}")
-        return _err("no projects found on the funding page")
-    origin = f"fixture {args.fixture}" if args.fixture else "the web"
-    print(f"OK   funding page from {origin}" + (" (CLOE_FAKE=1: keyword stand-in cards)"
-                                               if settings.fake_llm else ""))
+    print(f"OK   M-DPP research-funding network from {folder}" +
+          (" (CLOE_FAKE=1: keyword stand-in cards)" if settings.fake_llm else ""))
     for line in report.lines():
         print(f"     {line}" if not line.startswith("WARN") else line)
+    if reader is None:
+        print(f"WARN projects imported, none carded: {NO_READER}")
     return 0
 
 
@@ -182,9 +188,9 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
         return _err(f"{result.name}: {exc}")
     finally:
         conn.close()
-    print(f"OK   work order {args.number}: {counts['projects']} projects, "
-          f"{counts['documents']} documents ({counts['flagged']} flagged, "
-          f"{counts['skipped']} skipped)")
+    print(f"OK   work order {args.number}: {counts['documents']} documents "
+          f"({counts['flagged']} flagged, {counts['skipped']} skipped, "
+          f"{counts['unknown_projects']} for unknown projects)")
     for e in counts["errors"]:
         print(f"WARN {e}")
     return 0
@@ -193,12 +199,17 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
 def register(sub: argparse._SubParsersAction) -> None:
     scrape_p = sub.add_parser("scrape", help="fill the research library").add_subparsers(
         dest="what", required=True)
-    p = scrape_p.add_parser("funding", help="EU projects from m-dpp.nl → CORDIS → documents")
-    p.add_argument("--fixture", help="folder of saved pages with index.json (no web access)")
-    p.add_argument("--max-projects", type=int, default=scrape.DEFAULT_MAX_PROJECTS)
+    p = scrape_p.add_parser("funding", help="M-DPP's research-funding network → projects "
+                            "→ cards and research material")
+    p.add_argument("--mdpp", help="a checkout of github.com/MDPP-ops/MDPP_Website "
+                   "(default: CLOE_MDPP_DIR)")
+    p.add_argument("--fixture", help="saved test data: the datasets and the pages "
+                   "(index.json) from one folder, no web access")
+    p.add_argument("--max-projects", type=int, default=scrape.DEFAULT_MAX_PROJECTS,
+                   help="how many uncarded projects to card this run (default 3)")
     p.add_argument("--max-docs-per-project", type=int, default=scrape.DEFAULT_MAX_DOCS)
     p.add_argument("--engine", choices=("api", "workorder"), default="api",
-                   help="api: fetch and card here; workorder: write a work order instead")
+                   help="api: card here; workorder: write a work order instead")
     p.set_defaults(func=cmd_scrape_funding)
     p = scrape_p.add_parser("url", help="one page or PDF into the library")
     p.add_argument("url")
