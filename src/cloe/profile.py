@@ -7,6 +7,7 @@ indented code block, with its source, so it cannot render as links or markup.
 
 from __future__ import annotations
 
+import json
 import re
 import sqlite3
 import textwrap
@@ -17,6 +18,7 @@ from cloe import db, people, records
 TELL_URL = "https://tell.newtexeco.nl"
 DOES_KINDS = ("does", "makes")
 OTHER_KINDS = ("project", "event", "contact", "other")
+MAX_MENTIONS = 30
 PURPOSE_LABEL = {"followup": "follow-up", "newsletter": "newsletter",
                  "cloe_updates": "Cloé updates"}
 
@@ -91,8 +93,15 @@ def _header(c: sqlite3.Row) -> list[str]:
          f"**Class:** {val(c['company_class'])}"),
         (f"- **Employees:** {val(c['employees'])} · **Founded:** {val(c['year_start'])} · "
          f"**KvK:** {val(c['kvk'])}"),
-        f"- **TELL:** {tell}",
+        f"- **Legal form:** {val(c['legal_form'])} · **SBI:** {_sbi(c)}",
+        f"- **TELL:** {tell} · **Last researched:** {val((c['researched_at'] or '')[:10])}",
     ]
+
+
+def _sbi(c: sqlite3.Row) -> str:
+    codes = json.loads(c["sbi_json"] or "[]")
+    return "; ".join(_md(f"{s.get('code', '')} {s.get('text', '')}".strip())
+                     for s in codes if s.get("code")) or "—"
 
 
 def _consent_text(state: dict[str, str], channel: str) -> str:
@@ -120,6 +129,12 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
     ).fetchall()
     flagged += [("need", n["source_id"], n["text"]) for n in needs if n["status"] == "flagged"]
     open_needs = [n for n in needs if n["status"] != "flagged"]
+    mentions = conn.execute(
+        "SELECT * FROM mention WHERE company_id = ? ORDER BY published_at IS NULL, "
+        "published_at DESC, id DESC", (company_id,)).fetchall()
+    flagged += [("mention", m["source_id"], f"{m['title']} — {m['one_line']} ({m['url']})")
+                for m in mentions if records.INSTRUCTION_LIKE in records.flags_of(m)]
+    mentions = [m for m in mentions if records.INSTRUCTION_LIKE not in records.flags_of(m)]
 
     out = _header(c)
 
@@ -139,6 +154,16 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
     ] or ["- (nothing yet)"]
     out += ["", "## Data they have", *fact_lines(("has_data",))]
     out += ["", "## Other facts", *fact_lines(OTHER_KINDS)]
+    out += ["", "## In the news and in registers"]
+    for m in mentions[:MAX_MENTIONS]:
+        where = f" — {_md(m['outlet'])}" if m["outlet"] else ""
+        out.append(f"- {m['published_at'] or '—'} · {m['kind']} · "
+                   f"{_md(m['title'] or m['url'])}{where} · {_md(m['url'])} "
+                   f"{src.ref(m['source_id'])}")
+    if len(mentions) > MAX_MENTIONS:
+        out.append(f"- … and {len(mentions) - MAX_MENTIONS} more in the database")
+    if not mentions:
+        out.append("- (nothing yet)")
 
     with_consent, without = [], []
     for p in persons:
@@ -192,8 +217,12 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
     out += ["", "## Sources"]
     out += [f"- [S{sid}] {label}" for sid, label in sorted(src.used.items())] or ["- (none)"]
 
-    out += ["", "## Open questions", *_open_questions(c, open_needs, prose, with_consent,
-                                                       persons, flagged)]
+    questions = _open_questions(c, open_needs, prose, with_consent, persons, flagged)
+    if not c["researched_at"]:
+        questions = [q for q in questions if q != "- (none)"]
+        questions.append("- Not researched yet: `cloe research` reads the site, the registers "
+                         "and the news.")
+    out += ["", "## Open questions", *questions]
     return "\n".join(out) + "\n"
 
 

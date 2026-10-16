@@ -175,13 +175,23 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
     order = workorders.find(workorders.WORKORDER_DIR, args.number)
     if order is None:
         return _err(f"no work order {args.number} in {workorders.WORKORDER_DIR}")
-    if "funding-batch" not in order.name:
-        return _err(f"{order.name}: only funding-batch work orders can be ingested so far")
+    kind = "funding-batch" if "funding-batch" in order.name else (
+        "research" if "-research-" in order.name else None)
+    if kind is None:
+        return _err(f"{order.name}: only funding-batch and research work orders can be ingested")
     result = Path(args.result) if args.result else workorders.result_path(order)
     if not result.is_file():
         return _err(f"no result at {result}")
     conn = open_db(settings)
     try:
+        if kind == "research":
+            report = workorders.ingest_research(conn, args.number, result,
+                                                raw_dir=data_dir(settings) / "raw",
+                                                strict_number=not args.result)
+            conn.commit()
+            from cloe.cmd_research import print_report
+            print_report(f"work order {args.number}", report)
+            return 0
         counts = workorders.ingest_funding_batch(conn, args.number, result,
                                                  raw_dir=data_dir(settings) / "raw")
     except ValueError as exc:

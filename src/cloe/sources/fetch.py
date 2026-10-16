@@ -34,8 +34,10 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 
 from cloe import records
 
-ALLOWED_TYPES = ("text/html", "text/plain", "application/pdf", "application/json")
-TYPE_ALIASES = {"application/xhtml+xml": "text/html", "application/x-pdf": "application/pdf"}
+ALLOWED_TYPES = ("text/html", "text/plain", "application/pdf", "application/json",
+                 "application/xml", "text/xml")  # xml: RSS feeds and SRU registers (Sprint 3)
+TYPE_ALIASES = {"application/xhtml+xml": "text/html", "application/x-pdf": "application/pdf",
+                "application/rss+xml": "application/xml", "application/atom+xml": "application/xml"}
 OCTET_STREAM = ("application/octet-stream", "binary/octet-stream")  # accepted only if %PDF-
 MAX_BYTES = 2_000_000
 MAX_PDF_BYTES = 20_000_000

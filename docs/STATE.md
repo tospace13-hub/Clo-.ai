@@ -6,13 +6,15 @@ round-log line to `finished` or `stopped` when you stop. The pre-commit hook (Sp
 refuses any commit that doesn't touch this file. When the team praises the work, add it
 to "Laurels" with the habits that earned it.
 
-**Next sprint:** 3 (Dynamic company profiles: own scraper + research + work orders). Branch: `main`.
+**Next sprint:** 4 (Matching and composing). Branch: `main` (Sprint 3 was pushed to
+`claude/relaxed-edison-nggs72`; merge it first).
 Work order 001 (MacBook, narrowed) still asks for three real CORDIS results pages; see open question 13.
 
 ## Round log (newest first)
 
-- 2026-10-16 · sprint 3 · started — company research: source catalogue (KvK-first public
-  databases + news + academic), site crawl, findings schema, API + work-order engines.
+- 2026-10-16 · sprint 3 · finished — company research: KvK-first source catalogue (50
+  sources, 12 parsers), site crawl, findings schema with URL validation, API + work-order
+  engines, "In the news and in registers" in the profile; 305 tests.
 - 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
   M-DPP repo (github.com/MDPP-ops/MDPP_Website): 2,530 Dutch projects imported, cards
   most-textile-first; 228 tests.
@@ -57,13 +59,59 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 3. Done: step 1 — source catalogue (`sources/registers.py`, 50 sources, 12 parsers on
-hand-written fixtures, CONTEXT §H), site crawl (`sources/web.py`), migration 6 (`mention`,
-`company.researched_at/legal_form/sbi_json`), fetcher `headers`, settings
-`CLOE_KVK_API_KEY` / `CLOE_OVERHEIDIO_API_KEY`. Next: step 2 — `research.py` (findings
-schema, URL validation, API engine, merge, match seeds), then the work order + CLI + profile.
+(none — Sprint 3 finished; Sprint 4 not started.)
 
 ## Done
+
+- 2026-10-16 (sprint 3): `cloe research <company>` — the team's ask (2026-10-16): "a scraper
+  that looks at a company and digs the internet for every article that mentions them,
+  including public databases; start with the KvK number". **Sources first:** CONTEXT §H and
+  `sources/registers.py` (`CATALOGUE`: 50 sources in 8 groups — identity, official
+  publications, funding/procurement, IP & certification, news, academic, people, HvA
+  library; 12 parsers for the documented machine-readable ones: KVK API Zoeken/Basisprofiel,
+  OpenKVK, OpenCorporates, Wikidata SPARQL, MediaWiki, SRU (officielebekendmakingen), RSS
+  (Google/Bing News), GDELT, OpenAlex, Crossref, Wayback CDX, Zenodo). The KvK number keys
+  the official half; TELL's export has no KvK column, so Cloé reads it from the company's
+  own site (`web.find_kvk`; Dutch law makes them print it), `--kvk`, or KVK's name search.
+  `sources/web.py` crawls the site (own host only; the metadata address a hostile page links
+  to is never followed). `research.py`: `ResearchFindings` (identity, facts, people,
+  needs, data, news, mentions, instruction_like_found, open_questions), `validate_findings`
+  (every URL must be one Cloé fetched or the web tools cited; others dropped and counted;
+  "S3" ids resolved), the API engine (crawl → loaded sources → registers → newest articles
+  → one reader call → one web research call whose text goes through the same reader →
+  merge → `match(status=proposed)` seeds), expiry 180 d (event) / 365 d (does…), repeats
+  renewed, contradictions kept with dates. `workorders.write_research_order` /
+  `ingest_research` (`ResearchOrderResult`: `visited[]` + findings; facts may only cite
+  visited URLs). Migration 6: `mention` (one row per company+URL: title, date, outlet,
+  kind, register), `company.researched_at/legal_form/sbi_json`. Profile: KvK, legal form,
+  SBI, "Last researched", "## In the news and in registers" (newest first, flagged ones
+  under "Flagged text"). Fetcher: optional `headers` (API keys), XML types. Settings
+  `CLOE_KVK_API_KEY`, `CLOE_OVERHEIDIO_API_KEY`. Dep `defusedxml`.
+  **Definition of Done** (`CLOE_FAKE=1`, scratch DB with the TELL fixture): `uv run pytest -q`
+  → `305 passed, 3 skipped`; ruff → `All checks passed!`; `cloe research example.nl --engine
+  api --fixture tests/fixtures/site` → `KvK 12345678 (found by site)` · `pages: 5 read, 3 not
+  fetched · registers: 12 read, 0 failed, 3 skipped · articles read: 3` · `mentions: 14 new,
+  4 seen · facts: 10 new, 0 renewed · people 2 · needs 2 · data 3` · `dropped (unlisted
+  source): 0 · flagged: 1`; run again → `was researched on 2026-10-16; --refresh runs it
+  again`; `cloe research example.nl --engine workorder` → `docs/workorders/002-research-
+  example.nl.md` (deleted after the run — fictional company; the golden copy is
+  `tests/fixtures/workorders/research-order.md`); `cloe workorder ingest 002 --result
+  tests/fixtures/workorders/research-result.json` → `pages: 4 read` · `dropped (unlisted
+  source): 3 · flagged: 3` with a WARN per unlisted source; `cloe profile example.nl` →
+  header `KvK 12345678 · Legal form Besloten Vennootschap · SBI 13.20 · Last researched
+  2026-10-16`, 14 mentions newest first, the injected fact and need only under "Flagged
+  text". Tests: `test_registers` (24), `test_web` (12), `test_research` (12),
+  `test_workorder_research` (4), `test_cmd_research` (3); fixtures `tests/fixtures/site/`
+  (README explains every file is a hand-written stand-in) and `tests/fixtures/workorders/`.
+  **Hand-off:** per-company token cost of an API run: **not measured** (no key in the
+  cloud). No live run anywhere yet: every source host is blocked from cloud sessions
+  (CONTEXT §H lists the 2026-10-16 probe); the parsers were written from documentation and
+  the first MacBook run must save the real responses over the fixtures (open question 19).
+  Differences from sprint.md: people found on the web become `contact` facts (name — role,
+  URL, date), not `person` rows (a person row is someone who gave an email); the work-order
+  result sits next to the order (Sprint 2 convention) rather than `data/workorders/`; the
+  web research text is parsed by a second schema call (readers have no free-text channel);
+  a `mention` table was added for "every article".
 
 - 2026-10-13 (sprint 2 follow-up): the team pointed to the source of m-dpp.nl,
   `github.com/MDPP-ops/MDPP_Website` (public; cloned read-only at 836204b). The real page
@@ -362,6 +410,30 @@ schema, URL validation, API engine, merge, match seeds), then the work order + C
   their project by `project_ext_id`); `records.write_raw` (was `_write_raw`). Removed
   in the follow-up: `funding.parse_funding_page`, `cordis.parse_project`.
 
+- **Company research (Sprint 3):** the KvK number is the company key for public databases;
+  sources are data (`registers.Register`: keyed by kvk/name/domain/local, access open/key/
+  person/loaded, format, URL template, parser, note) and `cloe research <c> --list-sources`
+  prints them. Readers see wrapped page text and cite a URL or a block id; code validates
+  every URL against what was actually fetched or cited. A person's work-order result is
+  validated the same way against the pages they say they visited. People from the web are
+  `contact` facts, never `person` rows. Facts expire (event 180 d, others 365 d); a fact
+  seen again is renewed, a contradicting one is added with its date. `--refresh` is needed
+  within 30 days of the last run; the work-order engine refuses while an order is open.
+  Mentions (articles, register entries, papers, archived pages) are rows, one per
+  company+URL, flagged like facts. Only facts cite sources; needs, data and open questions
+  cite the run (`cloe://research/<engine>/<date>/company-<id>`).
+- **Sprint 3 interfaces:** `registers.CATALOGUE / BY_KEY / Subject / queries(subject, keys)
+  / url_for / describe / parse / search_name / iso_date / PRESS_DOMAINS / SOCIAL_DOMAINS`;
+  `web.crawl_site(fetcher, domain, max_pages=, start_url=) -> Crawl(pages, errors,
+  offsite_links, kvk)`, `web.find_kvk`; `research.ResearchFindings`, `validate_findings
+  (findings, allowed, aliases)`, `research_company(conn, settings, claude, fetcher, cid,
+  raw_dir=, max_pages=, max_mentions=, web_research=, kvk=) -> Report`, `merge_findings`,
+  `apply_identity`, `add_mention`, `loaded_mentions`, `seed_matches`, `recently_researched`,
+  `standin_findings` (FakeClaude key `ResearchFindings`; `research` → empty
+  `ResearchResult`); `workorders.write_research_order(conn, dir, cid, query=)`,
+  `ingest_research(conn, number, result, strict_number=)`, `ResearchOrderResult`,
+  `open_research_order`; `fetch.Fetcher.fetch(url, headers=None)`; migration 6.
+
 ## Open questions for Chloe / the team
 
 1. Chloe's name as she writes it (Chloe / Chloé / Cloé), surname, role, OK to have the AI
@@ -399,3 +471,17 @@ schema, URL validation, API engine, merge, match seeds), then the work order + C
 16. How many projects to card, and with which engine? About 785 mention a textile term
     (117 strongly). Carding them all with the API is ~785 calls; the work-order engine
     does it under Claude Max. Default per run: 3.
+17. **TELL and the KvK number** (TELL team): is `organizations.id` the KvK number? If so,
+    `tell.DB_QUERY` should carry it into `company.kvk`. The xlsx export has no KvK column
+    — can TELL add one? Until then Cloé reads it from the company's site or KVK's search.
+18. **API keys** for the keyed registers: who registers at developers.kvk.nl (Zoeken free,
+    Basisprofiel metered per call) and overheid.io (free tier)? They go in the MacBook's
+    `.env` as `CLOE_KVK_API_KEY` / `CLOE_OVERHEIDIO_API_KEY`; without them those three
+    registers are skipped and reported.
+19. **First live run (MacBook):** `cloe research <a real company> --engine api --verbose`
+    with an API key, then save the real register responses over `tests/fixtures/site/*`
+    and tell the next session which of the 12 parsers broke — all were written from
+    documentation. URL parameters marked unverified: OpenKVK endpoint version,
+    projecten.rvo.nl, TenderNed, FashionUnited, Ecotextile. Also measure the token cost.
+20. **HvA library:** may the team use Nexis Uni (full-text Dutch press) and Company.info in
+    research work orders? The order asks for them when available.

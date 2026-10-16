@@ -420,11 +420,20 @@ def iso_date(value: object) -> str | None:
         return m.group(1) + (f"-{m.group(2)}" if m.group(2) else "")
     if m := re.match(r"^(\d{1,2})-(\d{1,2})-((?:19|20)\d{2})$", s):
         return f"{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}"
+    if m := re.match(r"^(\d{1,2})\.?\s+([A-Za-z]+)\.?\s+((?:19|20)\d{2})\b", s):
+        month = MONTHS.get(m.group(2).lower()[:3])
+        if month:
+            return f"{m.group(3)}-{month:02d}-{int(m.group(1)):02d}"
     try:
         dt = email.utils.parsedate_to_datetime(s)
     except (TypeError, ValueError, IndexError):
         return None
     return dt.date().isoformat() if dt else None
+
+
+MONTHS = {m: i for i, names in enumerate((
+    ("jan",), ("feb",), ("mar", "mrt", "maa"), ("apr",), ("may", "mei"), ("jun",), ("jul",),
+    ("aug",), ("sep",), ("oct", "okt"), ("nov",), ("dec",)), 1) for m in names}
 
 
 def _host(url: str) -> str:

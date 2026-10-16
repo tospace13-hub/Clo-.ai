@@ -4,7 +4,8 @@
 - **Place:** Tilburg (5038 AB)
 - **Tier:** Yarn & Textile producer (semi-finished products) · **Category:** Fashion · **Class:** SME
 - **Employees:** 10-49 · **Founded:** 1998 · **KvK:** —
-- **TELL:** listed · https://tell.newtexeco.nl
+- **Legal form:** — · **SBI:** —
+- **TELL:** listed · https://tell.newtexeco.nl · **Last researched:** —
 
 ## What they do
 - Supply-chain tier: Yarn & Textile producer (semi-finished products) [S1]
@@ -23,6 +24,9 @@
 ## Other facts
 - Interests: Becoming an associate partner; Visiting the fieldlab [S1]
 - Interests: Something else [S2]
+
+## In the news and in registers
+- (nothing yet)
 
 ## People we may contact (with consent)
 - Anna de Vries, Founder — anna@example.nl
@@ -56,3 +60,4 @@ need [S2]:
 ## Open questions
 - No phone number: SMS is not possible.
 - Flagged text from a source: check that source before trusting its other facts.
+- Not researched yet: `cloe research` reads the site, the registers and the news.

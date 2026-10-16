@@ -176,6 +176,7 @@ def test_academic_registers():
     ("Thu, 16 Oct 2025 10:00:00 GMT", "2025-10-16"), ("20251016T120000Z", "2025-10-16"),
     ("2025-10-16T10:00:00+02:00", "2025-10-16"), ("16-10-2025", "2025-10-16"),
     ("2025-10", "2025-10"), ("2025", "2025"), (20251016, "2025-10-16"), ("soon", None),
+    ("12 september 2026", "2026-09-12"), ("3 nov. 2025", "2025-11-03"), ("1 mrt 2024", "2024-03-01"),
     ("", None), (None, None),
 ])
 def test_iso_date(value, expected):
@@ -185,10 +186,10 @@ def test_iso_date(value, expected):
 @pytest.mark.parametrize("key, body", [
     ("gdelt", b"<html>Service unavailable</html>"), ("google_news", b'{"not": "xml"}'),
     ("openalex", b"[]"), ("wikidata", b"null"), ("bekendmakingen", b""),
-    ("google_news", b'<?xml version="1.0"?><!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 '
-                    b'"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">]><rss><channel>'
-                    b'<item><title>&lol2;</title><link>https://a.example/</link></item>'
-                    b'</channel></rss>'),
+    ("google_news", (b'<?xml version="1.0"?><!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 '
+                     b'"&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;">]><rss><channel>'
+                     b'<item><title>&lol2;</title><link>https://a.example/</link></item>'
+                     b'</channel></rss>')),
 ])
 def test_unreadable_responses_are_reported_not_raised(key, body):
     p = R.parse(R.BY_KEY[key], body)

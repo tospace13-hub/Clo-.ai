@@ -5,7 +5,7 @@ the local http.server from test_fetch, and offline on tests/fixtures/site/."""
 from pathlib import Path
 
 import pytest
-from test_fetch import fetcher, html, routes, server  # noqa: F401 (fixtures)
+from test_fetch import fetcher, html
 
 from cloe.sources import fetch, web
 from cloe.untrusted import injection_flags
@@ -57,8 +57,8 @@ def test_crawl_falls_back_to_http_and_needs_a_host(tmp_path):
     (tmp_path / "home.html").write_text("<html><body>Kamer van Koophandel 87654321</body></html>")
     crawl = web.crawl_site(fetch.FixtureFetcher(tmp_path), "www.fallback.example")
     assert [p.url for p in crawl.pages] == ["http://fallback.example/"]
-    assert crawl.errors == ["https://fallback.example/: not in the fixture index: "
-                            "https://fallback.example/"]
+    assert crawl.errors == [("https://fallback.example/: not in the fixture index: "
+                             "https://fallback.example/")]
     assert crawl.kvk == "87654321"
     assert web.crawl_site(fetch.FixtureFetcher(tmp_path), "").errors == ["no host in ''"]
 
