@@ -57,8 +57,11 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 3, step 1: the source catalogue (`sources/registers.py` + CONTEXT §H) — what every
-Dutch-company research source is, how it is keyed (KvK / name / domain), its access and format.
+Sprint 3. Done: step 1 — source catalogue (`sources/registers.py`, 50 sources, 12 parsers on
+hand-written fixtures, CONTEXT §H), site crawl (`sources/web.py`), migration 6 (`mention`,
+`company.researched_at/legal_form/sbi_json`), fetcher `headers`, settings
+`CLOE_KVK_API_KEY` / `CLOE_OVERHEIDIO_API_KEY`. Next: step 2 — `research.py` (findings
+schema, URL validation, API engine, merge, match seeds), then the work order + CLI + profile.
 
 ## Done
 

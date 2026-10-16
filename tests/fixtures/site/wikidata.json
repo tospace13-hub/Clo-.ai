@@ -1,0 +1,39 @@
+{
+ "head": {
+  "vars": [
+   "item",
+   "itemLabel",
+   "article",
+   "inception",
+   "website"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "item": {
+     "type": "uri",
+     "value": "http://www.wikidata.org/entity/Q99999999"
+    },
+    "itemLabel": {
+     "xml:lang": "nl",
+     "type": "literal",
+     "value": "Voorbeeld Weverij"
+    },
+    "article": {
+     "type": "uri",
+     "value": "https://nl.wikipedia.org/wiki/Voorbeeld_Weverij"
+    },
+    "inception": {
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "type": "literal",
+     "value": "1998-01-01T00:00:00Z"
+    },
+    "website": {
+     "type": "uri",
+     "value": "https://example.nl/"
+    }
+   }
+  ]
+ }
+}

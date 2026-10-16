@@ -1,0 +1,23 @@
+{
+ "dossiernummer": "12345678",
+ "handelsnaam": "Voorbeeld Weverij B.V.",
+ "rechtsvorm": "Besloten Vennootschap",
+ "sbi": [
+  {
+   "code": "1320",
+   "omschrijving": "Weven van textiel"
+  }
+ ],
+ "straat": "Weverstraat",
+ "huisnummer": "12",
+ "postcode": "5000AA",
+ "plaats": "Tilburg",
+ "actief": true,
+ "datum_inschrijving": "1998-03-12",
+ "website": "https://example.nl",
+ "_links": {
+  "self": {
+   "href": "/openkvk/12345678"
+  }
+ }
+}

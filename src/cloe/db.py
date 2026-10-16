@@ -224,6 +224,31 @@ MIGRATIONS: list[str] = [
     ALTER TABLE project ADD COLUMN nl_orgs_json TEXT NOT NULL DEFAULT '[]';
     CREATE UNIQUE INDEX project_ext ON project(ext_id);
     """,
+    # 6 — Sprint 3: company research. When a company was last researched, what the
+    # registers say it is (legal form, SBI activities), and `mention`: every article,
+    # register entry, paper or archived page found about it, one row per URL, with the
+    # register it came from and the source (the query or page) it was found in.
+    """
+    ALTER TABLE company ADD COLUMN researched_at TEXT;
+    ALTER TABLE company ADD COLUMN legal_form TEXT;
+    ALTER TABLE company ADD COLUMN sbi_json TEXT NOT NULL DEFAULT '[]';
+    CREATE TABLE mention (
+        id           INTEGER PRIMARY KEY,
+        company_id   INTEGER NOT NULL REFERENCES company(id) ON DELETE CASCADE,
+        url          TEXT NOT NULL,
+        title        TEXT,
+        published_at TEXT,
+        outlet       TEXT,
+        kind         TEXT NOT NULL DEFAULT 'other',
+        register     TEXT,
+        one_line     TEXT,
+        source_id    INTEGER REFERENCES source(id) ON DELETE SET NULL,
+        found_at     TEXT NOT NULL,
+        flags        TEXT NOT NULL DEFAULT '',
+        UNIQUE (company_id, url)
+    );
+    CREATE INDEX mention_company ON mention(company_id, published_at);
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

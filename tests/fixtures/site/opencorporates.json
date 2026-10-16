@@ -1,0 +1,33 @@
+{
+ "api_version": "0.4.8",
+ "results": {
+  "company": {
+   "name": "Voorbeeld Weverij B.V.",
+   "company_number": "12345678",
+   "jurisdiction_code": "nl",
+   "incorporation_date": "1998-03-12",
+   "dissolution_date": null,
+   "company_type": "Besloten Vennootschap",
+   "registry_url": "https://www.kvk.nl/zoeken/handelsregister/?kvknummer=12345678",
+   "current_status": "Active",
+   "updated_at": "2026-02-01T08:00:00+00:00",
+   "opencorporates_url": "https://opencorporates.com/companies/nl/12345678",
+   "previous_names": [
+    {
+     "company_name": "Weverij Van Dijk B.V.",
+     "con_date": "2008-01-01"
+    }
+   ],
+   "registered_address_in_full": "Weverstraat 12, 5000AA Tilburg",
+   "industry_codes": [
+    {
+     "industry_code": {
+      "code": "13.20",
+      "description": "Weaving of textiles",
+      "code_scheme_id": "eu_nace_2"
+     }
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "status": "ok",
+ "message-type": "work-list",
+ "message": {
+  "total-results": 1,
+  "items": [
+   {
+    "DOI": "10.1000/voorbeeld.2025.01",
+    "URL": "https://doi.org/10.1000/voorbeeld.2025.01",
+    "title": [
+     "Digital product passports for woven interior textiles: a pilot"
+    ],
+    "container-title": [
+     "Journal of Circular Textiles"
+    ],
+    "issued": {
+     "date-parts": [
+      [
+       2025,
+       10,
+       2
+      ]
+     ]
+    },
+    "publisher": "Example Press"
+   }
+  ]
+ }
+}

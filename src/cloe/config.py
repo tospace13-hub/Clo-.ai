@@ -84,6 +84,8 @@ class Settings:
     joinform_sheet_id: str = ""
     google_service_account_file: str = ""
     mdpp_dir: str = ""
+    kvk_api_key: str = field(default="", repr=False)
+    overheidio_api_key: str = field(default="", repr=False)
     canary: str = field(default="", repr=False)
     fake_llm: bool = False
     env_path: Path = DEFAULT_ENV_PATH
@@ -160,6 +162,8 @@ def load(
         joinform_sheet_id=get("CLOE_JOINFORM_SHEET_ID"),
         google_service_account_file=get("GOOGLE_SERVICE_ACCOUNT_FILE"),
         mdpp_dir=get("CLOE_MDPP_DIR"),
+        kvk_api_key=get("CLOE_KVK_API_KEY"),
+        overheidio_api_key=get("CLOE_OVERHEIDIO_API_KEY"),
         canary=canary,
         fake_llm=get("CLOE_FAKE", "0").strip() == "1",
         env_path=path,

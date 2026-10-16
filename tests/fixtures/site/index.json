@@ -1,0 +1,94 @@
+{
+ "https://api.kvk.nl/api/v2/zoeken?naam=Voorbeeld%20Weverij&resultatenPerPagina=10": {
+  "file": "kvk_zoeken.json",
+  "content_type": "application/json"
+ },
+ "https://api.kvk.nl/api/v1/basisprofielen/12345678": {
+  "file": "kvk_basisprofiel.json",
+  "content_type": "application/json"
+ },
+ "https://api.overheid.io/v3/openkvk/12345678": {
+  "file": "openkvk.json",
+  "content_type": "application/json"
+ },
+ "https://api.opencorporates.com/v0.4/companies/nl/12345678": {
+  "file": "opencorporates.json",
+  "content_type": "application/json"
+ },
+ "https://query.wikidata.org/sparql?format=json&query=SELECT%20%3Fitem%20%3FitemLabel%20%3Farticle%20%3Finception%20%3Fwebsite%20WHERE%20%7B%20%3Fitem%20wdt%3AP3220%20%2212345678%22%20.%20OPTIONAL%20%7B%20%3Farticle%20schema%3Aabout%20%3Fitem%20%3B%20schema%3AisPartOf%20%3Chttps%3A%2F%2Fnl.wikipedia.org%2F%3E%20%7D%20OPTIONAL%20%7B%20%3Fitem%20wdt%3AP571%20%3Finception%20%7D%20OPTIONAL%20%7B%20%3Fitem%20wdt%3AP856%20%3Fwebsite%20%7D%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22nl%2Cen%22.%20%7D%20%7D": {
+  "file": "wikidata.json",
+  "content_type": "application/json"
+ },
+ "https://nl.wikipedia.org/w/api.php?action=query&list=search&srsearch=%22Voorbeeld%20Weverij%22&format=json&srlimit=5": {
+  "file": "wikipedia.json",
+  "content_type": "application/json"
+ },
+ "https://zoek.officielebekendmakingen.nl/sru/Search?version=2.0&operation=searchRetrieve&x-connection=officielepublicaties&maximumRecords=25&query=cql.textAndIndexes%3D%22Voorbeeld%20Weverij%22": {
+  "file": "bekendmakingen.xml",
+  "content_type": "text/xml; charset=utf-8"
+ },
+ "https://news.google.com/rss/search?q=%22Voorbeeld%20Weverij%22&hl=nl&gl=NL&ceid=NL:nl": {
+  "file": "google_news.xml",
+  "content_type": "text/xml; charset=utf-8"
+ },
+ "https://news.google.com/rss/search?q=%22Voorbeeld%20Weverij%22&hl=en&gl=NL&ceid=NL:en": {
+  "file": "google_news_en.xml",
+  "content_type": "text/xml; charset=utf-8"
+ },
+ "https://www.bing.com/news/search?q=%22Voorbeeld%20Weverij%22&format=rss": {
+  "file": "bing_news.xml",
+  "content_type": "text/xml; charset=utf-8"
+ },
+ "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Voorbeeld%20Weverij%22&mode=artlist&format=json&maxrecords=50&timespan=24m": {
+  "file": "gdelt.json",
+  "content_type": "application/json"
+ },
+ "https://web.archive.org/cdx/search/cdx?url=example.nl&output=json&fl=timestamp,original&filter=statuscode:200&collapse=timestamp:4&limit=50": {
+  "file": "wayback.json",
+  "content_type": "application/json"
+ },
+ "https://api.openalex.org/works?filter=raw_affiliation_strings.search:Voorbeeld%20Weverij&per-page=25&sort=publication_date:desc": {
+  "file": "openalex.json",
+  "content_type": "application/json"
+ },
+ "https://api.crossref.org/works?query.affiliation=Voorbeeld%20Weverij&rows=20&sort=published&order=desc": {
+  "file": "crossref.json",
+  "content_type": "application/json"
+ },
+ "https://zenodo.org/api/records?q=%22Voorbeeld%20Weverij%22&size=20&sort=mostrecent": {
+  "file": "zenodo.json",
+  "content_type": "application/json"
+ },
+ "https://example.nl/": {
+  "file": "home.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://example.nl/over-ons": {
+  "file": "over-ons.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://example.nl/producten": {
+  "file": "producten.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://example.nl/nieuws": {
+  "file": "nieuws.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://example.nl/team": {
+  "file": "team.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://www.textilia.nl/nieuws/voorbeeld-weverij-productpaspoort": {
+  "file": "article_textilia.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://www.tubantia.nl/economie/voorbeeld-weverij-recycled-garen~a1b2c3/": {
+  "file": "article_tubantia.html",
+  "content_type": "text/html; charset=utf-8"
+ },
+ "https://www.innovationintextiles.com/dutch-mill-voorbeeld-weverij-joins-dpp-pilot/": {
+  "file": "article_iit.html",
+  "content_type": "text/html; charset=utf-8"
+ }
+}

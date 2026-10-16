@@ -171,14 +171,15 @@ class Fetcher:
 
     # -- public -----------------------------------------------------------------------
 
-    def fetch(self, url: str) -> Fetched:
+    def fetch(self, url: str, headers: dict[str, str] | None = None) -> Fetched:
+        """`headers` carries an API key for keyed registers (Sprint 3); never logged."""
         current = url
         for _hop in range(MAX_REDIRECTS + 1):
             _scheme, host, port, _path = _split(current)
             self._vet(host, port)  # a clear refusal before robots.txt is even asked
             if not self.robots_allowed(current):
                 raise Blocked(f"robots.txt disallows {current}")
-            result = self._get(current)
+            result = self._get(current, headers=headers)
             if isinstance(result, str):  # a redirect
                 current = result
                 continue
@@ -235,7 +236,8 @@ class Fetcher:
                 self.sleep(remaining)
         self._last[host] = self.clock()
 
-    def _get(self, url: str, *, robots: bool = False) -> str | tuple[str, bytes, str | None]:
+    def _get(self, url: str, *, robots: bool = False,
+             headers: dict[str, str] | None = None) -> str | tuple[str, bytes, str | None]:
         """One request. Returns the next URL on a redirect, else (type, bytes, charset)."""
         scheme, host, port, path = _split(url)
         ip = self._vet(host, port)
@@ -250,6 +252,7 @@ class Fetcher:
                 "User-Agent": USER_AGENT,
                 "Accept": "text/html,application/pdf,application/json,text/plain;q=0.9",
                 "Accept-Encoding": "identity",
+                **(headers or {}),
             })
             resp = conn.getresponse()
             if resp.status in REDIRECTS:
@@ -315,7 +318,7 @@ class FixtureFetcher:
     def robots_allowed(self, url: str) -> bool:
         return True
 
-    def fetch(self, url: str) -> Fetched:
+    def fetch(self, url: str, headers: dict[str, str] | None = None) -> Fetched:
         candidates = (url, url.rstrip("/"), url.rstrip("/") + "/")
         entry = next((self.index[u] for u in candidates if u in self.index), None)
         if entry is None:

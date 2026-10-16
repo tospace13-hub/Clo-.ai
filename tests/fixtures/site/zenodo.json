@@ -1,0 +1,22 @@
+{
+ "hits": {
+  "hits": [
+   {
+    "id": 9990007,
+    "doi": "10.5281/zenodo.9990007",
+    "metadata": {
+     "title": "KNITPASS D3.2 \u2014 Field study: product passports at Dutch weaving mills",
+     "publication_date": "2026-01-20",
+     "resource_type": {
+      "title": "Report",
+      "type": "publication"
+     }
+    },
+    "links": {
+     "self_html": "https://zenodo.org/records/9990007"
+    }
+   }
+  ],
+  "total": 1
+ }
+}
