@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-16 · sprint 3 · started — company research: source catalogue (KvK-first public
+  databases + news + academic), site crawl, findings schema, API + work-order engines.
 - 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
   M-DPP repo (github.com/MDPP-ops/MDPP_Website): 2,530 Dutch projects imported, cards
   most-textile-first; 228 tests.
@@ -55,7 +57,8 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 2 and its follow-up finished; Sprint 3 not started.)
+Sprint 3, step 1: the source catalogue (`sources/registers.py` + CONTEXT §H) — what every
+Dutch-company research source is, how it is keyed (KvK / name / domain), its access and format.
 
 ## Done
 
