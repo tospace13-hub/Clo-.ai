@@ -11,8 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-10-20 · contact language · started — capture each person's preferred contact
-  language (the team's Dutch invitation, sent by email and WhatsApp, was the example).
+- 2026-10-20 · contact language · finished — each person's contact language is captured
+  (default English, Dutch offered; explicit beats inferred); 240 tests.
 - 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
   M-DPP repo (github.com/MDPP-ops/MDPP_Website): 2,530 Dutch projects imported, cards
   most-textile-first; 228 tests.
@@ -57,11 +57,24 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Contact language: migration 6 (person language + je/u + where it came from), `cloe/language.py`
-(detect), join form capture, `cloe language set`, profile line, tests.
+(none — Sprint 3 not started. Work order 001 is open for the MacBook.)
 
 ## Done
 
+- 2026-10-20 (contact language): the team shared their Dutch invitation (sent by email and
+  WhatsApp, "Hoi [naam]") and asked Cloé to capture each person's preferred contact
+  language: **default to English, but offer Dutch**. Migration 6 adds `person.lang_source,
+  lang_evidence, lang_at, formality`; `person.lang` existed but was unused until now.
+  `cloe/language.py`: `detect(text)`, `formality(text)`, `parse_choice(value)`,
+  `set_language(…)`, `contact_language(…) -> ContactLanguage(lang, formality, source,
+  evidence, offer_dutch)`. The join form captures it: the optional `preferred_language`
+  column (read when the sheet gains it), else the language of the person's own answers
+  (question, role, other tier). `cloe language set <email> nl|en [--formality je|u]
+  --evidence …` records it by hand. The profile shows a language line per contactable
+  person, and the export includes the fields. The library's stand-in now uses the same
+  detector. sprint.md Sprints 4 and 5 now say how compose and the inbox use it.
+  `uv run pytest -q` → `240 passed, 3 skipped`; ruff clean; golden profile regenerated
+  (only the language lines changed). New `tests/test_language.py` (12).
 - 2026-10-13 (sprint 2 follow-up): the team pointed to the source of m-dpp.nl,
   `github.com/MDPP-ops/MDPP_Website` (public; cloned read-only at 836204b). The real page
   is a D3 network over three JSON datasets (CONTEXT §E). The HTML parser built on
@@ -333,6 +346,16 @@ Contact language: migration 6 (person language + je/u + where it came from), `cl
   newest. The card's text is `scrape.project_text` (title, programme, dates, abstract,
   keywords, Dutch partners). Material: CORDIS results page (fetched) → deliverables and
   publications; NWO open-access publications (DOIs); Erasmus+ project website.
+- **Contact language (migration 6, team 2026-10-20):** default **English**, Dutch
+  **offered**. Two strengths: *explicit* (`joinform` language answer, `manual` via `cloe
+  language set` with evidence, `inbound` reply from Sprint 5), where the newest wins; and
+  *inferred* (`joinform_text`, the language of their own answers, ≥ 3 stopword hits and a
+  2:1 margin), which is used only while nothing explicit exists and never replaces an
+  explicit choice. `offer_dutch` is true while the language is English and not explicit,
+  so an English message carries one line offering Dutch (Sprint 4); a Dutch reply
+  switches them (Sprint 5). Dutch is je unless their Dutch uses u/uw. Languages are `en`
+  and `nl` only (tone.md covers those two). Every change logs `language_set` (ids and
+  codes only).
 - **`untrusted.injection_flags` (follow-up):** "act as" counts only when followed by an
   AI/admin role ("act as an AI", "act as admin"). On its own it flagged 16 real CORDIS and
   Erasmus+ abstracts.
@@ -396,3 +419,18 @@ Contact language: migration 6 (person language + je/u + where it came from), `cl
 16. How many projects to card, and with which engine? About 785 mention a textile term
     (117 strongly). Carding them all with the API is ~785 calls; the work-order engine
     does it under Claude Max. Default per run: 3.
+17. **Join form language question** (team): add "Preferred language for our messages:
+    English / Nederlands" to the space13.to join form (`tos13website`: `join.html`, plus
+    `Code.gs` `COLUMNS` with `preferred_language` appended at the end). Code.gs writes the
+    header only on an empty sheet, so add the header cell to the live sheet by hand. Cloé
+    already reads the column. Until then the language is inferred or defaults to English.
+18. **Chloe:** the wording of the one-line Dutch offer (a tone.md §6 fixed text). Also
+    update tone.md §3 to "default English, offer Dutch": it says "website and form in
+    English → English", which now matches, but doesn't mention the offer. Needs your
+    sign-off.
+19. **WhatsApp:** the team shares invitations by email and WhatsApp. Cloé's channels are
+    email and SMS (WhatsApp Business is in the backlog; it needs template approval).
+    Decide before Sprint 5.
+20. Chloe: should the 2026-10-20 TOS13 invitation (Dutch, je-form, signed by Borre) be
+    one of tone.md §9's calibration examples? §9 asks for messages Chloe wrote, so it's
+    your call. The text is not in the repo.

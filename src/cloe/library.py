@@ -19,7 +19,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
-from cloe import db, persona
+from cloe import db, language, persona
 from cloe.llm import InjectionSuspected, LLMError
 from cloe.records import INSTRUCTION_LIKE
 from cloe.sources.cordis import iso_date
@@ -465,8 +465,6 @@ NEED_WORDS: dict[str, tuple[str, ...]] = {
     "technology": ("technology", "spectroscopy", "digital twin", "software"),
     "knowledge": ("template", "guide", "training"),
 }
-_NL = {"de", "het", "een", "en", "van", "voor", "met", "zijn", "wordt", "niet", "ook"}
-_EN = {"the", "and", "of", "for", "with", "are", "is", "to", "this", "which", "by"}
 
 
 def standin_card(content: Any) -> dict[str, Any]:
@@ -488,8 +486,7 @@ def standin_card(content: Any) -> dict[str, Any]:
     data = [s.strip() for s in re.split(r"(?<=[.!?])\s+", prose)
             if re.search(r"dataset|template|open data|spreadsheet|json schema", s, re.IGNORECASE)]
     date = re.search(r"\b(19|20)\d{2}-\d{2}-\d{2}\b|\b\d{1,2} [A-Z][a-z]+ (19|20)\d{2}\b", text)
-    tokens = re.findall(r"[a-zà-ÿ]+", low)
-    lang = "nl" if sum(t in _NL for t in tokens) > sum(t in _EN for t in tokens) else "en"
+    lang = language.detect(text) or "en"
     return {
         "title": title[:300],
         "one_line": re.split(r"(?<=[.!?])\s", prose, maxsplit=1)[0][:240],

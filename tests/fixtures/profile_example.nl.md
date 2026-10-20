@@ -28,9 +28,11 @@
 - Anna de Vries, Founder — anna@example.nl
   - email: follow-up yes, newsletter yes, Cloé updates unknown
   - sms: follow-up unknown, newsletter unknown, Cloé updates unknown (no phone number)
+  - language: English, the language of their join-form answers; Cloé offers Dutch
 - Injected Tester, Marketing — injected@example.nl
   - email: follow-up yes, newsletter no, Cloé updates unknown
   - sms: follow-up unknown, newsletter unknown, Cloé updates unknown (no phone number)
+  - language: English, the language of their join-form answers; Cloé offers Dutch
 
 Contacts without consent — Cloé may not write to them until Chloe records consent (`cloe consent set`):
 - info@example.nl

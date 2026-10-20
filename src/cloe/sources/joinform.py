@@ -26,7 +26,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from cloe import db, people, persona, records
+from cloe import db, language, people, persona, records
 from cloe.llm import InjectionSuspected, LLMError
 from cloe.untrusted import wrap
 
@@ -38,6 +38,8 @@ COLUMNS = (
     "consent_privacy", "consent_newsletter",
     "tell_match", "team_notes",
 )
+# Read when the sheet has them, wherever they stand; not on the form yet (team, 2026-10-20).
+OPTIONAL_COLUMNS = ("preferred_language",)
 UNSUBSCRIBE_COLUMNS = ("submitted_at", "email", "responses_updated")
 RESPONSES_TAB = "Responses"
 UNSUBSCRIBE_TAB = "Unsubscribe"
@@ -102,6 +104,7 @@ class Report:
     flagged_needs: int = 0
     flagged_facts: int = 0
     unsubscribes: int = 0
+    languages: int = 0
     classified: int = 0
     unclassified: int = 0
     unknown_columns: list[str] = field(default_factory=list)
@@ -115,7 +118,8 @@ class Report:
              f"consent rows +{self.consents} · facts +{self.facts} · needs +{self.needs} · "
              f"unsubscribes applied {self.unsubscribes}"),
             (f"rejoined after being forgotten {self.rejoined} · colleague links (people from "
-             f"one company who registered separately) +{self.colleague_links}"),
+             f"one company who registered separately) +{self.colleague_links} · "
+             f"contact languages captured {self.languages}"),
             f"needs classified {self.classified}, still unclassified {self.unclassified}",
             (f"flagged as instruction-like (whole database): {self.flagged_needs} needs, "
              f"{self.flagged_facts} facts"),
@@ -142,7 +146,8 @@ def to_records(
     if not rows:
         return [], []
     head = [_norm_header(str(c)) for c in rows[0]]
-    known = set(columns)
+    extra = OPTIONAL_COLUMNS if columns == COLUMNS else ()
+    known = set(columns) | set(extra)
     if "email" in head and sum(h in known for h in head) >= 2:
         names, body = head, rows[1:]
         unknown = [h for h in head if h and h not in known]
@@ -152,7 +157,7 @@ def to_records(
     for row in body:
         rec = {name: _cell(row[i]) if i < len(row) else "" for i, name in enumerate(names)
                if name in known}
-        out.append({c: rec.get(c, "") for c in columns})
+        out.append({c: rec.get(c, "") for c in (*columns, *extra)})
     return out, unknown
 
 
@@ -266,6 +271,24 @@ def _row_consents(
                 report.consents += 1
 
 
+def _row_language(conn, pid: int, rec: dict[str, str], at: str, submitted: str, new: bool,
+                  report: Report) -> None:
+    """The form's language answer when it has one (explicit); otherwise, for a new row,
+    the language the person wrote their answers in (inferred). Nothing → English."""
+    text = " ".join(rec[k] for k in ("question", "role", "tier_other"))
+    written = language.detect(text)
+    form = language.formality(text) if written == "nl" else None
+    choice = language.parse_choice(rec["preferred_language"])
+    if choice:
+        report.languages += language.set_language(
+            conn, pid, choice, source="joinform", form=form, at=at,
+            evidence=f"join form, submitted {submitted}")
+    elif new and written:
+        report.languages += language.set_language(
+            conn, pid, written, source="joinform_text", form=form, at=at,
+            evidence=f"their join-form answers, submitted {submitted}")
+
+
 def _row_facts(conn, cid: int, sid: int, rec: dict[str, str], report: Report) -> None:
     tier = rec["tier"]
     if tier and rec["tier_other"] and tier.lower().startswith("other"):
@@ -335,6 +358,7 @@ def ingest_responses(
         )
         report.people_created += created
         _row_consents(conn, pid, rec, at, None if new else before, report)
+        _row_language(conn, pid, rec, at, submitted, new, report)
         if rejoin and people.add_flag(conn, pid, "rejoined"):
             report.rejoined += 1
             db.event(conn, "joinform", "rejoin", ref=f"person:{pid}")

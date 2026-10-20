@@ -185,6 +185,33 @@ def cmd_consent_set(args: argparse.Namespace, settings: config.Settings) -> int:
     return 0
 
 
+def cmd_language_set(args: argparse.Namespace, settings: config.Settings) -> int:
+    from cloe import language, people
+
+    email = people.normalise_email(args.email)
+    if not email:
+        return _err("not a valid email address")
+    if not args.evidence.strip():
+        return _err("--evidence is required: say how you know (e.g. 'asked for Dutch on "
+                    "the phone, 2026-10-20')")
+    conn = open_db(settings)
+    person = people.get_person(conn, email)
+    if person is None:
+        reason = "was forgotten" if people.is_forgotten(conn, email) else "is not known"
+        conn.close()
+        return _err(f"this person {reason}; ingest them first")
+    if args.formality and args.lang != "nl":
+        conn.close()
+        return _err("--formality applies to Dutch only")
+    language.set_language(conn, person["id"], args.lang, source="manual",
+                          evidence=args.evidence, form=args.formality)
+    conn.commit()
+    now = language.contact_language(conn, person["id"])
+    conn.close()
+    print(f"OK   person #{person['id']} is written to in {now.describe()}")
+    return 0
+
+
 def cmd_forget(args: argparse.Namespace, settings: config.Settings) -> int:
     from cloe import people
 
@@ -267,6 +294,17 @@ def register(sub: argparse._SubParsersAction) -> None:
     p.add_argument("status", choices=("yes", "no"))
     p.add_argument("--evidence", required=True, help="how and when they agreed")
     p.set_defaults(func=cmd_consent_set)
+
+    lang = sub.add_parser("language", help="the language Cloé writes to someone in "
+                          "(default English, Dutch offered)").add_subparsers(
+        dest="action", required=True
+    )
+    p = lang.add_parser("set", help="record the language someone prefers")
+    p.add_argument("email")
+    p.add_argument("lang", choices=("en", "nl"))
+    p.add_argument("--formality", choices=("je", "u"), help="Dutch only (default je)")
+    p.add_argument("--evidence", required=True, help="how you know")
+    p.set_defaults(func=cmd_language_set)
 
     p = sub.add_parser("forget", help="erase a person and keep them out of future imports")
     p.add_argument("email")

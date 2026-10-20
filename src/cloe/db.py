@@ -224,6 +224,16 @@ MIGRATIONS: list[str] = [
     ALTER TABLE project ADD COLUMN nl_orgs_json TEXT NOT NULL DEFAULT '[]';
     CREATE UNIQUE INDEX project_ext ON project(ext_id);
     """,
+    # 6 — contact language (team, 2026-10-20: default to English, offer Dutch). `person.lang`
+    # (since migration 1, unused until now) is the language Cloé writes to them in; where it
+    # came from (`language.EXPLICIT_SOURCES` / `INFERRED_SOURCES`), the evidence, when, and
+    # the Dutch form of address (tone.md §3: je unless they use u).
+    """
+    ALTER TABLE person ADD COLUMN lang_source TEXT;
+    ALTER TABLE person ADD COLUMN lang_evidence TEXT;
+    ALTER TABLE person ADD COLUMN lang_at TEXT;
+    ALTER TABLE person ADD COLUMN formality TEXT CHECK (formality IN ('je', 'u'));
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

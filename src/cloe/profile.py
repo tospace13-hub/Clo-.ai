@@ -12,7 +12,7 @@ import sqlite3
 import textwrap
 from pathlib import Path
 
-from cloe import db, people, records
+from cloe import db, language, people, records
 
 TELL_URL = "https://tell.newtexeco.nl"
 DOES_KINDS = ("does", "makes")
@@ -151,6 +151,7 @@ def render(conn: sqlite3.Connection, company_id: int) -> str:
         out.append(f"  - email: {_consent_text(state, 'email')}")
         out.append(f"  - sms: {_consent_text(state, 'sms')}"
                    + ("" if p["phone"] else " (no phone number)"))
+        out.append(f"  - language: {language.contact_language(conn, p['id']).describe()}")
         if "rejoined" in (p["flags"] or "").split(","):
             out.append("  - rejoined after being forgotten: the welcome says it looks like "
                        "they're rejoining and shows what we know about their company")

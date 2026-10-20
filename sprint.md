@@ -445,6 +445,12 @@ voice, in the right format, and the tone check blocks drift.
      each other? **Neither ask names the other person.** Sets the link to `asked`.
    - `colleague_intro`: only when `newcomer_ok = existing_ok = 'yes'` (`connected`): tells
      each of them who the other is. Refuses otherwise.
+   Added by the team on 2026-10-20 (**default to English, offer Dutch**): a draft's
+   language comes from `language.contact_language(conn, person_id)`, not from a guess at
+   compose time (`--lang` only overrides it for testing). Dutch uses the person's
+   `formality` (je unless they used u). When `offer_dutch` is true, an English message
+   carries one line offering to continue in Dutch. Its wording goes in tone.md (§6, fixed
+   text, Chloe signs off); until then it's a placeholder constant, as for STOP.
 5. Tests: golden examples from tone.md §7 pass `tonecheck` with FakeClaude configured to
    score by rules implemented in code (banned words, caps, signature) + canned model
    judgement; anti-examples fail; a draft with a non-allowlisted link is stripped and
@@ -492,7 +498,11 @@ questions 2, 4, 5 (answers may be in STATE.md by now).
    `task` for Chloe (`cloe tasks list`) — never an outbound. `yes` on an intro → fact
    `agreed_to_intro`. A yes/no reply to a `colleague_ask` sets that person's
    `newcomer_ok`/`existing_ok`; both yes → `connected`, any no → `declined`. When a
-   `welcome` to a person flagged `rejoined` is sent, remove the flag.
+   `welcome` to a person flagged `rejoined` is sent, remove the flag. Every inbound sets
+   the person's language from what they wrote (`language.detect` on the body →
+   `language.set_language(source="inbound")`, with `formality="u"` when they use u). An
+   explicit ask ("Nederlands graag", "in English please") wins, so a Dutch reply switches
+   them to Dutch (team, 2026-10-20).
 5. Thread continuity: `thread_id` per person+topic; replies drafted with `email_reply`
    format and `In-Reply-To`.
 6. Tests: every gate has a failing test; dry-run path; Twilio signature valid/invalid
@@ -607,4 +617,4 @@ items and their owners.
 - WhatsApp Business as a channel (needs template approval; SMS first).
 - A small read-only web view of profiles for the team (after Sprint 7).
 - Dutch/English detection from website language (TELL `Website languages`).
-- CORDIS bulk dataset import instead of page-by-page.
+- ~~CORDIS bulk dataset import instead of page-by-page~~ (done 2026-10-13: M-DPP's datasets).

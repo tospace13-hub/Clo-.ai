@@ -19,6 +19,7 @@ uv run cloe ingest tell companies.xlsx  # TELL dashboard export (or --db, read-o
 uv run cloe companies list --needs
 uv run cloe profile example.nl        # prints, and saves data/profiles/example.nl.md
 uv run cloe consent set someone@example.org email followup yes --evidence "how and when"
+uv run cloe language set someone@example.org nl --evidence "asked for Dutch, 2026-10-20"
 uv run cloe export someone@example.org   # everything held about one person (JSON)
 uv run cloe forget someone@example.org   # erase them; future imports skip them
 
