@@ -166,3 +166,70 @@ live site. Either add them under *Allowed domains* in the
 environment settings (https://code.claude.com/docs/en/cloud-environments#network-access) or
 fetch them on the MacBook and commit the HTML into `tests/fixtures/`. `pypi.org` and
 GitHub work.
+
+## H. PONT: orchestrating as a design competence (`cloe orchestrate`)
+
+Source: Jotte de Koning & Willem-Jan Renger, "Orkestreren als ontwerpcompetentie", De
+Publieke Ontwerppraktijk (PONT), October 2025
+(`depubliekeontwerppraktijk.nl/wp-content/uploads/2025/10/PONT_ORKESTREREN.pdf`; host
+blocked from cloud sessions; the team shared the PDF on 2026-10-20). It is one of PONT's
+four design competences, with reframen, integreren and vormgeven. The team's ACT × PONT
+proposal (Drive, "ACT x PONT", March 2026) asks for "een orkestrerende kracht die beweging
+organiseert waar regie ontbreekt" (an orchestrating force that creates movement where no one
+has the lead) across Brabant, Oost-Nederland and Amsterdam, linking regional and national
+policy within the European context.
+
+- **Definition:** "het vermogen om in complexe contexten de inzet van verschillende actoren,
+  belangen en tijdspaden zo met elkaar te verbinden dat er samenhang, momentum en beweging
+  ontstaat" (the ability to connect the efforts, interests and timelines of different
+  actors so that coherence, momentum and movement emerge). It is not about power or formal
+  leadership but about *verbindend sturen* (connective steering). The designer is an
+  arranger or concertmaster, not the conductor, and a *boundary spanner* who learns
+  stakeholders' languages and makes options visible and tangible.
+- **The competence:** guiding multi-stakeholder processes, guarding timing and sequence,
+  and making discomfort manageable. Its basis is finding people and connecting them: "wie
+  betrek je wanneer, en hoe zorg je dat hun bijdrage relevant blijft, voor het proces en
+  voor henzelf?" (who do you involve when, and how do you keep their contribution relevant,
+  for the process and for themselves?)
+- **Three components:**
+  1. *Sturen maar niet besturen* (steer, don't govern): bringing the right people together
+     without formal power. **Stakeholder timing**: who is needed when. People involved too
+     late, or a crucial voice missing, stall a process; people held too long drop out.
+     **Stakeholder staging**: involving people so their input has value. Resistance and
+     tension are handled constructively: friction can be needed, but it must stay
+     manageable. Practices: scenarios and visualisations, formats that make differences
+     discussable without escalation, prototypes that make policy options tangible, and
+     small interventions (a workshop, a shared map, a shared vocabulary) at the right
+     moment. "Niet door te beslissen, maar door het proces zó te orkestreren dat beslissen
+     mogelijk wordt" (not by deciding, but by orchestrating the process so that deciding
+     becomes possible). This component is the upper half of the model (seeking access to
+     mandate).
+  2. *Signaleren en navigeren* (signal and navigate): mapping the context and moving
+     across system levels (micro, meso, macro; from the kitchen table to regional
+     strategy). It means recognising patterns, tensions, opportunities and blockages,
+     questioning frames (reframing is a precondition), and working in a "permanent beta".
+     It runs through all quadrants.
+  3. *Ruimte maken en ruimte benutten* (make space and use space): in the short term,
+     experiments, pilots and temporary interventions within the given rules. In the long
+     term, translating those experiences into structural change and stronger learning
+     capacity. It involves timing and sequence, radical transparency and strategic
+     positioning of experiments; small steps build trust and act as catalysts.
+- **The model (2×2):** access to mandate (top) or working with stakeholders (bottom),
+  crossed with short term (left) or long term (right):
+  - *timing & mandaat*: for example, using a steering meeting's momentum to present an
+    experiment and win formal support. Value: guard timing and sequence; involve
+    administrators at the right moment so they feel ownership.
+  - *strategische orkestratie*: aligning the order and intensity of transition steps with
+    the board or alderman, and recalibrating policy iteratively. Value: anchor change
+    structurally, couple experiments to policy, build legitimacy.
+  - *ruimte benutten met betrokkenen*: a studio, a small intervention or a pilot where
+    stakeholders experiment together. Value: release energy, learn from direct
+    experience, build support.
+  - *ruimte maken met betrokkenen*: keeping stakeholders involved in vision development
+    and structural change. Value: connect small experiences to a larger transition;
+    develop long-term collaboration.
+- **Closing chord:** a repertoire of interventions and a sharp sense of context. Anchor
+  lessons, successes and failures alike, in the organisation's collective memory, so they
+  are not rediscovered each time. Shared ownership, openness to friction, the courage to
+  experiment, care for the long term.
+

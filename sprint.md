@@ -539,6 +539,11 @@ Claude Code skill with a person in the loop.
    `client.beta.messages.tool_runner` with `persona.system_prompt`; tool results that
    include facts are plain, those that include raw source text are wrapped. `cloe chat`
    REPL; `cloe ask "<one question>"`.
+   Added 2026-10-20: the `orchestrate` functions (`board`, `check`, `suggest`,
+   `search_lessons`, and adding actors, signals, interventions and lessons) become tools
+   of the chat agent, so Chloe can say "add Provincie Overijssel to dpp-twente, involve
+   them after the studio". Adding is a tool call; contacting anyone stays a draft with
+   approval.
 2. `workorders.py` full lifecycle: `cloe workorder new <kind> …`, `list`, `show`, `ingest
    NNN [--result path]`, `close`. Kinds: `research`, `funding-batch`, `fetch-page`,
    `linkedin-lookup`, `summarise-batch`, `draft-batch` (the API engine's twin for each LLM

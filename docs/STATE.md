@@ -11,8 +11,9 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-10-20 · orchestrate · started — `cloe orchestrate`, built on PONT's "Orkestreren als
-  ontwerpcompetentie" (De Koning & Renger, 2025), shared by the team as a PDF.
+- 2026-10-20 · orchestrate · finished — `cloe orchestrate`, built on PONT's "Orkestreren als
+  ontwerpcompetentie" (De Koning & Renger, 2025): board, check against the model,
+  suggestions from the network, collective memory; 248 tests.
 - 2026-10-20 · contact language · finished — each person's contact language is captured
   (default English, Dutch offered; explicit beats inferred); 240 tests.
 - 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
@@ -59,12 +60,24 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Orchestrate: migration 7 (opgave, actors, signals, interventions, lessons), `orchestrate.py`
-(board, PONT check, suggestions from the network, collective memory), `cmd_orchestrate.py`,
-tests, CONTEXT §H with the model.
+(none — Sprint 3 not started. Work order 001 is open for the MacBook.)
 
 ## Done
 
+- 2026-10-20 (orchestrate): the team asked for a tool that orchestrates following PONT's
+  "Orkestreren als ontwerpcompetentie" (the PDF's host is blocked; the team uploaded it).
+  The model is summarised in CONTEXT §H. Migration 7 adds tables `opgave`, `orch_actor`,
+  `orch_signal`, `orch_intervention` (+ `orch_intervention_actor`), `orch_lesson` and FTS5
+  `orch_lesson_fts`. `orchestrate.py` provides `new_opgave`, `set_actor`, `add_signal`,
+  `add_intervention`, `set_intervention_status` (done marks its tension addressed),
+  `add_lesson`, `search_lessons`, `check` (findings per component), `suggest` (network
+  companies by facts and needs, then research projects from the library, then their Dutch
+  partners) and `board` (markdown). `cmd_orchestrate.py` provides `cloe orchestrate
+  new|list|show|check [--strict]|actor|signal|intervention|status|lesson|lessons|suggest`.
+  Tried end to end on the fixtures ("DPP readiness for small knitwear makers": suggestions
+  led by Voorbeeld Weverij, Vezel Lab and KNITPASS). `uv run pytest -q` → `248 passed, 3
+  skipped`; ruff clean. New `tests/test_orchestrate.py` (8). README, sprint.md Sprint 6
+  (the functions become chat-agent tools).
 - 2026-10-20 (contact language): the team shared their Dutch invitation (sent by email and
   WhatsApp, "Hoi [naam]") and asked Cloé to capture each person's preferred contact
   language: **default to English, but offer Dutch**. Migration 6 adds `person.lang_source,
@@ -360,6 +373,29 @@ tests, CONTEXT §H with the model.
   switches them (Sprint 5). Dutch is je unless their Dutch uses u/uw. Languages are `en`
   and `nl` only (tone.md covers those two). Every change logs `language_set` (ids and
   codes only).
+- **Orchestrate (migration 7, team 2026-10-20):** follows PONT's orchestration model
+  (CONTEXT §H). A challenge (`opgave`, by slug) holds actors (kind company / knowledge /
+  government / network / funder / project / citizen / other; level micro / meso / macro;
+  `has_mandate`; interest, timeline, `involve_when` for stakeholder timing, `staging` for
+  stakeholder staging; status not_yet / involved / resting / left; optional link to a
+  company, project or person); signals (pattern / tension / opportunity / blockage, with a
+  level); interventions in the four quadrants (`timing_mandate`, `strategic` = with
+  mandate; `use_space`, `make_space` = with stakeholders; short and long term), with kind,
+  value, actors, `follows` (catalyst chain) and the signal they address; and lessons
+  (success / failure / insight, FTS-searchable across challenges). `check` encodes the
+  paper:
+  - nobody with a mandate involved, or no intervention in the upper half;
+  - a crucial voice missing (company, knowledge or government);
+  - no timing or no staging for an actor;
+  - an involved actor held without a role;
+  - an open tension with no intervention;
+  - one system level only;
+  - only short-term or only long-term steps;
+  - an intervention done without a lesson;
+  - earlier lessons from other challenges that apply (info).
+
+  It is code only, no model calls. Team input is trusted. Network text used by `suggest`
+  skips flagged facts and needs. Nothing contacts anyone.
 - **`untrusted.injection_flags` (follow-up):** "act as" counts only when followed by an
   AI/admin role ("act as an AI", "act as admin"). On its own it flagged 16 real CORDIS and
   Erasmus+ abstracts.
@@ -438,3 +474,7 @@ tests, CONTEXT §H with the model.
 20. Chloe: should the 2026-10-20 TOS13 invitation (Dutch, je-form, signed by Borre) be
     one of tone.md §9's calibration examples? §9 asks for messages Chloe wrote, so it's
     your call. The text is not in the repo.
+21. **Orchestrate:** which challenges to set up first? The ACT × PONT proposal names
+    Brabant, Oost-Nederland and Amsterdam. Should `suggest` and `check` later get a
+    model-assisted variant (propose interventions, spot tensions in inbound mail)? That
+    would be a new LLM job with a work-order twin; v1 is code only.

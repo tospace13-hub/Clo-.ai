@@ -234,6 +234,90 @@ MIGRATIONS: list[str] = [
     ALTER TABLE person ADD COLUMN lang_at TEXT;
     ALTER TABLE person ADD COLUMN formality TEXT CHECK (formality IN ('je', 'u'));
     """,
+    # 7 — orchestrate (team, 2026-10-20), after PONT's "Orkestreren als ontwerpcompetentie"
+    # (CONTEXT §H): a challenge (opgave) with its actors (who, when, how; mandate; system
+    # level), signals (patterns, tensions, opportunities, blockages), interventions placed
+    # in the model's four quadrants, and lessons (the collective memory, searchable).
+    """
+    CREATE TABLE opgave (
+        id          INTEGER PRIMARY KEY,
+        slug        TEXT NOT NULL UNIQUE,
+        title       TEXT NOT NULL,
+        frame       TEXT NOT NULL DEFAULT '',
+        region      TEXT NOT NULL DEFAULT '',
+        status      TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'closed')),
+        created_at  TEXT NOT NULL,
+        updated_at  TEXT NOT NULL
+    );
+    CREATE TABLE orch_actor (
+        id           INTEGER PRIMARY KEY,
+        opgave_id    INTEGER NOT NULL REFERENCES opgave(id) ON DELETE CASCADE,
+        name         TEXT NOT NULL,
+        kind         TEXT NOT NULL CHECK (kind IN ('company', 'knowledge', 'government',
+                     'network', 'funder', 'project', 'citizen', 'other')),
+        company_id   INTEGER REFERENCES company(id) ON DELETE SET NULL,
+        project_id   INTEGER REFERENCES project(id) ON DELETE SET NULL,
+        person_id    INTEGER REFERENCES person(id) ON DELETE SET NULL,
+        level        TEXT NOT NULL DEFAULT 'meso' CHECK (level IN ('micro', 'meso', 'macro')),
+        has_mandate  INTEGER NOT NULL DEFAULT 0 CHECK (has_mandate IN (0, 1)),
+        interest     TEXT NOT NULL DEFAULT '',
+        timeline     TEXT NOT NULL DEFAULT '',
+        involve_when TEXT NOT NULL DEFAULT '',
+        staging      TEXT NOT NULL DEFAULT '',
+        status       TEXT NOT NULL DEFAULT 'not_yet'
+                     CHECK (status IN ('not_yet', 'involved', 'resting', 'left')),
+        status_at    TEXT NOT NULL,
+        created_at   TEXT NOT NULL,
+        UNIQUE (opgave_id, name)
+    );
+    CREATE TABLE orch_signal (
+        id          INTEGER PRIMARY KEY,
+        opgave_id   INTEGER NOT NULL REFERENCES opgave(id) ON DELETE CASCADE,
+        kind        TEXT NOT NULL CHECK (kind IN ('pattern', 'tension', 'opportunity',
+                    'blockage')),
+        level       TEXT NOT NULL DEFAULT 'meso' CHECK (level IN ('micro', 'meso', 'macro')),
+        text        TEXT NOT NULL,
+        actor_id    INTEGER REFERENCES orch_actor(id) ON DELETE SET NULL,
+        status      TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'addressed',
+                    'dropped')),
+        created_at  TEXT NOT NULL
+    );
+    CREATE TABLE orch_intervention (
+        id           INTEGER PRIMARY KEY,
+        opgave_id    INTEGER NOT NULL REFERENCES opgave(id) ON DELETE CASCADE,
+        title        TEXT NOT NULL,
+        kind         TEXT NOT NULL DEFAULT 'other' CHECK (kind IN ('workshop', 'shared_map',
+                     'shared_language', 'scenario', 'visualisation', 'prototype', 'pilot',
+                     'meeting', 'other')),
+        quadrant     TEXT NOT NULL CHECK (quadrant IN ('timing_mandate', 'strategic',
+                     'use_space', 'make_space')),
+        value        TEXT NOT NULL DEFAULT '',
+        planned_for  TEXT NOT NULL DEFAULT '',
+        status       TEXT NOT NULL DEFAULT 'idea' CHECK (status IN ('idea', 'planned', 'done',
+                     'dropped')),
+        follows_id   INTEGER REFERENCES orch_intervention(id) ON DELETE SET NULL,
+        signal_id    INTEGER REFERENCES orch_signal(id) ON DELETE SET NULL,
+        created_at   TEXT NOT NULL,
+        updated_at   TEXT NOT NULL
+    );
+    CREATE TABLE orch_intervention_actor (
+        intervention_id INTEGER NOT NULL REFERENCES orch_intervention(id) ON DELETE CASCADE,
+        actor_id        INTEGER NOT NULL REFERENCES orch_actor(id) ON DELETE CASCADE,
+        PRIMARY KEY (intervention_id, actor_id)
+    );
+    CREATE TABLE orch_lesson (
+        id              INTEGER PRIMARY KEY,
+        opgave_id       INTEGER NOT NULL REFERENCES opgave(id) ON DELETE CASCADE,
+        intervention_id INTEGER REFERENCES orch_intervention(id) ON DELETE SET NULL,
+        kind            TEXT NOT NULL DEFAULT 'insight' CHECK (kind IN ('success', 'failure',
+                        'insight')),
+        text            TEXT NOT NULL,
+        created_at      TEXT NOT NULL
+    );
+    CREATE VIRTUAL TABLE orch_lesson_fts USING fts5(
+        text, tokenize = 'unicode61 remove_diacritics 2'
+    );
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

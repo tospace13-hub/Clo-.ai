@@ -15,7 +15,7 @@ from pathlib import Path
 
 from cloe import config, db, persona
 
-COMMAND_MODULES: tuple[str, ...] = ("cloe.cmd_network", "cloe.cmd_library")
+COMMAND_MODULES: tuple[str, ...] = ("cloe.cmd_network", "cloe.cmd_library", "cloe.cmd_orchestrate")
 
 OPTIONAL_EXTRAS = {
     "openpyxl": "tell", "pymysql": "tell", "pypdf": "pdf", "google.auth": "sheets",
