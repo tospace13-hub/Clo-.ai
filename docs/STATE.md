@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-20 · orchestrate · started — `cloe orchestrate`, built on PONT's "Orkestreren als
+  ontwerpcompetentie" (De Koning & Renger, 2025), shared by the team as a PDF.
 - 2026-10-20 · contact language · finished — each person's contact language is captured
   (default English, Dutch offered; explicit beats inferred); 240 tests.
 - 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
@@ -57,7 +59,9 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 3 not started. Work order 001 is open for the MacBook.)
+Orchestrate: migration 7 (opgave, actors, signals, interventions, lessons), `orchestrate.py`
+(board, PONT check, suggestions from the network, collective memory), `cmd_orchestrate.py`,
+tests, CONTEXT §H with the model.
 
 ## Done
 
