@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-20 · orchestrate regions + proposals · started — the team targets Brabant,
+  Oost-Nederland and Amsterdam, and wants AI help spotting tensions and proposing interventions.
 - 2026-10-20 · orchestrate · finished — `cloe orchestrate`, built on PONT's "Orkestreren als
   ontwerpcompetentie" (De Koning & Renger, 2025): board, check against the model,
   suggestions from the network, collective memory; 248 tests.
@@ -60,7 +62,11 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 3 not started. Work order 001 is open for the MacBook.)
+Orchestrate, part 2. Migration 8 (`company.region` from TELL; `orch_proposal`).
+- [ ] Region-aware `suggest`, `cloe orchestrate load` + `docs/orchestrate/act-regions.json`
+  (Brabant, Oost-Nederland, Amsterdam, from the ACT × PONT doc).
+- [ ] `cloe orchestrate propose` (tensions + interventions; API, stand-in, work order),
+  `proposals`, `accept`, `reject`.
 
 ## Done
 
