@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-20 · contact language · started — capture each person's preferred contact
+  language (the team's Dutch invitation, sent by email and WhatsApp, was the example).
 - 2026-10-13 · sprint 2 follow-up · finished — the funding page's real data comes from the
   M-DPP repo (github.com/MDPP-ops/MDPP_Website): 2,530 Dutch projects imported, cards
   most-textile-first; 228 tests.
@@ -55,7 +57,8 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 2 and its follow-up finished; Sprint 3 not started.)
+Contact language: migration 6 (person language + je/u + where it came from), `cloe/language.py`
+(detect), join form capture, `cloe language set`, profile line, tests.
 
 ## Done
 
