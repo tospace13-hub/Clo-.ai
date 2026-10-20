@@ -545,7 +545,7 @@ Claude Code skill with a person in the loop.
    them after the studio". Adding is a tool call; contacting anyone stays a draft with
    approval.
 2. `workorders.py` full lifecycle: `cloe workorder new <kind> …`, `list`, `show`, `ingest
-   NNN [--result path]`, `close`. Kinds: `research`, `funding-batch`, `fetch-page`,
+   NNN [--result path]`, `close`. Kinds: `research`, `funding-batch`, `orchestrate-proposal`, `fetch-page`,
    `linkedin-lookup`, `summarise-batch`, `draft-batch` (the API engine's twin for each LLM
    job). Each work order file has: purpose, inputs (paths), exact schema (JSON schema
    dumped from the Pydantic model), output path, rules, and a "done when" checklist.

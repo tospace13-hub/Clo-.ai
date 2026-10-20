@@ -11,8 +11,9 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-10-20 · orchestrate regions + proposals · started — the team targets Brabant,
-  Oost-Nederland and Amsterdam, and wants AI help spotting tensions and proposing interventions.
+- 2026-10-20 · orchestrate regions + proposals · finished — the three ACT regions set up
+  (seed file + `load`, region-aware suggestions), AI proposals for tensions and
+  interventions (API, stand-in, work order; the team accepts); 254 tests.
 - 2026-10-20 · orchestrate · finished — `cloe orchestrate`, built on PONT's "Orkestreren als
   ontwerpcompetentie" (De Koning & Renger, 2025): board, check against the model,
   suggestions from the network, collective memory; 248 tests.
@@ -62,17 +63,32 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Orchestrate, part 2. Migration 8 (`company.region` from TELL; `orch_proposal`).
-- [x] Region-aware `suggest` (`orchestrate.REGIONS`: provinces from TELL + main cities;
-  regional challenges offer every company in the region, registered ones first), `cloe
-  orchestrate load <file>` (adds only what's missing), `docs/orchestrate/act-regions.json`
-  (act-brabant, act-oost-nederland, act-amsterdam: framing, 5 national actors and 6
-  signals each, from the ACT × PONT doc). TELL's `Region` is stored as `company.region`.
-- [ ] `cloe orchestrate propose` (tensions + interventions; API, stand-in, work order),
-  `proposals`, `accept`, `reject`.
+(none — Sprint 3 not started. Work order 001 is open for the MacBook.)
 
 ## Done
 
+- 2026-10-20 (orchestrate part 2): the team targets **Brabant, Oost-Nederland and
+  Amsterdam** (ACT × PONT) and wants AI help with **tensions and interventions**.
+  Migration 8 adds `company.region` (TELL `Region`, stored and quarantined like other
+  cells) and `orch_proposal`. `orchestrate.REGIONS` holds provinces plus main cities,
+  with aliases Twente → Oost-Nederland and MRA → Amsterdam. A regional challenge's
+  `suggest` offers every company in the region, matches and join-form registrants first.
+  `load_seed` / `cloe orchestrate load <file>` add only what's missing.
+  `docs/orchestrate/act-regions.json` holds act-brabant, act-oost-nederland and
+  act-amsterdam: region character and the shared reframe, 5 national actors (EZ, IenW,
+  OCW, ACT, PONT) and 6 signals each.
+  Proposals: `OrchestrationProposal` (≤ 5 signals, tensions first, and ≤ 5 interventions,
+  each with quadrant, kind, value, actors, addresses, when and why; closed enums),
+  `PROPOSE_TASK` (PONT's model), `context()` (board + network facts, needs and project
+  cards, no flagged text), `propose()` (`Claude.extract` over two untrusted blocks),
+  `store_proposal()` (strips links, drops instruction-like items, skips duplicates of the
+  board or earlier proposals, carries a warning when the reader saw instruction-like
+  input), `standin_proposal()` (CLOE_FAKE=1) and `decide()` (accept adds unknown actors as
+  not_yet/other and links the addressed signal). Work order `NNN-orchestrate-proposal.md`
+  holds instructions and schema only; the board goes to a git-ignored `.private.md`
+  (0600), because the repository is public. CLI: `cloe orchestrate
+  propose [--engine workorder] | proposals [--status] | accept <ids> | reject <ids> |
+  load`. `uv run pytest -q` → `254 passed, 3 skipped`; ruff clean.
 - 2026-10-20 (orchestrate): the team asked for a tool that orchestrates following PONT's
   "Orkestreren als ontwerpcompetentie" (the PDF's host is blocked; the team uploaded it).
   The model is summarised in CONTEXT §H. Migration 7 adds tables `opgave`, `orch_actor`,
@@ -405,6 +421,12 @@ Orchestrate, part 2. Migration 8 (`company.region` from TELL; `orch_proposal`).
 
   It is code only, no model calls. Team input is trusted. Network text used by `suggest`
   skips flagged facts and needs. Nothing contacts anyone.
+- **Orchestrate proposals (team, 2026-10-20):** an LLM job with two engines (API;
+  work order `orchestrate-proposal`) plus the CLOE_FAKE stand-in. The reader sees the
+  board and the network context as untrusted blocks, has no tools, and returns the schema.
+  Code checks every item. Proposals never reach the board without `accept`, and nothing
+  contacts anyone. Boards are internal strategy: work-order inputs about a board stay out
+  of git.
 - **`untrusted.injection_flags` (follow-up):** "act as" counts only when followed by an
   AI/admin role ("act as an AI", "act as admin"). On its own it flagged 16 real CORDIS and
   Erasmus+ abstracts.
@@ -483,7 +505,13 @@ Orchestrate, part 2. Migration 8 (`company.region` from TELL; `orch_proposal`).
 20. Chloe: should the 2026-10-20 TOS13 invitation (Dutch, je-form, signed by Borre) be
     one of tone.md §9's calibration examples? §9 asks for messages Chloe wrote, so it's
     your call. The text is not in the repo.
-21. **Orchestrate:** which challenges to set up first? The ACT × PONT proposal names
-    Brabant, Oost-Nederland and Amsterdam. Should `suggest` and `check` later get a
-    model-assisted variant (propose interventions, spot tensions in inbound mail)? That
-    would be a new LLM job with a work-order twin; v1 is code only.
+21. ~~Orchestrate: which challenges, and AI help?~~ Decided 2026-10-20: Brabant,
+    Oost-Nederland and Amsterdam; AI proposes tensions and interventions, and the team
+    accepts.
+22. **The repository is public.** CONTEXT §H and `docs/orchestrate/act-regions.json`
+    quote the ACT × PONT proposal (an internal draft, March 2026): the region characters,
+    "een orkestrerende kracht die beweging organiseert waar regie ontbreekt" (an
+    orchestrating force that creates movement where no one has the lead), and national
+    signals such as fragmented funding and policy that doesn't fit the market. Is that
+    fine to publish, or should the seed file move out of the repo (e.g. to Drive)? Boards
+    themselves live only in the MacBook's database.

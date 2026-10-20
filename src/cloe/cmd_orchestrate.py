@@ -184,6 +184,80 @@ def cmd_load(args, settings):
     return _run(settings, go)
 
 
+def cmd_propose(args, settings):
+    from cloe import llm, workorders
+
+    def go(conn):
+        if args.engine == "workorder":
+            path = workorders.write_proposal_order(conn, workorders.WORKORDER_DIR, args.slug)
+            print(f"OK   work order written: {path}")
+            print(f"     its inputs are in {workorders.private_path(path).name} (not in git)")
+            return 0
+        if settings.fake_llm:
+            reader = llm.FakeClaude(settings, {"OrchestrationProposal":
+                                               orchestrate.standin_proposal(conn, args.slug)},
+                                    conn)
+            engine = "standin"
+        elif settings.anthropic_api_key:
+            reader, engine = llm.Claude(settings, conn), "api"
+        else:
+            return _err("no ANTHROPIC_API_KEY: use --engine workorder (the MacBook proposes), "
+                        "or CLOE_FAKE=1 for a dry run with the stand-in")
+        counts = orchestrate.propose(conn, args.slug, reader, settings.canary, engine=engine)
+        print(f"OK   proposed {counts['signals']} signals and {counts['interventions']} "
+              f"interventions ({counts['dropped']} dropped by the checks, "
+              f"{counts['duplicates']} already known)"
+              + (" — CLOE_FAKE=1: stand-in, not Cloé's judgement" if engine == "standin"
+                 else ""))
+        print(f"     review: cloe orchestrate proposals {orchestrate.slugify(args.slug)}")
+        return 0
+    return _run(settings, go)
+
+
+def cmd_proposals(args, settings):
+    def go(conn):
+        rows = orchestrate.proposals(conn, args.slug, args.status)
+        for r in rows:
+            item = r["item"]
+            if r["kind"] == "signal":
+                head = f"[{item['kind']} · {item['level']}] {item['text']}"
+                extra = [f"actors: {', '.join(item['actors'])}" if item["actors"] else "",
+                         f"evidence: {', '.join(item['evidence'])}" if item["evidence"] else ""]
+            else:
+                q = orchestrate.QUADRANTS[item["quadrant"]]
+                head = f"[{q['label']} · {item['kind']}] {item['title']}"
+                extra = [f"value: {item['value']}" if item["value"] else "",
+                         f"with: {', '.join(item['actors'])}" if item["actors"] else "",
+                         f"addresses: {item['addresses']}" if item["addresses"] else "",
+                         f"when: {item['when']}" if item["when"] else "",
+                         f"why: {item['why']}" if item["why"] else ""]
+            print(f"#{r['id']} {r['kind']} ({r['engine']}): {head}")
+            for line in filter(None, [*extra, item.get("warning", "")]):
+                print(f"     {line}")
+        print(f"{len(rows)} {args.status} proposal{'s' if len(rows) != 1 else ''}")
+        if rows and args.status == "proposed":
+            print("     cloe orchestrate accept <id> … / cloe orchestrate reject <id> …")
+        return 0
+    return _run(settings, go)
+
+
+def _decide(args, settings, accept: bool):
+    def go(conn):
+        for pid in args.ids:
+            ref = orchestrate.decide(conn, pid, accept)
+            print(f"OK   proposal #{pid} " + (f"accepted: {ref}" if accept else "rejected"))
+        return 0
+    return _run(settings, go)
+
+
+def cmd_accept(args, settings):
+    return _decide(args, settings, True)
+
+
+def cmd_reject(args, settings):
+    return _decide(args, settings, False)
+
+
 def register(sub: argparse._SubParsersAction) -> None:
     orch = sub.add_parser("orchestrate", help="orchestrate a challenge (PONT: orkestreren)"
                           ).add_subparsers(dest="action", required=True)
@@ -261,6 +335,22 @@ def register(sub: argparse._SubParsersAction) -> None:
     p.add_argument("query")
     p.add_argument("-k", type=int, default=10)
     p.set_defaults(func=cmd_lessons)
+
+    p = orch.add_parser("propose", help="AI: propose tensions and interventions (the "
+                        "team accepts or rejects them)")
+    p.add_argument("slug")
+    p.add_argument("--engine", choices=("api", "workorder"), default="api")
+    p.set_defaults(func=cmd_propose)
+    p = orch.add_parser("proposals", help="proposals waiting for the team")
+    p.add_argument("slug")
+    p.add_argument("--status", choices=("proposed", "accepted", "rejected"),
+                   default="proposed")
+    p.set_defaults(func=cmd_proposals)
+    for name, func, help_text in (("accept", cmd_accept, "put proposals on the board"),
+                                  ("reject", cmd_reject, "turn proposals down")):
+        p = orch.add_parser(name, help=help_text)
+        p.add_argument("ids", type=int, nargs="+")
+        p.set_defaults(func=func)
 
     p = orch.add_parser("load", help="set up challenges from a seed file (adds only what "
                         "is missing)")

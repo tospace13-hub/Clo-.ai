@@ -175,12 +175,24 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
     order = workorders.find(workorders.WORKORDER_DIR, args.number)
     if order is None:
         return _err(f"no work order {args.number} in {workorders.WORKORDER_DIR}")
-    if "funding-batch" not in order.name:
-        return _err(f"{order.name}: only funding-batch work orders can be ingested so far")
+    if "funding-batch" not in order.name and "orchestrate-proposal" not in order.name:
+        return _err(f"{order.name}: only funding-batch and orchestrate-proposal work orders "
+                    "can be ingested so far")
     result = Path(args.result) if args.result else workorders.result_path(order)
     if not result.is_file():
         return _err(f"no result at {result}")
     conn = open_db(settings)
+    if "orchestrate-proposal" in order.name:
+        try:
+            counts = workorders.ingest_proposal_order(conn, args.number, result)
+        except ValueError as exc:
+            return _err(f"{result.name}: {exc}")
+        finally:
+            conn.close()
+        print(f"OK   work order {args.number}: {counts['signals']} signals and "
+              f"{counts['interventions']} interventions proposed ({counts['dropped']} dropped, "
+              f"{counts['duplicates']} already known); review with `cloe orchestrate proposals`")
+        return 0
     try:
         counts = workorders.ingest_funding_batch(conn, args.number, result,
                                                  raw_dir=data_dir(settings) / "raw")

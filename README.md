@@ -31,21 +31,26 @@ uv run cloe scrape url https://…               # one page or PDF into the libr
 uv run cloe library search "digital product passport knitwear" --tier yarn
 uv run cloe library show 2 · uv run cloe library stats
 
-uv run cloe orchestrate new dpp-twente --title "DPP readiness in Twente" --frame "…"
+uv run cloe orchestrate load docs/orchestrate/act-regions.json   # Brabant, Oost-Nederland, Amsterdam
+uv run cloe orchestrate new dpp-twente --title "DPP readiness in Twente" --frame "…" --region Twente
 uv run cloe orchestrate suggest dpp-twente     # candidate actors from the network
 uv run cloe orchestrate actor dpp-twente --company example.nl --status involved --staging "…"
 uv run cloe orchestrate signal dpp-twente tension "…" --level micro
 uv run cloe orchestrate intervention dpp-twente "Passport studio" --quadrant use_space --kind workshop
 uv run cloe orchestrate show dpp-twente        # board + check against the orchestration model
 uv run cloe orchestrate lessons "pilot province"  # the collective memory, across challenges
+uv run cloe orchestrate propose act-brabant    # AI: tensions + interventions (or --engine workorder)
+uv run cloe orchestrate proposals act-brabant  # review; then accept <id> … / reject <id> …
 ```
 
 `cloe orchestrate` follows PONT's "Orkestreren als ontwerpcompetentie" (docs/CONTEXT.md §H).
 For each challenge it keeps the actors (who, when, how, mandate, system level), signals,
 interventions in the model's four quadrants, and lessons. It then checks the board against
 the model: is someone with a mandate involved, is a crucial voice missing, are tensions made
-discussable, are short-term steps tied to long-term change, were lessons kept? It never
-contacts anyone.
+discussable, are short-term steps tied to long-term change, were lessons kept? With
+`--region` (Brabant, Oost-Nederland or Twente, Amsterdam), suggestions stay in the region.
+`propose` asks Claude for tensions and interventions, checked in code; they wait as
+proposals until the team accepts them. It never contacts anyone.
 
 `scrape funding` reads the datasets behind m-dpp.nl's research-funding network (CORDIS,
 Erasmus+, NWO; set `CLOE_MDPP_DIR` to skip `--mdpp`). It imports every project with a Dutch
