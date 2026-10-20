@@ -63,8 +63,11 @@ habits that earned it, so later rounds repeat them. Newest first.
 ## In progress
 
 Orchestrate, part 2. Migration 8 (`company.region` from TELL; `orch_proposal`).
-- [ ] Region-aware `suggest`, `cloe orchestrate load` + `docs/orchestrate/act-regions.json`
-  (Brabant, Oost-Nederland, Amsterdam, from the ACT × PONT doc).
+- [x] Region-aware `suggest` (`orchestrate.REGIONS`: provinces from TELL + main cities;
+  regional challenges offer every company in the region, registered ones first), `cloe
+  orchestrate load <file>` (adds only what's missing), `docs/orchestrate/act-regions.json`
+  (act-brabant, act-oost-nederland, act-amsterdam: framing, 5 national actors and 6
+  signals each, from the ACT × PONT doc). TELL's `Region` is stored as `company.region`.
 - [ ] `cloe orchestrate propose` (tensions + interventions; API, stand-in, work order),
   `proposals`, `accept`, `reject`.
 

@@ -33,6 +33,8 @@ import re
 import sqlite3
 from dataclasses import dataclass
 
+from pydantic import BaseModel, ConfigDict, ValidationError
+
 from cloe import db, library, records
 
 QUADRANTS: dict[str, dict[str, str]] = {
@@ -78,6 +80,24 @@ INTERVENTION_KINDS = ("workshop", "shared_map", "shared_language", "scenario",
 INTERVENTION_STATUSES = ("idea", "planned", "done", "dropped")
 LESSON_KINDS = ("success", "failure", "insight")
 CRUCIAL_KINDS = ("company", "knowledge", "government")
+# The regions TOS13 targets (team, 2026-10-20; the ACT × PONT proposal). A company is in a
+# region when its province (TELL) or its city matches; join-form companies have a city only.
+REGIONS: dict[str, dict[str, tuple[str, ...]]] = {
+    "brabant": {
+        "provinces": ("Noord-Brabant",),
+        "cities": ("Tilburg", "Eindhoven", "Helmond", "'s-Hertogenbosch", "Den Bosch", "Breda",
+                   "Oss", "Roosendaal", "Bergen op Zoom", "Waalwijk", "Veghel", "Oisterwijk"),
+    },
+    "oost-nederland": {
+        "provinces": ("Overijssel", "Gelderland"),
+        "cities": ("Enschede", "Hengelo", "Almelo", "Oldenzaal", "Borne", "Haaksbergen",
+                   "Rijssen", "Zwolle", "Deventer", "Kampen", "Arnhem", "Nijmegen", "Apeldoorn",
+                   "Ede", "Doetinchem", "Winterswijk", "Zutphen"),
+    },
+    "amsterdam": {"provinces": (), "cities": ("Amsterdam",)},
+}
+REGION_ALIASES = {"twente": "oost-nederland", "oost-nl": "oost-nederland", "oost nl":
+                  "oost-nederland", "noord-brabant": "brabant", "mra": "amsterdam"}
 # CORDIS activity types of a project's Dutch partners → actor kinds.
 ORG_KIND = {"PRC": "company", "HES": "knowledge", "REC": "knowledge", "PUB": "government",
             "OTH": "network"}
@@ -319,6 +339,76 @@ def search_lessons(conn: sqlite3.Connection, query: str, k: int = 10, *,
         "LIMIT ?", (match, exclude_opgave, k)).fetchall()
 
 
+# -- seeding boards from a file (the team's shared setup) --------------------------------
+
+
+class SeedActor(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str
+    kind: str = "other"
+    level: str = "meso"
+    has_mandate: bool = False
+    interest: str = ""
+    timeline: str = ""
+    involve_when: str = ""
+    staging: str = ""
+    status: str = "not_yet"
+
+
+class SeedSignal(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    kind: str
+    text: str
+    level: str = "meso"
+    actor: str | None = None
+
+
+class SeedChallenge(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    slug: str
+    title: str
+    frame: str = ""
+    region: str = ""
+    actors: list[SeedActor] = []
+    signals: list[SeedSignal] = []
+
+
+class Seed(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    source: str = ""
+    challenges: list[SeedChallenge]
+
+
+def load_seed(conn: sqlite3.Connection, data: bytes | str) -> dict[str, int]:
+    """Create the challenges, actors and signals a seed file describes. Only what is
+    missing is added: re-loading never changes what the team has edited since."""
+    try:
+        seed = Seed.model_validate_json(data)
+    except ValidationError as exc:
+        raise OrchestrateError(f"seed file does not match the format ({exc.error_count()} "
+                               "errors)") from None
+    counts = {"challenges": 0, "actors": 0, "signals": 0}
+    for ch in seed.challenges:
+        slug = slugify(ch.slug)
+        if not conn.execute("SELECT 1 FROM opgave WHERE slug = ?", (slug,)).fetchone():
+            new_opgave(conn, slug, ch.title, frame=ch.frame, region=ch.region)
+            counts["challenges"] += 1
+        oid = opgave(conn, slug)["id"]
+        for a in ch.actors:
+            exists = conn.execute("SELECT 1 FROM orch_actor WHERE opgave_id = ? AND name = ? "
+                                  "COLLATE NOCASE", (oid, _clean(a.name, 200))).fetchone()
+            if not exists:
+                set_actor(conn, slug, a.name, **a.model_dump(exclude={"name"}))
+                counts["actors"] += 1
+        for sig in ch.signals:
+            exists = conn.execute("SELECT 1 FROM orch_signal WHERE opgave_id = ? AND text = ?",
+                                  (oid, _clean(sig.text, 1000))).fetchone()
+            if not exists:
+                add_signal(conn, slug, sig.kind, sig.text, level=sig.level, actor=sig.actor)
+                counts["signals"] += 1
+    return counts
+
+
 # -- reading the board against the model ------------------------------------------------
 
 
@@ -392,8 +482,8 @@ def check(conn: sqlite3.Connection, slug: str) -> list[Finding]:
     for s in signals:
         if s["status"] == "open" and s["kind"] in ("tension", "blockage") and \
                 s["id"] not in handled:
-            add("steer", "warn", f"Open {s['kind']} #{s['id']}: \"{s['text'][:80]}\". "
-                "Make it discussable before it escalates (link an intervention).")
+            add("steer", "warn", f"Open {s['kind']} #{s['id']}: \"{s['text'][:80].rstrip('.')}"
+                "\". Make it discussable before it escalates (link an intervention).")
 
     # 2. Signal and navigate
     if not signals:
@@ -448,6 +538,23 @@ def org_kind(org: dict) -> str:
     return "other"
 
 
+def region_key(region: str | None) -> str | None:
+    """The REGIONS key a challenge's region names ('Oost-Nederland', 'Twente', …), or None."""
+    low = (region or "").strip().lower()
+    if not low:
+        return None
+    key = REGION_ALIASES.get(low, low.replace(" ", "-"))
+    return key if key in REGIONS else None
+
+
+def in_region(company: sqlite3.Row, key: str) -> bool:
+    scope = REGIONS[key]
+    province = (company["region"] or "").strip().lower()
+    city = (company["city"] or "").strip().lower()
+    return province in {p.lower() for p in scope["provinces"]} or \
+        city in {c.lower() for c in scope["cities"]}
+
+
 @dataclass(frozen=True)
 class Candidate:
     name: str
@@ -458,9 +565,11 @@ class Candidate:
 
 
 def suggest(conn: sqlite3.Connection, slug: str, k: int = 8) -> list[Candidate]:
-    """Candidate actors from Cloé's data that fit the challenge's title and frame: research
-    projects (library cards), their Dutch partners, and companies whose facts or needs
-    match. Flagged text is never used. Actors already on the board are left out."""
+    """Candidate actors from Cloé's data that fit the challenge's title and frame: companies
+    whose facts or needs match (only those in the challenge's region, when it names one of
+    REGIONS), research projects (library cards) and their Dutch partners (national; the
+    datasets give no location). Flagged text is never used. Actors already on the board
+    are left out."""
     o = opgave(conn, slug)
     query = f"{o['title']} {o['frame']}"
     have = conn.execute("SELECT name, company_id, project_id FROM orch_actor WHERE "
@@ -497,13 +606,30 @@ def suggest(conn: sqlite3.Connection, slug: str, k: int = 8) -> list[Candidate]:
                 "text LIKE ? UNION SELECT company_id FROM need WHERE status != 'flagged' AND "
                 "text LIKE ?", (f"%{term}%", f"%{term}%")):
             scores.setdefault(cid, set()).add(term)
-    for cid, terms in sorted(scores.items(), key=lambda kv: -len(kv[1]))[:k]:
-        c = conn.execute("SELECT name, city, tier FROM company WHERE id = ?", (cid,)).fetchone()
-        if c:
-            where = ", ".join(x for x in (c["city"], c["tier"]) if x)
-            keep("companies", Candidate(c["name"], "company", f"in the network "
-                                        f"({where or '-'}); matches {', '.join(sorted(terms))}",
-                                        company_id=cid))
+    region = region_key(o["region"])
+    if region:
+        # A regional challenge: every company in the region is a candidate, ranked by the
+        # words it matches and by whether someone there registered through the join form.
+        rows = [c for c in conn.execute("SELECT id, name, city, region, tier FROM company")
+                if in_region(c, region)]
+        registered = {r[0] for r in conn.execute(
+            "SELECT DISTINCT p.company_id FROM person p JOIN consent c ON c.person_id = p.id "
+            "WHERE c.source = 'joinform'")}
+        ranked = sorted(rows, key=lambda c: (-len(scores.get(c["id"], ())),
+                                             c["id"] not in registered, c["name"]))
+    else:
+        ids = [cid for cid, _ in sorted(scores.items(), key=lambda kv: -len(kv[1]))]
+        ranked = [c for cid in ids if (c := conn.execute(
+            "SELECT id, name, city, region, tier FROM company WHERE id = ?", (cid,)).fetchone())]
+    for c in ranked:
+        terms = scores.get(c["id"], set())
+        where = ", ".join(x for x in (c["city"], c["tier"]) if x)
+        why = [f"in the network ({where or '-'})"]
+        if terms:
+            why.append(f"matches {', '.join(sorted(terms))}")
+        if region and c["id"] in registered:
+            why.append("registered through the join form")
+        keep("companies", Candidate(c["name"], "company", "; ".join(why), company_id=c["id"]))
     # The network's own companies first, then research projects, then their partners.
     return [c for group in groups.values() for c in group[:k]]
 

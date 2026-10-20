@@ -318,6 +318,25 @@ MIGRATIONS: list[str] = [
         text, tokenize = 'unicode61 remove_diacritics 2'
     );
     """,
+    # 8 — orchestrate part 2 (team, 2026-10-20: targeting Brabant, Oost-Nederland and
+    # Amsterdam; AI help for tensions and interventions): a company's province (TELL's
+    # `Region`) so suggestions stay in the challenge's region, and proposals: signals and
+    # interventions a reader proposed, waiting for the team to accept or reject them.
+    """
+    ALTER TABLE company ADD COLUMN region TEXT;
+    CREATE TABLE orch_proposal (
+        id          INTEGER PRIMARY KEY,
+        opgave_id   INTEGER NOT NULL REFERENCES opgave(id) ON DELETE CASCADE,
+        kind        TEXT NOT NULL CHECK (kind IN ('signal', 'intervention')),
+        payload     TEXT NOT NULL,
+        engine      TEXT NOT NULL CHECK (engine IN ('api', 'standin', 'workorder')),
+        status      TEXT NOT NULL DEFAULT 'proposed'
+                    CHECK (status IN ('proposed', 'accepted', 'rejected')),
+        result_ref  TEXT,
+        created_at  TEXT NOT NULL,
+        decided_at  TEXT
+    );
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

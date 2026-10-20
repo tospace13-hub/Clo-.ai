@@ -1,0 +1,224 @@
+{
+  "source": "TOS13 team, 2026-10-20: the regions targeted with ACT x PONT. Framing from the ACT x PONT proposal; actors and signals are national starting points. Regional actors are for the team to add (`cloe orchestrate suggest`).",
+  "challenges": [
+    {
+      "slug": "act-brabant",
+      "title": "Circular textiles in Brabant: from waste to value",
+      "region": "Brabant",
+      "frame": "Brabant as a (technology) industry and innovation region ((technologie)industrie- en innovatieregio). Reframe circular textiles from a fashion, waste or regulation issue to value: 'van afval naar waarde, van wegwerplogica naar gebruik en hergebruik, van kostenpost naar verdienvermogen'. Connect what moves in the region to national policy and European funding.",
+      "actors": [
+        {
+          "name": "Ministerie van Economische Zaken (EZ)",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "strategic autonomy, raw-material security and earning capacity (strategische autonomie, grondstoffenzekerheid, verdienvermogen)"
+        },
+        {
+          "name": "Ministerie van Infrastructuur en Waterstaat (IenW)",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "Beleidsprogramma Circulair Textiel 2025-2030"
+        },
+        {
+          "name": "Ministerie van OCW",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "initiated PONT: using design capacity for complex societal challenges"
+        },
+        {
+          "name": "Actieplan Circulair Textiel (ACT)",
+          "kind": "network",
+          "level": "macro",
+          "interest": "a shared agenda and chain vision for the sector; facilitates those who want to act (bewaakt overkoepelende doelen, biedt een gedeelde ketenvisie)"
+        },
+        {
+          "name": "PONT (De Publieke Ontwerppraktijk)",
+          "kind": "knowledge",
+          "level": "macro",
+          "interest": "learning how a design approach can orchestrate collaboration between governments"
+        }
+      ],
+      "signals": [
+        {
+          "kind": "pattern",
+          "level": "macro",
+          "text": "No shared ownership: the issue is spread over ministries, regional governments, interest groups and companies; everyone sees the importance, nobody feels responsible for the whole."
+        },
+        {
+          "kind": "blockage",
+          "level": "macro",
+          "text": "Funding is fragmented."
+        },
+        {
+          "kind": "tension",
+          "level": "macro",
+          "text": "National policy and regulation do not match what the market needs."
+        },
+        {
+          "kind": "pattern",
+          "level": "macro",
+          "text": "Circular textiles are framed as a fashion, waste or regulation issue, which brings the wrong parties to the table and asks the wrong questions."
+        },
+        {
+          "kind": "opportunity",
+          "level": "macro",
+          "text": "European momentum (EU Circular Economy Action Plan, Interreg, Textile ETP), usable only when Dutch government and business go to Europe with one story."
+        },
+        {
+          "kind": "opportunity",
+          "level": "meso",
+          "text": "In Brabant, governments, companies and knowledge institutions already find each other in regional chains: a starting point for national and international collaboration."
+        }
+      ]
+    },
+    {
+      "slug": "act-oost-nederland",
+      "title": "Circular textiles in Oost-Nederland: from waste to value",
+      "region": "Oost-Nederland",
+      "frame": "Oost-Nederland with its rich textile history (rijke textielhistorie; Twente). Reframe circular textiles from a fashion, waste or regulation issue to value: 'van afval naar waarde, van wegwerplogica naar gebruik en hergebruik, van kostenpost naar verdienvermogen'. Connect what moves in the region to national policy and European funding.",
+      "actors": [
+        {
+          "name": "Ministerie van Economische Zaken (EZ)",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "strategic autonomy, raw-material security and earning capacity (strategische autonomie, grondstoffenzekerheid, verdienvermogen)"
+        },
+        {
+          "name": "Ministerie van Infrastructuur en Waterstaat (IenW)",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "Beleidsprogramma Circulair Textiel 2025-2030"
+        },
+        {
+          "name": "Ministerie van OCW",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "initiated PONT: using design capacity for complex societal challenges"
+        },
+        {
+          "name": "Actieplan Circulair Textiel (ACT)",
+          "kind": "network",
+          "level": "macro",
+          "interest": "a shared agenda and chain vision for the sector; facilitates those who want to act (bewaakt overkoepelende doelen, biedt een gedeelde ketenvisie)"
+        },
+        {
+          "name": "PONT (De Publieke Ontwerppraktijk)",
+          "kind": "knowledge",
+          "level": "macro",
+          "interest": "learning how a design approach can orchestrate collaboration between governments"
+        }
+      ],
+      "signals": [
+        {
+          "kind": "pattern",
+          "level": "macro",
+          "text": "No shared ownership: the issue is spread over ministries, regional governments, interest groups and companies; everyone sees the importance, nobody feels responsible for the whole."
+        },
+        {
+          "kind": "blockage",
+          "level": "macro",
+          "text": "Funding is fragmented."
+        },
+        {
+          "kind": "tension",
+          "level": "macro",
+          "text": "National policy and regulation do not match what the market needs."
+        },
+        {
+          "kind": "pattern",
+          "level": "macro",
+          "text": "Circular textiles are framed as a fashion, waste or regulation issue, which brings the wrong parties to the table and asks the wrong questions."
+        },
+        {
+          "kind": "opportunity",
+          "level": "macro",
+          "text": "European momentum (EU Circular Economy Action Plan, Interreg, Textile ETP), usable only when Dutch government and business go to Europe with one story."
+        },
+        {
+          "kind": "opportunity",
+          "level": "meso",
+          "text": "In Oost-Nederland, governments, companies and knowledge institutions already find each other in regional chains: a starting point for national and international collaboration."
+        }
+      ]
+    },
+    {
+      "slug": "act-amsterdam",
+      "title": "Circular textiles in Amsterdam: from waste to value",
+      "region": "Amsterdam",
+      "frame": "Amsterdam as a creative and cultural hub with international connections (creatieve en culturele hub met internationale connecties). Reframe circular textiles from a fashion, waste or regulation issue to value: 'van afval naar waarde, van wegwerplogica naar gebruik en hergebruik, van kostenpost naar verdienvermogen'. Connect what moves in the region to national policy and European funding.",
+      "actors": [
+        {
+          "name": "Ministerie van Economische Zaken (EZ)",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "strategic autonomy, raw-material security and earning capacity (strategische autonomie, grondstoffenzekerheid, verdienvermogen)"
+        },
+        {
+          "name": "Ministerie van Infrastructuur en Waterstaat (IenW)",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "Beleidsprogramma Circulair Textiel 2025-2030"
+        },
+        {
+          "name": "Ministerie van OCW",
+          "kind": "government",
+          "level": "macro",
+          "has_mandate": true,
+          "interest": "initiated PONT: using design capacity for complex societal challenges"
+        },
+        {
+          "name": "Actieplan Circulair Textiel (ACT)",
+          "kind": "network",
+          "level": "macro",
+          "interest": "a shared agenda and chain vision for the sector; facilitates those who want to act (bewaakt overkoepelende doelen, biedt een gedeelde ketenvisie)"
+        },
+        {
+          "name": "PONT (De Publieke Ontwerppraktijk)",
+          "kind": "knowledge",
+          "level": "macro",
+          "interest": "learning how a design approach can orchestrate collaboration between governments"
+        }
+      ],
+      "signals": [
+        {
+          "kind": "pattern",
+          "level": "macro",
+          "text": "No shared ownership: the issue is spread over ministries, regional governments, interest groups and companies; everyone sees the importance, nobody feels responsible for the whole."
+        },
+        {
+          "kind": "blockage",
+          "level": "macro",
+          "text": "Funding is fragmented."
+        },
+        {
+          "kind": "tension",
+          "level": "macro",
+          "text": "National policy and regulation do not match what the market needs."
+        },
+        {
+          "kind": "pattern",
+          "level": "macro",
+          "text": "Circular textiles are framed as a fashion, waste or regulation issue, which brings the wrong parties to the table and asks the wrong questions."
+        },
+        {
+          "kind": "opportunity",
+          "level": "macro",
+          "text": "European momentum (EU Circular Economy Action Plan, Interreg, Textile ETP), usable only when Dutch government and business go to Europe with one story."
+        },
+        {
+          "kind": "opportunity",
+          "level": "meso",
+          "text": "In Amsterdam, governments, companies and knowledge institutions already find each other in regional chains: a starting point for national and international collaboration."
+        }
+      ]
+    }
+  ]
+}

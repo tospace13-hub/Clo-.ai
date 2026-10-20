@@ -169,6 +169,21 @@ def cmd_suggest(args, settings):
     return _run(settings, go)
 
 
+def cmd_load(args, settings):
+    from pathlib import Path
+
+    def go(conn):
+        path = Path(args.file)
+        if not path.is_file() or path.stat().st_size > 1_000_000:
+            return _err(f"{path}: not a seed file (missing, or larger than 1 MB)")
+        counts = orchestrate.load_seed(conn, path.read_bytes())
+        print(f"OK   loaded {path.name}: +{counts['challenges']} challenges, "
+              f"+{counts['actors']} actors, +{counts['signals']} signals (existing ones kept "
+              "as the team left them)")
+        return 0
+    return _run(settings, go)
+
+
 def register(sub: argparse._SubParsersAction) -> None:
     orch = sub.add_parser("orchestrate", help="orchestrate a challenge (PONT: orkestreren)"
                           ).add_subparsers(dest="action", required=True)
@@ -246,6 +261,11 @@ def register(sub: argparse._SubParsersAction) -> None:
     p.add_argument("query")
     p.add_argument("-k", type=int, default=10)
     p.set_defaults(func=cmd_lessons)
+
+    p = orch.add_parser("load", help="set up challenges from a seed file (adds only what "
+                        "is missing)")
+    p.add_argument("file")
+    p.set_defaults(func=cmd_load)
 
     p = orch.add_parser("suggest", help="candidate actors from Cloé's network")
     p.add_argument("slug")

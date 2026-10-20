@@ -30,7 +30,7 @@ SCRAPED = "scraped"  # third-party scraped text (TELL keywords): wrap before any
 
 COMPANY_FIELDS = (
     "name", "website", "city", "postcode", "kvk", "tier", "category", "employees",
-    "year_start", "tell_id", "company_class",
+    "year_start", "tell_id", "company_class", "region",
 )
 
 SHARED_HOSTS = frozenset({

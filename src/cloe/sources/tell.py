@@ -26,7 +26,7 @@ EXPORT_COLUMNS = (
     "Email contacts", "Keywords",
 )
 NAME_FIELDS = ("name", "website", "city", "employees", "year_start", "tier", "category",
-               "company_class")
+               "company_class", "region")
 KEYWORDS_PER_FACT = 20
 MAX_FILE_BYTES = 50 * 1024 * 1024
 CONFIDENCE = 0.6  # a 2021 KvK-based dataset
@@ -189,7 +189,7 @@ def _row(conn, rec: dict[str, str], sid: int, report: Report) -> None:
         "name": rec["Company"], "website": rec["Website"], "city": rec["City"],
         "employees": rec["Employees"], "year_start": rec["Founded"],
         "tier": rec["Supply chain tier"], "category": rec["Product category"],
-        "company_class": rec["Company class"],
+        "company_class": rec["Company class"], "region": rec.get("Region", ""),
     }
     moved = records.quarantine(values, NAME_FIELDS, "TELL")
     if not values["name"]:
