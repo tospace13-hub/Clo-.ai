@@ -95,9 +95,13 @@ def cmd_doctor(args: argparse.Namespace, settings: config.Settings) -> int:
         r.fail("no canary")
 
     if settings.anthropic_api_key:
-        r.ok("ANTHROPIC_API_KEY set (API engine available)")
+        r.ok("ANTHROPIC_API_KEY set (API engine available, billed per token)")
+    if settings.engine == "workorder":
+        r.ok("engine workorder: LLM jobs become work orders for Claude Code on the MacBook "
+             "(the Claude plan, no API costs)")
     else:
-        r.warn("ANTHROPIC_API_KEY not set: only the work-order engine can run LLM jobs")
+        r.ok("engine api: LLM jobs run here" + ("" if settings.anthropic_api_key else
+                                                " (CLOE_FAKE=1 stand-in)"))
     if settings.fake_llm:
         r.warn("CLOE_FAKE=1: no model calls; library cards come from a keyword stand-in")
 

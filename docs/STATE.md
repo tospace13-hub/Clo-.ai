@@ -11,8 +11,9 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-10-21 · Max plan engine · in progress — `CLOE_ENGINE` (work orders by default
-  without an API key), a work order for join-form needs, the decision recorded.
+- 2026-10-21 · Max plan engine · finished — no API costs: without a key every AI job
+  becomes a work order for Claude Code under the Claude plan (`CLOE_ENGINE`), join-form
+  needs included; 335 tests.
 - 2026-10-21 · merge sprint 3 · finished — `claude/relaxed-edison-nggs72` (Sprint 3,
   company research) merged with `main`; its migration renumbered 6 → 9; 331 tests.
 - 2026-10-21 · MacBook hand-off · finished — the computer that runs Cloé doesn't see the cloud
@@ -72,9 +73,25 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 3 merged; Sprint 4 not started.)
+(none — Sprint 4 not started.)
 
 ## Done
+
+- 2026-10-21 (Max plan engine): the team does not want API costs ("Anthropic keys use real
+  money, not my Max account"). `config.ENGINES`, `Settings.engine`: `CLOE_ENGINE` (api |
+  workorder), and when empty, api with a key or `CLOE_FAKE=1`, else workorder. `--engine`
+  on `scrape funding`, `research`, `orchestrate propose` and (new) `ingest joinform` now
+  defaults to it, so without a key nothing calls the API: the job becomes a work order.
+  New work order kind `classify-needs` (`workorders.write_needs_order` /
+  `ingest_needs_order` / `open_needs_order`, `NeedsOrderResult`): `NEED_TASK` verbatim,
+  the questions wrapped in a git-ignored `.private.md` (0600), flagged needs never
+  included; the result fills only needs still open and blank (repeats, unknown ids and
+  needs it wasn't given are skipped; `instruction_like` flags). `cloe workorder ingest`
+  takes it; `ingest joinform` writes one when needs are left and none is open. `doctor`
+  prints the engine. `tests/conftest.py` now gives every test its own work-order folder.
+  MACBOOK.md (`.env` table: key empty; check the shell has no `ANTHROPIC_API_KEY`, or
+  Claude Code bills it), the `cloe-workorder` skill and sprint.md Sprints 4–5 updated.
+  `uv run pytest -q` → `335 passed, 3 skipped`; ruff clean.
 
 - 2026-10-21 (merge sprint 3): merged `claude/relaxed-edison-nggs72` (forked from 412e171)
   with `main` (contact language, orchestrate, MacBook hand-off). Conflicts, all
@@ -305,6 +322,10 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## Decisions
 
+- **No API costs (team, 2026-10-21):** the MacBook runs without `ANTHROPIC_API_KEY`; every
+  model job is a work order that a person starts in Claude Code under the team's Claude
+  plan. New model jobs (Sprints 4–5) get a work-order twin from the start. Unattended,
+  scheduled model work would need an API key, or a check of the plan's terms first.
 - Language: Python 3.12 + uv. Store: SQLite (stdlib) with FTS5 for the library.
 - Cloé's runtime model: `claude-opus-5-5` for every call (`CLOE_MODEL`; `CLOE_MODEL_BULK`
   defaults to the same). Sprints are executed by Opus 5.5 sessions; planning was done by

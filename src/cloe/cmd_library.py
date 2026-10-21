@@ -29,7 +29,8 @@ def make_reader(settings: config.Settings, conn):
     return None
 
 
-NO_READER = ("no ANTHROPIC_API_KEY: use --engine workorder (the MacBook makes the cards), "
+NO_READER = ("no ANTHROPIC_API_KEY: use --engine workorder (the MacBook makes the cards, "
+             "under the Claude plan), "
              "or CLOE_FAKE=1 for a dry run with the keyword stand-in")
 
 
@@ -52,7 +53,7 @@ def cmd_scrape_funding(args: argparse.Namespace, settings: config.Settings) -> i
         return _err(f"M-DPP datasets: {exc}")
     conn = open_db(settings)
     try:
-        if args.engine == "workorder":
+        if (args.engine or settings.engine) == "workorder":
             report = scrape.Report(sources=sources)
             ids = scrape.import_projects(conn, refs, report)
             chosen = scrape.to_card(conn, refs, ids, args.max_projects)
@@ -177,14 +178,26 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
         return _err(f"no work order {args.number} in {workorders.WORKORDER_DIR}")
     kind = ("funding-batch" if "funding-batch" in order.name else
             "orchestrate-proposal" if "orchestrate-proposal" in order.name else
+            "classify-needs" if "classify-needs" in order.name else
             "research" if "-research-" in order.name else None)
     if kind is None:
-        return _err(f"{order.name}: only funding-batch, orchestrate-proposal and research "
-                    "work orders can be ingested")
+        return _err(f"{order.name}: only funding-batch, orchestrate-proposal, classify-needs "
+                    "and research work orders can be ingested")
     result = Path(args.result) if args.result else workorders.result_path(order)
     if not result.is_file():
         return _err(f"no result at {result}")
     conn = open_db(settings)
+    if kind == "classify-needs":
+        try:
+            counts = workorders.ingest_needs_order(conn, args.number, result)
+        except ValueError as exc:
+            return _err(f"{result.name}: {exc}")
+        finally:
+            conn.close()
+        print(f"OK   work order {args.number}: {counts['classified']} needs classified, "
+              f"{counts['flagged']} flagged as instruction-like, {counts['skipped']} skipped "
+              "(unknown, or no longer open)")
+        return 0
     if kind == "orchestrate-proposal":
         try:
             counts = workorders.ingest_proposal_order(conn, args.number, result)
@@ -231,8 +244,9 @@ def register(sub: argparse._SubParsersAction) -> None:
     p.add_argument("--max-projects", type=int, default=scrape.DEFAULT_MAX_PROJECTS,
                    help="how many uncarded projects to card this run (default 3)")
     p.add_argument("--max-docs-per-project", type=int, default=scrape.DEFAULT_MAX_DOCS)
-    p.add_argument("--engine", choices=("api", "workorder"), default="api",
-                   help="api: card here; workorder: write a work order instead")
+    p.add_argument("--engine", choices=config.ENGINES,
+                   help="api: card here; workorder: write a work order instead "
+                   "(default: CLOE_ENGINE)")
     p.set_defaults(func=cmd_scrape_funding)
     p = scrape_p.add_parser("url", help="one page or PDF into the library")
     p.add_argument("url")

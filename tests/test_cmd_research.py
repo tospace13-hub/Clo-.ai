@@ -14,7 +14,7 @@ RESULT = str(FIXTURES / "workorders" / "research-result.json")
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for key in ("CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_FAKE", "CLOE_KVK_API_KEY",
+    for key in ("CLOE_ENGINE", "CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_FAKE", "CLOE_KVK_API_KEY",
                 "CLOE_OVERHEIDIO_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setattr(workorders, "WORKORDER_DIR", tmp_path / "docs" / "workorders")
@@ -101,5 +101,7 @@ def test_errors_are_clean(loaded, capsys, tmp_path):
     assert "FAIL no work order 001" in capsys.readouterr().err
     real = tmp_path / "real.env"
     real.write_text(f"CLOE_DB={tmp_path / 'data' / 'cloe.db'}\n")
-    assert run(real, "research", "example.nl") == 1
+    assert run(real, "research", "example.nl", "--engine", "api") == 1
     assert "FAIL no ANTHROPIC_API_KEY" in capsys.readouterr().out
+    assert run(real, "research", "example.nl") == 0  # no key: a work order, not the API
+    assert "-research-example.nl.md" in capsys.readouterr().out

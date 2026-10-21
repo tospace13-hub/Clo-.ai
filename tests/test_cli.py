@@ -5,7 +5,7 @@ from cloe import cli, db
 
 @pytest.fixture
 def env_file(tmp_path, monkeypatch):
-    for key in ("CLOE_DB", "CLOE_SEND", "CLOE_CANARY", "CLOE_APPROVERS", "ANTHROPIC_API_KEY"):
+    for key in ("CLOE_ENGINE", "CLOE_DB", "CLOE_SEND", "CLOE_CANARY", "CLOE_APPROVERS", "ANTHROPIC_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     path = tmp_path / ".env"
     path.write_text(f"CLOE_DB={tmp_path / 'data' / 'cloe.db'}\nCLOE_SEND=0\n")

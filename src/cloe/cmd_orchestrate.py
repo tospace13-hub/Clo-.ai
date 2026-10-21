@@ -188,7 +188,7 @@ def cmd_propose(args, settings):
     from cloe import llm, workorders
 
     def go(conn):
-        if args.engine == "workorder":
+        if (args.engine or settings.engine) == "workorder":
             path = workorders.write_proposal_order(conn, workorders.WORKORDER_DIR, args.slug)
             print(f"OK   work order written: {path}")
             print(f"     its inputs are in {workorders.private_path(path).name} (not in git)")
@@ -339,7 +339,8 @@ def register(sub: argparse._SubParsersAction) -> None:
     p = orch.add_parser("propose", help="AI: propose tensions and interventions (the "
                         "team accepts or rejects them)")
     p.add_argument("slug")
-    p.add_argument("--engine", choices=("api", "workorder"), default="api")
+    p.add_argument("--engine", choices=("api", "workorder"),
+                   help="api: propose here; workorder: write a work order (default: CLOE_ENGINE)")
     p.set_defaults(func=cmd_propose)
     p = orch.add_parser("proposals", help="proposals waiting for the team")
     p.add_argument("slug")

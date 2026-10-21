@@ -88,7 +88,7 @@ def cmd_research(args: argparse.Namespace, settings: config.Settings) -> int:
                   f"{subject.domain or 'no website'})")
             print("\n".join(registers.describe(subject)))
             return 0
-        if args.engine == research.ENGINE_WORKORDER:
+        if (args.engine or settings.engine) == research.ENGINE_WORKORDER:
             existing = workorders.open_research_order(conn, cid)
             if existing and not args.refresh:
                 print(f"OK   an open research work order exists: {existing} "
@@ -130,7 +130,8 @@ def register(sub: argparse._SubParsersAction) -> None:
     p = sub.add_parser("research", help="research a company: its site, the registers, the news")
     p.add_argument("company", help="domain, name or id")
     p.add_argument("--engine", choices=(research.ENGINE_API, research.ENGINE_WORKORDER),
-                   default=research.ENGINE_API)
+                   help="api: research here; workorder: write a work order "
+                   "(default: CLOE_ENGINE)")
     p.add_argument("--refresh", action="store_true",
                    help=f"run again although it ran in the last {research.REFRESH_DAYS} days")
     p.add_argument("--kvk", help="the company's KvK number (8 digits), if TELL did not have it")

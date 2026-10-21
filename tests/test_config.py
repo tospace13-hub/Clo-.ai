@@ -83,3 +83,15 @@ def test_secrets_not_in_repr(tmp_path):
     s = config.load(tmp_path / ".env", environ={"ANTHROPIC_API_KEY": "secret-value-123"})
     assert "secret-value-123" not in repr(s)
     assert s.canary not in repr(s)
+
+
+def test_engine_defaults_to_work_orders_without_a_key(tmp_path):
+    env = tmp_path / ".env"
+    assert config.load(env, {}).engine == "workorder"
+    assert config.load(env, {"ANTHROPIC_API_KEY": "sk-test"}).engine == "api"
+    assert config.load(env, {"CLOE_FAKE": "1"}).engine == "api"
+    assert config.load(env, {"ANTHROPIC_API_KEY": "sk-test",
+                             "CLOE_ENGINE": "workorder"}).engine == "workorder"
+    assert config.load(env, {"CLOE_ENGINE": " API "}).engine == "api"
+    with pytest.raises(ValueError, match="CLOE_ENGINE"):
+        config.load(env, {"CLOE_ENGINE": "max"})

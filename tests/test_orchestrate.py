@@ -180,7 +180,7 @@ def test_board_and_forget(network):
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for key in ("CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_FAKE"):
+    for key in ("CLOE_ENGINE", "CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_FAKE"):
         monkeypatch.delenv(key, raising=False)
     path = tmp_path / ".env"
     path.write_text(f"CLOE_DB={tmp_path / 'data' / 'cloe.db'}\nCLOE_FAKE=1\n")
@@ -383,5 +383,7 @@ def test_proposal_work_order_and_cli(env, capsys, tmp_path, monkeypatch):
     assert run("orchestrate", "proposals", "act-brabant") == 0
     assert "(workorder)" in capsys.readouterr().out
     env.write_text(env.read_text().replace("CLOE_FAKE=1", "CLOE_FAKE=0"))
-    assert run("orchestrate", "propose", "act-brabant") == 1
+    assert run("orchestrate", "propose", "act-brabant", "--engine", "api") == 1
     assert "--engine workorder" in capsys.readouterr().err
+    assert run("orchestrate", "propose", "act-brabant") == 0  # no key: a work order
+    assert "002-orchestrate-proposal.md" in capsys.readouterr().out

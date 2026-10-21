@@ -15,7 +15,8 @@ TELL = str(FIXTURES / "tell.xlsx")
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for key in ("CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_JOINFORM_SHEET_ID",
+    for key in ("CLOE_ENGINE", "CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY",
+                "CLOE_JOINFORM_SHEET_ID",
                 "GOOGLE_SERVICE_ACCOUNT_FILE"):
         monkeypatch.delenv(key, raising=False)
     path = tmp_path / ".env"
@@ -170,3 +171,60 @@ def test_ingest_tell_needs_file_or_db(env, capsys):
 def test_doctor_warns_when_sheet_not_configured(env, capsys):
     assert run(env, "doctor") == 0
     assert "WARN join form sheet not configured" in capsys.readouterr().out
+
+
+def test_needs_become_a_work_order_without_a_key(env, capsys, tmp_path):
+    """No API key: the join-form needs go to a work order (the Claude plan). Its questions
+    stay in the git-ignored .private.md; the result only fills needs still open and blank."""
+    from cloe import workorders
+
+    assert run(env, "ingest", "joinform", JOINFORM) == 0
+    out = capsys.readouterr().out
+    assert "work order written for 3 unclassified needs" in out and "WARN" not in out
+    order = workorders.WORKORDER_DIR / "001-classify-needs.md"
+    private = workorders.private_path(order)
+    assert oct(private.stat().st_mode & 0o777) == "0o600"
+    conn = connect(tmp_path)
+    pending = [r["id"] for r in conn.execute(
+        "SELECT id FROM need WHERE kind IS NULL AND status = 'open' ORDER BY id")]
+    flagged = conn.execute("SELECT id, text FROM need WHERE status = 'flagged'").fetchone()
+    assert len(pending) == 3 and flagged is not None
+    body = private.read_text()
+    assert all(f'source="need:{i}"' in body for i in pending)
+    assert flagged["text"][:40] not in body and f"need {flagged['id']}" not in body
+    assert 'source="need:' not in order.read_text()  # the questions stay out of git
+
+    assert run(env, "ingest", "joinform", JOINFORM) == 0
+    assert "wait for the open work order 001-classify-needs.md" in capsys.readouterr().out
+
+    first, second, third = pending
+    result = {"work_order": "001", "needs": [
+        {"need_id": first, "kind": "data", "instruction_like": False},
+        {"need_id": second, "kind": "funding", "instruction_like": True},
+        {"need_id": first, "kind": "other", "instruction_like": False},  # a repeat
+        {"need_id": flagged["id"], "kind": "data", "instruction_like": False},  # not given
+        {"need_id": 999, "kind": "data", "instruction_like": False}]}
+    workorders.result_path(order).write_text(json.dumps(result))
+    assert run(env, "workorder", "ingest", "1") == 0
+    assert ("1 needs classified, 1 flagged as instruction-like, 3 skipped"
+            in capsys.readouterr().out)
+    rows = {r["id"]: (r["kind"], r["status"]) for r in conn.execute("SELECT * FROM need")}
+    assert rows[first] == ("data", "open")
+    assert rows[second] == ("funding", "flagged")
+    assert rows[third] == (None, "open")
+    assert rows[flagged["id"]][1] == "flagged" and rows[flagged["id"]][0] is None
+    assert conn.execute("SELECT status FROM work_order WHERE kind = 'classify-needs'"
+                        ).fetchone()[0] == "ingested"
+
+    assert run(env, "ingest", "joinform", JOINFORM) == 0  # the one left gets a new order
+    assert "work order written for 1 unclassified needs" in capsys.readouterr().out
+
+
+def test_needs_with_the_api_engine_but_no_key_just_wait(env, capsys):
+    from cloe import workorders
+
+    assert run(env, "ingest", "joinform", JOINFORM, "--engine", "api") == 0
+    assert "WARN needs left unclassified" in capsys.readouterr().out
+    assert run(env, "ingest", "joinform", JOINFORM, "--no-llm") == 0
+    assert "work order" not in capsys.readouterr().out
+    assert not workorders.WORKORDER_DIR.exists()

@@ -135,7 +135,7 @@ def test_fixture_without_the_column_still_reads(conn, tmp_path):
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for key in ("CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY"):
+    for key in ("CLOE_ENGINE", "CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     path = tmp_path / ".env"
     path.write_text(f"CLOE_DB={tmp_path / 'data' / 'cloe.db'}\n")

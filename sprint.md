@@ -405,6 +405,10 @@ uv run cloe profile example.nl                                # shows merged fac
 
 ## Sprint 4 — Matching and composing (the gift, in Cloé's voice)
 
+> **Engines (decided 2026-10-21):** the MacBook runs without an API key, so every model
+> call here (`MatchJudgement`, `draft`, the tone check) needs a work-order twin, as the
+> library, research and orchestrate have, chosen by `settings.engine` / `--engine`.
+
 **Goal:** `cloe match` proposes what to bring to whom; `cloe draft` writes it in Cloé's
 voice, in the right format, and the tone check blocks drift.
 **Read:** `tone.md` in full. CONTEXT §B. Security principle 3. STATE "Decisions".
@@ -471,6 +475,10 @@ uv run cloe tone-check <message_id>            # passes golden, fails anti-examp
 ---
 
 ## Sprint 5 — Outbox, channels, inbox (nothing leaves without Chloe)
+
+> **Engines (decided 2026-10-21):** no API key on the MacBook; reading inbound replies is a
+> work order (inputs in a git-ignored `.private.md`), like every other model job. Sending
+> stays plain Python behind the gates, never a model.
 
 **Goal:** approve → send by email and SMS, receive replies, with every gate in code.
 **Read:** Security principles 4, 6, 10, 11. `tone.md` §6. STATE "Decisions" + open

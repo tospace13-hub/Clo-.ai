@@ -15,7 +15,7 @@ FUNDING = str(FIXTURES / "funding")
 
 @pytest.fixture
 def env(tmp_path, monkeypatch):
-    for key in ("CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_FAKE", "CLOE_MDPP_DIR"):
+    for key in ("CLOE_ENGINE", "CLOE_DB", "CLOE_CANARY", "ANTHROPIC_API_KEY", "CLOE_FAKE", "CLOE_MDPP_DIR"):
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setattr(workorders, "WORKORDER_DIR", tmp_path / "docs" / "workorders")
     path = tmp_path / ".env"
@@ -75,11 +75,23 @@ def test_definition_of_done_flow(env, capsys, tmp_path):
 
 def test_scrape_without_a_reader_imports_projects_only(env, capsys, tmp_path):
     env.write_text(env.read_text().replace("CLOE_FAKE=1", "CLOE_FAKE=0"))
-    assert run(env, "scrape", "funding", "--fixture", FUNDING) == 0
+    assert run(env, "scrape", "funding", "--fixture", FUNDING, "--engine", "api") == 0
     out = capsys.readouterr().out
     assert "projects imported 8" in out and "projects carded 0" in out
     assert "WARN projects imported, none carded" in out
     assert connect(tmp_path).execute("SELECT count(*) FROM document").fetchone()[0] == 0
+
+
+def test_without_a_key_the_default_is_a_work_order(env, capsys, tmp_path):
+    """No API key: the cards become a work order (the Claude plan), never an API call."""
+    env.write_text(env.read_text().replace("CLOE_FAKE=1", "CLOE_FAKE=0"))
+    assert run(env, "scrape", "funding", "--fixture", FUNDING) == 0
+    assert "work order written for 3 projects" in capsys.readouterr().out
+    assert (tmp_path / "docs" / "workorders" / "001-funding-batch.md").is_file()
+    with env.open("a") as f:
+        f.write("CLOE_ENGINE=api\n")
+    assert run(env, "scrape", "funding", "--fixture", FUNDING) == 0
+    assert "projects carded 0" in capsys.readouterr().out
 
 
 def test_scrape_needs_the_datasets(env, capsys, tmp_path):

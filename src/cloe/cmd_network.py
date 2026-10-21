@@ -54,16 +54,36 @@ def cmd_ingest_joinform(args: argparse.Namespace, settings: config.Settings) -> 
     except (OSError, ValueError, sheets.SheetsError) as exc:
         return _err(f"join form: {exc}")
     conn = open_db(settings)
-    claude = make_claude(settings, conn, args.no_llm)
+    claude = make_claude(settings, conn,
+                         args.no_llm or (args.engine or settings.engine) == "workorder")
     report = joinform.ingest(conn, tabs, raw_dir=data_dir(settings) / "raw", claude=claude,
                              canary=settings.canary)
     conn.close()
     print(f"OK   join form from {origin}")
     for line in report.lines():
         print(f"     {line}")
-    if report.unclassified and claude is None:
-        print("WARN needs left unclassified: no ANTHROPIC_API_KEY (or --no-llm); "
-              "re-run the ingest with a key to classify them")
+    if report.unclassified and claude is None and not args.no_llm \
+            and (args.engine or settings.engine) == "workorder":
+        from cloe import workorders
+
+        conn = open_db(settings)
+        try:
+            existing = workorders.open_needs_order(conn)
+            path = None if existing else workorders.write_needs_order(
+                conn, workorders.WORKORDER_DIR)
+        finally:
+            conn.close()
+        if existing:
+            print(f"OK   needs wait for the open work order {Path(existing).name}; ingest "
+                  "it, then run this again for any newer ones")
+        elif path:
+            print(f"OK   work order written for {report.unclassified} unclassified needs: "
+                  f"{path}")
+            print(f"     run it in Claude Code on the MacBook, then: uv run cloe workorder "
+                  f"ingest {path.name[:3]}")
+    elif report.unclassified and claude is None:
+        print("WARN needs left unclassified: no ANTHROPIC_API_KEY (or --no-llm); re-run "
+              "the ingest with --engine workorder, or with a key, to classify them")
     return 0
 
 
@@ -261,6 +281,9 @@ def register(sub: argparse._SubParsersAction) -> None:
     )
     p.add_argument("file", nargs="?", help="CSV/XLSX export; omit to read the Google Sheet")
     p.add_argument("--no-llm", action="store_true", help="don't classify needs now")
+    p.add_argument("--engine", choices=config.ENGINES,
+                   help="api: classify needs here; workorder: write a work order for them "
+                   "(default: CLOE_ENGINE)")
     p.set_defaults(func=cmd_ingest_joinform)
     p = ingest.add_parser("tell", help="TELL: the dashboard's xlsx export, or --db (read-only)")
     p.add_argument("file", nargs="?", help="companies.xlsx from the TELL dashboard export")

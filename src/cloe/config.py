@@ -14,6 +14,10 @@ from datetime import time
 from pathlib import Path
 
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
+# Who does the LLM work: the API (billed per token, needs ANTHROPIC_API_KEY), or work orders
+# that Claude Code on the MacBook carries out under the team's Claude plan (decided
+# 2026-10-21). Empty CLOE_ENGINE = the API when a key is set (or CLOE_FAKE=1), else work orders.
+ENGINES = ("api", "workorder")
 DEFAULT_ENV_PATH = Path(".env")
 
 _LINE = re.compile(r"^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$")
@@ -88,7 +92,15 @@ class Settings:
     overheidio_api_key: str = field(default="", repr=False)
     canary: str = field(default="", repr=False)
     fake_llm: bool = False
+    engine_choice: str = ""
     env_path: Path = DEFAULT_ENV_PATH
+
+    @property
+    def engine(self) -> str:
+        """The default engine for LLM jobs; `--engine` on a command overrides it."""
+        if self.engine_choice:
+            return self.engine_choice
+        return "api" if self.anthropic_api_key or self.fake_llm else "workorder"
 
 
 def new_canary() -> str:
@@ -125,6 +137,10 @@ def load(
     effort = get("CLOE_EFFORT", "high").lower()
     if effort not in EFFORTS:
         raise ValueError(f"CLOE_EFFORT must be one of {EFFORTS}, got {effort!r}")
+
+    engine = get("CLOE_ENGINE").strip().lower()
+    if engine and engine not in ENGINES:
+        raise ValueError(f"CLOE_ENGINE must be one of {ENGINES} or empty, got {engine!r}")
 
     canary = get("CLOE_CANARY")
     if not canary:
@@ -166,5 +182,6 @@ def load(
         overheidio_api_key=get("CLOE_OVERHEIDIO_API_KEY"),
         canary=canary,
         fake_llm=get("CLOE_FAKE", "0").strip() == "1",
+        engine_choice=engine,
         env_path=path,
     )

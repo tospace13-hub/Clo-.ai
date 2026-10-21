@@ -54,12 +54,19 @@ Then fill in `.env` (it is never committed; `chmod 600 .env`):
 
 | Setting | What to put | Needed for |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | an API key, or leave empty and use `--engine workorder` | AI jobs through the API |
+| `ANTHROPIC_API_KEY` | **leave empty** (team decision, 2026-10-21) | an API key is billed per token, apart from the Claude plan |
+| `CLOE_ENGINE` | empty (or `workorder`) | without a key, AI jobs become work orders that Claude Code here does under the Claude plan |
 | `CLOE_APPROVERS` | Chloe's real address (and a second approver) | sending, later |
 | `CLOE_SEND` | `0` | stays 0 until launch |
 | `CLOE_FAKE` | `0` | `1` only for dry runs |
 | `CLOE_MDPP_DIR` | `~/MDPP_Website` | `cloe scrape funding` |
 | `CLOE_JOINFORM_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_FILE` | the sheet id, and the path to the service account key (outside the repo) | reading the join form directly (open question 8) |
+
+**No API costs:** with `ANTHROPIC_API_KEY` empty, every AI job (library cards, needs,
+company research, orchestrate proposals) is written as a work order (step 4), and Claude
+Code on this Mac does it under the team's Claude plan. Check that the key is not set in the
+shell either (`echo $ANTHROPIC_API_KEY` prints nothing): if it is, Claude Code itself bills
+the key instead of the plan. `uv run cloe doctor` prints the engine in use.
 
 `CLOE_CANARY` is added by itself on the first run. Turn on FileVault: the database holds
 personal data. Back it up with Time Machine, and don't copy it elsewhere.
@@ -79,6 +86,9 @@ That keeps both tabs, Responses and Unsubscribe. Then:
 uv run cloe ingest joinform ~/Downloads/"TOS13 join form responses.xlsx"
 ```
 
+Without an API key, the ingest writes a `classify-needs` work order for the questions
+people asked (step 4); the questions themselves go to its git-ignored `.private.md`.
+
 **b. TELL.** Download the dashboard export (an empty filter exports every company), then
 import it:
 
@@ -94,8 +104,7 @@ until Chloe records consent (`cloe consent set … --evidence "…"`).
 
 ```sh
 cd ~/MDPP_Website && git pull && cd -
-uv run cloe scrape funding --max-projects 3          # with ANTHROPIC_API_KEY
-uv run cloe scrape funding --engine workorder --max-projects 20   # or: a work order (step 4)
+uv run cloe scrape funding --max-projects 20         # no key: a work order (step 4)
 ```
 
 Every run imports all projects, then cards the next N without a card, most
@@ -107,8 +116,7 @@ The keyed registers need `CLOE_KVK_API_KEY` / `CLOE_OVERHEIDIO_API_KEY` in `.env
 
 ```sh
 uv run cloe research <domain|id|name> --list-sources   # every source, URLs filled in
-uv run cloe research <domain|id|name> --verbose        # with ANTHROPIC_API_KEY
-uv run cloe research <domain|id|name> --engine workorder   # or: a work order (step 4)
+uv run cloe research <domain|id|name>                  # no key: a work order (step 4)
 ```
 
 The first live run is open question 26: save the real register responses over
@@ -159,8 +167,8 @@ explains how. Right now:
 
 - **001**: save three real CORDIS results pages and one deliverable into
   `tests/fixtures/funding_real/` (cordis.europa.eu is blocked from the cloud).
-- Others appear when you run `scrape funding --engine workorder` or `orchestrate propose
-  --engine workorder`.
+- Others appear when an AI job runs without an API key: `ingest joinform` (needs),
+  `scrape funding` (cards), `research <company>`, `orchestrate propose <challenge>`.
 
 After a work order, `uv run cloe workorder ingest <NNN>` reads its result into Cloé.
 
