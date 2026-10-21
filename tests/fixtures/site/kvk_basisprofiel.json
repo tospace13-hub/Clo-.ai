@@ -1,0 +1,47 @@
+{
+ "kvkNummer": "12345678",
+ "naam": "Voorbeeld Weverij B.V.",
+ "formeleRegistratiedatum": "19980312",
+ "materieleRegistratie": {
+  "datumAanvang": "19980301"
+ },
+ "totaalWerkzamePersonen": 32,
+ "statutaireNaam": "Voorbeeld Weverij B.V.",
+ "handelsnamen": [
+  {
+   "naam": "Voorbeeld Weverij B.V.",
+   "volgorde": 0
+  },
+  {
+   "naam": "Voorbeeld Jacquard",
+   "volgorde": 1
+  }
+ ],
+ "sbiActiviteiten": [
+  {
+   "sbiCode": "1320",
+   "sbiOmschrijving": "Weven van textiel",
+   "indHoofdactiviteit": "Ja"
+  },
+  {
+   "sbiCode": "4641",
+   "sbiOmschrijving": "Groothandel in textiel",
+   "indHoofdactiviteit": "Nee"
+  }
+ ],
+ "_embedded": {
+  "hoofdvestiging": {
+   "vestigingsnummer": "000012345678",
+   "adressen": [
+    {
+     "type": "bezoekadres",
+     "straatnaam": "Weverstraat",
+     "huisnummer": 12,
+     "postcode": "5000AA",
+     "plaats": "Tilburg",
+     "land": "Nederland"
+    }
+   ]
+  }
+ }
+}

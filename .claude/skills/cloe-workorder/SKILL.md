@@ -1,6 +1,6 @@
 ---
 name: cloe-workorder
-description: Carry out one of Cloé's work orders (docs/workorders/NNN-*.md) on the team's MacBook. That means fetching pages the cloud can't reach, making research-library cards, or proposing orchestration tensions and interventions without API calls; then writing the result, ingesting it and reporting. Use when the user mentions a work order, a funding batch, an orchestrate proposal, or "Cloé's MacBook jobs".
+description: Carry out one of Cloé's work orders (docs/workorders/NNN-*.md) on the team's MacBook. That means fetching pages the cloud can't reach, making research-library cards, researching a company, or proposing orchestration tensions and interventions without API calls; then writing the result, ingesting it and reporting. Use when the user mentions a work order, a funding batch, a company research order, an orchestrate proposal, or "Cloé's MacBook jobs".
 ---
 
 # Running a Cloé work order
@@ -29,6 +29,9 @@ Cloé is built in cloud sessions; this machine runs the jobs they can't. Start b
    - *orchestrate-proposal*: read `NNN-orchestrate-proposal.private.md` (git-ignored; it
      holds the team's board). Propose tensions and interventions as the task describes.
      Never propose that anyone sends messages on their own.
+   - *research* (`NNN-research-<domain>.md`): answer the order's questions from the
+     sources it lists, KvK number first. Record every page you read in `visited`; every
+     fact cites one of them. LinkedIn only in the person's own browser, as the order says.
    - Never automate LinkedIn. At most one request per second to a site.
 6. **Write the result** at the path the order gives (`NNN-….result.json`, git-ignored).
    Validate it with the command in the order.

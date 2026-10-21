@@ -1,0 +1,24 @@
+{
+ "batchcomplete": "",
+ "query": {
+  "searchinfo": {
+   "totalhits": 2
+  },
+  "search": [
+   {
+    "ns": 0,
+    "title": "Voorbeeld Weverij",
+    "pageid": 1234567,
+    "snippet": "<span class=\"searchmatch\">Voorbeeld</span> <span class=\"searchmatch\">Weverij</span> is een jacquardweverij in Tilburg, opgericht in 1998.",
+    "timestamp": "2026-03-04T10:11:12Z"
+   },
+   {
+    "ns": 0,
+    "title": "Textielindustrie in Tilburg",
+    "pageid": 7654321,
+    "snippet": "\u2026 waaronder <span class=\"searchmatch\">Voorbeeld Weverij</span> \u2026",
+    "timestamp": "2025-12-01T00:00:00Z"
+   }
+  ]
+ }
+}

@@ -101,7 +101,20 @@ uv run cloe scrape funding --engine workorder --max-projects 20   # or: a work o
 Every run imports all projects, then cards the next N without a card, most
 textile-specific first. About 785 are about textiles (open question 16: how many to card).
 
-**d. Look at what came in:**
+**d. Research a company** (KvK first, then its site, the registers, the news; CONTEXT §I).
+The keyed registers need `CLOE_KVK_API_KEY` / `CLOE_OVERHEIDIO_API_KEY` in `.env`
+(open question 25); without them those three are skipped and reported.
+
+```sh
+uv run cloe research <domain|id|name> --list-sources   # every source, URLs filled in
+uv run cloe research <domain|id|name> --verbose        # with ANTHROPIC_API_KEY
+uv run cloe research <domain|id|name> --engine workorder   # or: a work order (step 4)
+```
+
+The first live run is open question 26: save the real register responses over
+`tests/fixtures/site/*` and tell the next cloud session which parsers broke.
+
+**e. Look at what came in:**
 
 ```sh
 uv run cloe companies list --needs
@@ -182,3 +195,5 @@ The full list is in `docs/STATE.md` → "Open questions". The ones that block th
 - **16:** how many research projects to card, and with which engine.
 - **17:** a "Preferred language" question on the join form.
 - **22:** is ACT × PONT framing OK in this public repo?
+- **25, 26:** KVK and overheid.io API keys; the first live `cloe research` run.
+- **27:** may research work orders use the HvA library (Nexis Uni, Company.info)?

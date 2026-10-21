@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<searchRetrieveResponse xmlns="http://docs.oasis-open.org/ns/search-ws/sruResponse">
+  <version>2.0</version>
+  <numberOfRecords>2</numberOfRecords>
+  <records>
+    <record>
+      <recordSchema>gzd</recordSchema>
+      <recordPacking>xml</recordPacking>
+      <recordData>
+        <gzd xmlns="http://standaarden.overheid.nl/sru" xmlns:dcterms="http://purl.org/dc/terms/">
+          <originalData><meta><owmskern>
+            <dcterms:identifier>stcrt-2024-18723</dcterms:identifier>
+            <dcterms:title>Deponering fusievoorstel Voorbeeld Weverij B.V. en Voorbeeld Jacquard B.V.</dcterms:title>
+            <dcterms:type scheme="overheid:Informatietype">officiële publicatie</dcterms:type>
+            <dcterms:creator scheme="overheid:Organisatie">Ministerie van Justitie en Veiligheid</dcterms:creator>
+            <dcterms:available>2024-06-14</dcterms:available>
+          </owmskern><owmsmantel>
+            <dcterms:abstract>Mededeling ex art. 2:314 BW: de fusie tussen Voorbeeld Weverij B.V. en Voorbeeld Jacquard B.V.</dcterms:abstract>
+            <dcterms:publisher>Staatscourant</dcterms:publisher>
+          </owmsmantel></meta></originalData>
+          <enrichedData>
+            <url>https://zoek.officielebekendmakingen.nl/stcrt-2024-18723.html</url>
+            <publicatienaam>Staatscourant</publicatienaam>
+          </enrichedData>
+        </gzd>
+      </recordData>
+      <recordPosition>1</recordPosition>
+    </record>
+    <record>
+      <recordSchema>gzd</recordSchema>
+      <recordPacking>xml</recordPacking>
+      <recordData>
+        <gzd xmlns="http://standaarden.overheid.nl/sru" xmlns:dcterms="http://purl.org/dc/terms/">
+          <originalData><meta><owmskern>
+            <dcterms:identifier>gmb-2025-301122</dcterms:identifier>
+            <dcterms:title>Verleende omgevingsvergunning, Weverstraat 12 Tilburg, uitbreiden bedrijfshal Voorbeeld Weverij</dcterms:title>
+            <dcterms:creator scheme="overheid:Gemeente">Tilburg</dcterms:creator>
+            <dcterms:available>2025-08-20</dcterms:available>
+          </owmskern><owmsmantel>
+            <dcterms:publisher>Gemeenteblad</dcterms:publisher>
+          </owmsmantel></meta></originalData>
+          <enrichedData><publicatienaam>Gemeenteblad</publicatienaam></enrichedData>
+        </gzd>
+      </recordData>
+      <recordPosition>2</recordPosition>
+    </record>
+  </records>
+</searchRetrieveResponse>

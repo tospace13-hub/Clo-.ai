@@ -233,3 +233,54 @@ policy within the European context.
   are not rediscovered each time. Shared ownership, openness to friction, the courage to
   experiment, care for the long term.
 
+## I. Company research sources (Sprint 3)
+
+Researched 2026-10-16; the code is `src/cloe/sources/registers.py` (`CATALOGUE`, 50 sources
+in 8 groups) and `cloe research <company> --list-sources` prints them with the URLs filled
+in for that company. Do not re-research; add a source by adding a `Register`.
+
+- **The KvK number is the key.** TELL's dashboard export (§D) has no KvK column; whether
+  TELL's DB `organizations.id` is the KvK number is an open question for the TELL team.
+  Cloé takes the number from `company.kvk`, `--kvk`, the company's own site
+  (Handelsregisterwet art. 27 obliges Dutch companies to print it; `web.find_kvk`), or the
+  KVK API's name search (`kvk_zoeken`).
+- **Identity (KvK-keyed):** KVK API (developers.kvk.nl: Zoeken is free with a key,
+  Basisprofiel is metered; `CLOE_KVK_API_KEY`), OpenKVK on overheid.io (free tier,
+  `CLOE_OVERHEIDIO_API_KEY`), OpenCorporates (`/companies/nl/<kvk>`, open page; API
+  rate-limited without a key), Wikidata (property P3220 = KvK number, SPARQL), Wikipedia.
+  Never scrape kvk.nl's own search (a JS app; its terms forbid it).
+- **Official publications:** zoek.officielebekendmakingen.nl has an SRU 2.0 endpoint
+  (CQL `cql.textAndIndexes="<name>"`): Staatscourant (faillissement, surseance, fusie,
+  splitsing, ontbinding), Gemeenteblad/Provinciaal blad (vergunningen at the address),
+  Kamerstukken. Centraal Insolventieregister (by KvK number, a person). Rechtspraak: the
+  open-data API has no full-text search; the site does.
+- **Funding and procurement:** M-DPP's 2,530 projects are already loaded (match the
+  company among `project.nl_orgs_json`); projecten.rvo.nl (Dutch subsidies), CORDIS,
+  Kohesio (EFRO/ESF/Interreg), EU Financial Transparency System, TED and TenderNed
+  (awards for workwear, linen, uniforms), keep.eu.
+- **IP and certifications:** Espacenet / Google Patents / NL octrooiregister, TMview (trade
+  names to search for), GOTS, Textile Exchange, OEKO-TEX, Fair Wear, B Corp, SBTi, UPV
+  Textiel (producer register: public or not, to check), ANBI (for stichtingen).
+- **News:** Google News RSS (nl and en), Bing News RSS, GDELT DOC 2.0 (all open, parsed by
+  code); trade press with a site search (Textilia, FashionUnited, Modint, Innovation in
+  Textiles, Ecotextile, Knitting Industry); `registers.PRESS_DOMAINS` for `site:` searches
+  in the API engine; YouTube; the Wayback CDX API for the site's history.
+- **Academic:** OpenAlex (`raw_affiliation_strings.search`), Crossref (`query.affiliation`),
+  Zenodo — open JSON, parsed by code.
+- **People:** the company's own team page; LinkedIn only as a person-in-the-loop work order.
+- **HvA library (a logged-in person):** Nexis Uni is the full-text archive of Dutch
+  newspapers — the real "every article"; Company.info adds annual-accounts figures.
+- **Considered and left out:** CBS (aggregates only), Kadaster and KvK jaarrekeningen
+  (paid), Bing News API (retired), DuckDuckGo HTML (terms), Common Crawl (no reverse
+  lookup), Arbeidsinspectie openbaarmaking (rarely textile SMEs), Google Maps / Trustpilot
+  (reviews), Crunchbase / Dealroom (paid), Instagram / Facebook / X (never scraped).
+- **Reachability (2026-10-16, proxy 403 from the cloud session, do not retry):**
+  tell.newtexeco.nl, api.kvk.nl, www.kvk.nl, openkvk.nl, api.overheid.io,
+  zoek.officielebekendmakingen.nl, repository.overheid.nl, uitspraken.rechtspraak.nl,
+  data.rechtspraak.nl, www.rvo.nl, ted.europa.eu, news.google.com, www.bing.com,
+  api.gdeltproject.org, web.archive.org, opencorporates.com, api.opencorporates.com,
+  drimble.nl, www.cbs.nl, textilia.nl, www.modint.nl, fashionunited.nl, nos.nl, fd.nl,
+  www.wikidata.org, query.wikidata.org, nl.wikipedia.org, api.crossref.org,
+  export.arxiv.org. The parsers were written from the formats' documentation and tested on
+  hand-written fixtures (`tests/fixtures/site/README.md`); the MacBook runs them live and
+  saves the real responses over the fixtures.

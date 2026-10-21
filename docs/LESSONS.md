@@ -5,6 +5,23 @@ why it matters. Record corrections and confirmed approaches alike. Don't repeat 
 history or STATE.md already says. Update an existing entry rather than adding a duplicate;
 delete entries that turn out to be wrong.
 
+## 2026-10-16 — Write the source list as data before writing any scraper
+
+Asked to "dig the internet for every article" about a company, the useful first step was a
+catalogue, not a crawler: one `Register` per source with what keys it (KvK number, name,
+domain), how it is reached (open, API key, a person, already loaded), its format, and what
+it gives. The KvK number turned out to be the key to the official half of the list, and
+TELL's export doesn't carry it, so "find the KvK number" became step one of the pipeline.
+The catalogue also renders straight into the work order and `--list-sources`, so the team
+can review the sources without reading code.
+
+## 2026-10-16 — A test double sees only what the model sees
+
+`FakeClaude` callables get the request content, never the system prompt, so a stand-in
+reader cannot map source ids to URLs from the task text. Readers now cite the block id
+("S3") or the URL, and `validate_findings` resolves ids in code. That also makes the real
+reader robust when a model cites an id instead of the URL.
+
 ## 2026-10-13 — Before building on stand-ins, ask who made the source
 
 The m-dpp.nl funding page was blocked, so Sprint 2 built a label-based HTML parser on

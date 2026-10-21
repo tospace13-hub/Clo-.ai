@@ -1,0 +1,37 @@
+{
+ "pagina": 1,
+ "resultatenPerPagina": 10,
+ "totaal": 2,
+ "resultaten": [
+  {
+   "kvkNummer": "12345678",
+   "naam": "Voorbeeld Weverij B.V.",
+   "adres": {
+    "binnenlandsAdres": {
+     "type": "bezoekadres",
+     "straatnaam": "Weverstraat",
+     "plaats": "Tilburg"
+    }
+   },
+   "type": "hoofdvestiging",
+   "links": [
+    {
+     "rel": "basisprofiel",
+     "href": "https://api.kvk.nl/api/v1/basisprofielen/12345678"
+    }
+   ]
+  },
+  {
+   "kvkNummer": "87654321",
+   "naam": "Voorbeeld Weverij Holding B.V.",
+   "adres": {
+    "binnenlandsAdres": {
+     "type": "bezoekadres",
+     "plaats": "Tilburg"
+    }
+   },
+   "type": "rechtspersoon",
+   "links": []
+  }
+ ]
+}
