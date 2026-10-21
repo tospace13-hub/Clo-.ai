@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-21 · merge sprint 3 · in progress — merging `claude/relaxed-edison-nggs72`
+  (Sprint 3, company research) into `main`; its migrations renumbered after 8.
 - 2026-10-21 · MacBook hand-off · finished — the computer that runs Cloé doesn't see the cloud
   chats: `docs/MACBOOK.md` (runbook), `.claude/skills/cloe-workorder/`, a CLAUDE.md entry.
 - 2026-10-20 · orchestrate regions + proposals · finished — the three ACT regions set up
