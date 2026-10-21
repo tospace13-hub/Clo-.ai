@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-21 · MacBook hand-off · started — the computer that runs Cloé doesn't see the cloud
+  chats: put everything it needs in the repo (runbook, work-order skill, CLAUDE.md entry).
 - 2026-10-20 · orchestrate regions + proposals · finished — the three ACT regions set up
   (seed file + `load`, region-aware suggestions), AI proposals for tensions and
   interventions (API, stand-in, work order; the team accepts); 254 tests.
@@ -63,7 +65,8 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 3 not started. Work order 001 is open for the MacBook.)
+MacBook hand-off: `docs/MACBOOK.md` (runbook), `.claude/skills/cloe-workorder/SKILL.md`,
+CLAUDE.md "On the MacBook" section; runbook commands checked in a scratch run.
 
 ## Done
 
