@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-10-21 · Max plan engine · in progress — `CLOE_ENGINE` (work orders by default
+  without an API key), a work order for join-form needs, the decision recorded.
 - 2026-10-21 · merge sprint 3 · finished — `claude/relaxed-edison-nggs72` (Sprint 3,
   company research) merged with `main`; its migration renumbered 6 → 9; 331 tests.
 - 2026-10-21 · MacBook hand-off · finished — the computer that runs Cloé doesn't see the cloud
