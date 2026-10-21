@@ -11,8 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-10-21 · MacBook hand-off · started — the computer that runs Cloé doesn't see the cloud
-  chats: put everything it needs in the repo (runbook, work-order skill, CLAUDE.md entry).
+- 2026-10-21 · MacBook hand-off · finished — the computer that runs Cloé doesn't see the cloud
+  chats: `docs/MACBOOK.md` (runbook), `.claude/skills/cloe-workorder/`, a CLAUDE.md entry.
 - 2026-10-20 · orchestrate regions + proposals · finished — the three ACT regions set up
   (seed file + `load`, region-aware suggestions), AI proposals for tensions and
   interventions (API, stand-in, work order; the team accepts); 254 tests.
@@ -65,11 +65,17 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-MacBook hand-off: `docs/MACBOOK.md` (runbook), `.claude/skills/cloe-workorder/SKILL.md`,
-CLAUDE.md "On the MacBook" section; runbook commands checked in a scratch run.
+(none — on `main`. Note: a separate session pushed **Sprint 3** to the unmerged branch
+`claude/relaxed-edison-nggs72`, forked from 412e171; see open question 23.)
 
 ## Done
 
+- 2026-10-21 (MacBook hand-off): `docs/MACBOOK.md` covers what the machine does, the
+  one-time setup with the `.env` table, the real-data order (join form, TELL, M-DPP
+  library), the ACT boards, work orders, day-to-day consent and language, reporting, and
+  what blocks it. `.claude/skills/cloe-workorder/SKILL.md` tells Claude Code there how to
+  run a work order. `CLAUDE.md` gained an "On the team's MacBook" section, and the README
+  points to MACBOOK.md.
 - 2026-10-20 (orchestrate part 2): the team targets **Brabant, Oost-Nederland and
   Amsterdam** (ACT × PONT) and wants AI help with **tensions and interventions**.
   Migration 8 adds `company.region` (TELL `Region`, stored and quarantined like other
@@ -518,3 +524,9 @@ CLAUDE.md "On the MacBook" section; runbook commands checked in a scratch run.
     signals such as fragmented funding and policy that doesn't fit the market. Is that
     fine to publish, or should the seed file move out of the repo (e.g. to Drive)? Boards
     themselves live only in the MacBook's database.
+23. **Sprint 3 is on a separate branch.** Another cloud session pushed Sprint 3 (company
+    research, "305 tests green") to `claude/relaxed-edison-nggs72`, forked from 412e171.
+    `main` has moved on since: contact language, orchestrate, migrations 6–8. Merging needs
+    care, because both lines number their database migrations from 5 on. Decide whether to
+    merge it into `main` (renumbering its migrations after 8); a session can do that on
+    request.

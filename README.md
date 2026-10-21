@@ -66,5 +66,7 @@ address as **Viewer**, put the JSON key outside the repo (or under `secrets/`, i
 and set `CLOE_JOINFORM_SHEET_ID` and `GOOGLE_SERVICE_ACCOUNT_FILE` in `.env`
 (`uv sync --extra sheets`).
 
+**Running Cloé on the team's MacBook? Start with `docs/MACBOOK.md`.**
+
 Plan: `sprint.md` (one sprint per Claude Code session) · Status: `docs/STATE.md` ·
 Voice: `tone.md` · Researched facts: `docs/CONTEXT.md` · Session rules: `CLAUDE.md`.

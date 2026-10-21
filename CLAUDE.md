@@ -21,6 +21,15 @@ The pre-commit hook refuses commits that don't touch it.
 Facts in `docs/CONTEXT.md` were researched already — do not re-research them. Some hosts
 are blocked from cloud sessions (listed there); do not spend turns retrying them.
 
+## On the team's MacBook (the computer that runs Cloé)
+
+The cloud sessions that build Cloé are not visible on the MacBook. If this session runs
+there (the user says so, or `data/cloe.db` exists), **read `docs/MACBOOK.md` first**: it
+says what to run and in what order. Do what the user asks from it. Run work orders with
+the `cloe-workorder` skill. Don't start a sprint there unless the user asks. The "start of
+every session" steps above are for sprint sessions; on the MacBook, just add a "Round log"
+line when you commit.
+
 ## End of every sprint
 
 1. `uv run pytest -q` passes. `uv run ruff check src tests` passes.
