@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-11-19 · sprint 4 (Monday scope) · started — the team needs drafts Chloe can send by
+  Monday 2026-11-23: welcome, event invitation, data drop; Chloe sends them herself.
 - 2026-11-19 · status check · finished — one test failed only because a month had passed:
   `research.recently_researched` read the system clock instead of `db.now()`; fixed; 335 tests.
 - 2026-10-21 · Max plan engine · finished — no API costs: without a key every AI job
@@ -75,7 +77,9 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 4 not started.)
+Sprint 4, Monday scope (team decision 2026-11-19): `cloe draft` for `welcome`, `invite`
+and `data_drop`, with code checks. Chloe sends by hand and records it (`sent --via`). The
+outbox and automatic sending stay in Sprint 5.
 
 ## Done
 
