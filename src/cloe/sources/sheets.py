@@ -28,19 +28,27 @@ class _Session(Protocol):
     def get(self, url: str, params: dict[str, str], timeout: int) -> Any: ...
 
 
-def session(service_account_file: str) -> _Session:
-    """An authorised read-only HTTP session for the service account."""
-    if not service_account_file:
-        raise SheetsError("GOOGLE_SERVICE_ACCOUNT_FILE is not set")
+def session(service_account_file: str, service_account_json: str = "") -> _Session:
+    """An authorised read-only HTTP session for the service account: its key from the
+    macOS Keychain (GOOGLE_SERVICE_ACCOUNT_JSON, preferred) or from a file."""
+    if not service_account_file and not service_account_json:
+        raise SheetsError("neither GOOGLE_SERVICE_ACCOUNT_JSON (Keychain) nor "
+                          "GOOGLE_SERVICE_ACCOUNT_FILE is set")
     try:
         from google.auth.transport.requests import AuthorizedSession
         from google.oauth2 import service_account
     except ImportError as exc:
         raise SheetsError("the Google client is not installed: uv sync --extra sheets") from exc
     try:
-        creds = service_account.Credentials.from_service_account_file(
-            service_account_file, scopes=[SCOPE]
-        )
+        if service_account_json:
+            import json
+
+            creds = service_account.Credentials.from_service_account_info(
+                json.loads(service_account_json), scopes=[SCOPE])
+        else:
+            creds = service_account.Credentials.from_service_account_file(
+                service_account_file, scopes=[SCOPE]
+            )
     except (OSError, ValueError) as exc:
         raise SheetsError(f"cannot read the service account key: {type(exc).__name__}") from exc
     return AuthorizedSession(creds)

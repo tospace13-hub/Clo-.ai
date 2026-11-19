@@ -25,6 +25,9 @@ pdf = [
 sheets = [
     "google-auth[requests]>=2.61.0",
 ]
+keychain = [
+    "keyring>=25.7.0",
+]
 
 [project.scripts]
 cloe = "cloe.cli:main"

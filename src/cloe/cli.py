@@ -16,10 +16,12 @@ from pathlib import Path
 from cloe import config, db, persona
 
 COMMAND_MODULES: tuple[str, ...] = ("cloe.cmd_network", "cloe.cmd_library",
-                                    "cloe.cmd_orchestrate", "cloe.cmd_research", "cloe.cmd_compose")
+                                    "cloe.cmd_orchestrate", "cloe.cmd_research", "cloe.cmd_compose",
+                                    "cloe.cmd_secrets")
 
 OPTIONAL_EXTRAS = {
     "openpyxl": "tell", "pymysql": "tell", "pypdf": "pdf", "google.auth": "sheets",
+    "keyring": "keychain",
 }
 PLACEHOLDER_DOMAINS = ("example.org", "example.com", "example.net")
 
@@ -105,14 +107,31 @@ def cmd_doctor(args: argparse.Namespace, settings: config.Settings) -> int:
     if settings.fake_llm:
         r.warn("CLOE_FAKE=1: no model calls; library cards come from a keyword stand-in")
 
-    if settings.joinform_sheet_id and settings.google_service_account_file:
+    if settings.joinform_sheet_id and settings.google_service_account_json:
+        r.ok("join form: Google Sheet + service account key (macOS Keychain) configured")
+    elif settings.joinform_sheet_id and settings.google_service_account_file:
         if Path(settings.google_service_account_file).is_file():
             r.ok("join form: Google Sheet + service account key configured")
         else:
             r.fail("GOOGLE_SERVICE_ACCOUNT_FILE does not point to a file")
     else:
-        r.warn("join form sheet not configured (CLOE_JOINFORM_SHEET_ID, "
-               "GOOGLE_SERVICE_ACCOUNT_FILE): only file exports can be ingested")
+        r.warn("join form sheet not configured (CLOE_JOINFORM_SHEET_ID, and "
+               "GOOGLE_SERVICE_ACCOUNT_JSON in the Keychain or GOOGLE_SERVICE_ACCOUNT_FILE): "
+               "only file exports can be ingested")
+
+    from cloe import keychain
+
+    if keychain.enabled():
+        r.ok(f"macOS Keychain: {len(settings.keychain_names)} settings there "
+             "(cloe secrets list)")
+        in_file = config.parse_env(settings.env_path.read_text(encoding="utf-8")) \
+            if settings.env_path.exists() else {}
+        plain = [n for n in config.SECRET_NAMES if in_file.get(n)]
+        if plain:
+            r.warn(f"secrets in .env in plain text: {', '.join(plain)}; "
+                   "`cloe secrets move` puts them in the Keychain")
+    elif keychain.PLATFORM == "darwin":
+        r.warn(f"macOS Keychain not used: {keychain.why_not()}")
 
     real = [a for a in settings.approvers if not a.endswith(PLACEHOLDER_DOMAINS)]
     if real:

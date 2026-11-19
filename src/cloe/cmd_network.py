@@ -45,7 +45,8 @@ def cmd_ingest_joinform(args: argparse.Namespace, settings: config.Settings) -> 
             tabs = joinform.read_file(Path(args.file))
             origin = Path(args.file).name
         elif settings.joinform_sheet_id:
-            sess = sheets.session(settings.google_service_account_file)
+            sess = sheets.session(settings.google_service_account_file,
+                                  settings.google_service_account_json)
             tabs = joinform.read_sheet(sess, settings.joinform_sheet_id)
             origin = "Google Sheet (CLOE_JOINFORM_SHEET_ID)"
         else:

@@ -72,8 +72,27 @@ Code on this Mac does it under the team's Claude plan. Check that the key is not
 shell either (`echo $ANTHROPIC_API_KEY` prints nothing): if it is, Claude Code itself bills
 the key instead of the plan. `uv run cloe doctor` prints the engine in use.
 
-`CLOE_CANARY` is added by itself on the first run. Turn on FileVault: the database holds
+`CLOE_CANARY` is added by itself on the first run (to the Keychain, on this Mac). Turn on FileVault: the database holds
 personal data. Back it up with Time Machine, and don't copy it elsewhere.
+
+### Secrets in the macOS Keychain (instead of `.env`)
+
+Cloé reads each setting from the environment first, then the **macOS Keychain**, then
+`.env`. So secrets don't have to sit in a plain-text file:
+
+```sh
+uv run cloe secrets move                    # moves the secrets in .env into the Keychain and blanks them there
+uv run cloe secrets list                    # every setting and where it comes from (never its value)
+uv run cloe secrets set SMTP_PASSWORD       # asks for the value, hidden, and stores it
+uv run cloe secrets set GOOGLE_SERVICE_ACCOUNT_JSON --file ~/Downloads/key.json   # the join-form key; then delete the file
+uv run cloe secrets delete SMTP_PASSWORD
+uv run cloe secrets move --all              # every setting, not only secrets
+```
+
+They appear in the Keychain Access app under the name `cloe`. The first time Cloé reads
+one, macOS may ask to allow access: choose **Always Allow**. `uv run cloe doctor` shows how
+many settings are in the Keychain and warns if a secret is still in `.env`. Set
+`CLOE_KEYCHAIN=0` to turn the Keychain off for one run.
 
 ## 2. Bring in the real data (first run, in this order)
 

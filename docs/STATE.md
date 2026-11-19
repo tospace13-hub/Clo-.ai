@@ -12,8 +12,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-11-19 · keychain · started — the team wants settings and secrets in the macOS
-  Keychain instead of `.env` (MacBook installed: 356 tests passed there).
+- 2026-11-19 · keychain · finished — settings and secrets can live in the macOS Keychain
+  (`cloe secrets`); the MacBook is installed (356 tests passed there); 364 tests.
 - 2026-11-19 · sprint 4 (Monday scope) · finished — `cloe draft welcome|invite|data_drop`
   with tone.md enforced in code; Chloe approves, sends by hand, records it; 356 tests.
   The rest of Sprint 4 (match step, model tone check, other formats) is still open.
@@ -81,11 +81,25 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Keychain: `cloe/keychain.py` (keyring, macOS only), config lookup env > Keychain > .env,
-`cloe secrets set|list|delete|move`, doctor line, service-account JSON from the Keychain.
+(none — Sprint 4's Monday scope is done; the rest of Sprint 4 is listed in sprint.md.)
 
 ## Done
 
+- 2026-11-19 (keychain): the MacBook is installed (`~/Clo-.ai`, `~/MDPP_Website`; `cloe
+  doctor` OK, 356 tests passed there on Python 3.12.16). The team asked for settings in
+  the macOS Keychain. `keychain.py`: one generic-password item per setting, service
+  `cloe`, account = the setting's name, through the `keyring` library (new optional extra
+  `keychain`). It is used only on macOS, and never when `CLOE_KEYCHAIN=0`. `config.load`
+  order: environment > Keychain > `.env`. An explicit `environ=` never reads the Keychain;
+  tests set `CLOE_KEYCHAIN=0` in conftest. A new canary is stored in the Keychain on
+  macOS. `config.SECRET_NAMES` / `SETTING_NAMES` list what may be stored.
+  `GOOGLE_SERVICE_ACCOUNT_JSON` is a new setting: the join-form key itself, so no key
+  file is needed. `cloe secrets list|set [--file]|delete|move [--all]`; `move` blanks the
+  moved lines in `.env` and keeps what the Keychain refused. `doctor` reports the
+  Keychain and warns about secrets left in `.env`. `uv run pytest -q` → `364 passed, 2
+  skipped`; ruff clean. **Not verified on a real Mac:** the tests use a stand-in for the
+  Keychain, since cloud sessions run Linux. The first real `cloe secrets move` on the
+  MacBook is the check (open question 30).
 - 2026-11-19 (sprint 4, Monday scope): the team needs drafts Chloe sends herself by
   Monday 2026-11-23. Migration 10 adds `message.format`, `event` and `sent_via`.
   `compose.py`:
@@ -708,3 +722,6 @@ Keychain: `cloe/keychain.py` (keyring, macOS only), config lookup env > Keychain
 29. **Chloe:** consent per draft. Welcome and data drop use email consent for *follow-up*
     (the join form's privacy box); an invitation uses *newsletter* consent. Is that right,
     or should invitations count as follow-up?
+30. **MacBook:** run `uv run cloe secrets move` once and confirm `uv run cloe doctor`
+    shows "macOS Keychain: N settings there" (the Keychain code was tested with a stand-in
+    only). If macOS asks to allow access, choose Always Allow.

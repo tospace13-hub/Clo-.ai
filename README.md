@@ -11,6 +11,7 @@ cp .env.example .env                  # fill in what you have; CLOE_SEND stays 0
 git config core.hooksPath .githooks   # pre-commit: STATE.md staged, ruff, pytest
 uv run cloe init                      # create / migrate data/cloe.db
 uv run cloe doctor                    # OK / WARN / FAIL per check
+uv run cloe secrets move              # macOS: move the secrets from .env into the Keychain
 uv run cloe version
 
 uv run cloe ingest joinform           # the "TOS13 join form responses" Google Sheet

@@ -19,6 +19,20 @@ EFFORTS = ("low", "medium", "high", "xhigh", "max")
 # 2026-10-21). Empty CLOE_ENGINE = the API when a key is set (or CLOE_FAKE=1), else work orders.
 ENGINES = ("api", "workorder")
 DEFAULT_ENV_PATH = Path(".env")
+# Every setting `load` reads, and which of them are secrets. On the MacBook they can live in
+# the macOS Keychain instead of .env (keychain.py; `cloe secrets`).
+SECRET_NAMES = (
+    "ANTHROPIC_API_KEY", "CLOE_CANARY", "SMTP_PASSWORD", "IMAP_PASSWORD",
+    "TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "CLOE_WEBHOOK_SECRET", "TELL_DB_URL",
+    "CLOE_KVK_API_KEY", "CLOE_OVERHEIDIO_API_KEY", "GOOGLE_SERVICE_ACCOUNT_JSON",
+)
+SETTING_NAMES = (
+    "CLOE_MODEL", "CLOE_MODEL_BULK", "CLOE_EFFORT", "CLOE_ENGINE", "CLOE_DB", "CLOE_SEND",
+    "CLOE_FAKE", "CLOE_APPROVERS", "CLOE_TIMEZONE", "CLOE_QUIET_HOURS",
+    "CLOE_MAX_MSGS_PER_PERSON_PER_14D", "CLOE_ALLOWED_LINK_DOMAINS", "SMTP_HOST", "SMTP_PORT",
+    "SMTP_USER", "MAIL_FROM", "IMAP_HOST", "IMAP_USER", "TWILIO_FROM", "TELL_DB_CA_CERT",
+    "CLOE_JOINFORM_SHEET_ID", "GOOGLE_SERVICE_ACCOUNT_FILE", "CLOE_MDPP_DIR", *SECRET_NAMES,
+)
 
 _LINE = re.compile(r"^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$")
 
@@ -91,6 +105,8 @@ class Settings:
     kvk_api_key: str = field(default="", repr=False)
     overheidio_api_key: str = field(default="", repr=False)
     canary: str = field(default="", repr=False)
+    google_service_account_json: str = field(default="", repr=False)
+    keychain_names: tuple[str, ...] = ()
     fake_llm: bool = False
     engine_choice: str = ""
     env_path: Path = DEFAULT_ENV_PATH
@@ -126,9 +142,15 @@ def load(
     persist_canary: bool = True,
 ) -> Settings:
     """Load settings. `environ` defaults to `os.environ`; it overrides values in `.env`."""
+    from cloe import keychain
+
     path = Path(env_path) if env_path is not None else DEFAULT_ENV_PATH
     file_vals = parse_env(path.read_text(encoding="utf-8")) if path.exists() else {}
-    env = {**file_vals, **(os.environ if environ is None else environ)}
+    process = os.environ if environ is None else environ
+    # The macOS Keychain sits between the environment and .env, for real runs only (an
+    # explicit `environ` is a test or a caller that wants exactly what it passed).
+    stored = keychain.load(SETTING_NAMES) if environ is None and keychain.enabled() else {}
+    env = {**file_vals, **stored, **process}
 
     def get(key: str, default: str = "") -> str:
         value = env.get(key, "")
@@ -146,7 +168,11 @@ def load(
     if not canary:
         canary = new_canary()
         if persist_canary:
-            _persist_canary(path, canary)
+            if environ is None and keychain.enabled():
+                keychain.put("CLOE_CANARY", canary)
+                stored["CLOE_CANARY"] = canary
+            else:
+                _persist_canary(path, canary)
 
     model = get("CLOE_MODEL", "claude-opus-5-5")
     return Settings(
@@ -181,6 +207,9 @@ def load(
         kvk_api_key=get("CLOE_KVK_API_KEY"),
         overheidio_api_key=get("CLOE_OVERHEIDIO_API_KEY"),
         canary=canary,
+        google_service_account_json=get("GOOGLE_SERVICE_ACCOUNT_JSON"),
+        keychain_names=tuple(sorted(n for n in stored if n not in process or
+                                    process.get(n, "") == "")),
         fake_llm=get("CLOE_FAKE", "0").strip() == "1",
         engine_choice=engine,
         env_path=path,

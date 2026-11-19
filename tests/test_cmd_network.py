@@ -147,7 +147,7 @@ def test_ingest_joinform_from_the_sheet(env, capsys, tmp_path, monkeypatch):
     with env.open("a") as f:
         f.write(f"CLOE_JOINFORM_SHEET_ID={SHEET_ID}\nGOOGLE_SERVICE_ACCOUNT_FILE={key}\n")
     sess = FakeSession({"Responses": fixture_tabs()["Responses"]})
-    monkeypatch.setattr(sheets, "session", lambda path: sess)
+    monkeypatch.setattr(sheets, "session", lambda path, key_json="": sess)
     assert run(env, "ingest", "joinform") == 0
     out = capsys.readouterr().out
     assert "from Google Sheet" in out and "5 new" in out
