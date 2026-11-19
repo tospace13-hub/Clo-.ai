@@ -12,6 +12,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-11-19 · keychain · started — the team wants settings and secrets in the macOS
+  Keychain instead of `.env` (MacBook installed: 356 tests passed there).
 - 2026-11-19 · sprint 4 (Monday scope) · finished — `cloe draft welcome|invite|data_drop`
   with tone.md enforced in code; Chloe approves, sends by hand, records it; 356 tests.
   The rest of Sprint 4 (match step, model tone check, other formats) is still open.
@@ -79,7 +81,8 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-(none — Sprint 4's Monday scope is done; the rest of Sprint 4 is listed in sprint.md.)
+Keychain: `cloe/keychain.py` (keyring, macOS only), config lookup env > Keychain > .env,
+`cloe secrets set|list|delete|move`, doctor line, service-account JSON from the Keychain.
 
 ## Done
 
