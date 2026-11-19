@@ -11,6 +11,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-11-19 · status check · finished — one test failed only because a month had passed:
+  `research.recently_researched` read the system clock instead of `db.now()`; fixed; 335 tests.
 - 2026-10-21 · Max plan engine · finished — no API costs: without a key every AI job
   becomes a work order for Claude Code under the Claude plan (`CLOE_ENGINE`), join-form
   needs included; 335 tests.

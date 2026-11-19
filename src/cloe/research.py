@@ -650,7 +650,8 @@ def recently_researched(conn: sqlite3.Connection, company_id: int,
     if not at:
         return None
     then = datetime.fromisoformat(at)
-    return at[:10] if datetime.now(UTC) - then < timedelta(days=days) else None
+    now = datetime.fromisoformat(db.now())  # Cloé's clock, so tests that fix it hold
+    return at[:10] if now - then < timedelta(days=days) else None
 
 
 def subject_of(conn: sqlite3.Connection, company_id: int, kvk: str | None = None) -> Subject:
