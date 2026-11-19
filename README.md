@@ -31,6 +31,8 @@ uv run cloe scrape url https://…               # one page or PDF into the libr
 uv run cloe library search "digital product passport knitwear" --tier yarn
 uv run cloe library show 2 · uv run cloe library stats
 
+uv run cloe draft welcome                      # emails in Cloé's voice (also: data_drop, invite --brief <event.json>)
+uv run cloe drafts review                      # Chloe reads them; then approve <id>, send it herself, sent <id> --via email
 uv run cloe orchestrate load docs/orchestrate/act-regions.json   # Brabant, Oost-Nederland, Amsterdam
 uv run cloe orchestrate new dpp-twente --title "DPP readiness in Twente" --frame "…" --region Twente
 uv run cloe orchestrate suggest dpp-twente     # candidate actors from the network

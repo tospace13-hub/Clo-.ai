@@ -5,6 +5,14 @@ why it matters. Record corrections and confirmed approaches alike. Don't repeat 
 history or STATE.md already says. Update an existing entry rather than adding a duplicate;
 delete entries that turn out to be wrong.
 
+
+## 2026-11-19 — Every "now" goes through `db.now()`
+
+`research.recently_researched` compared against `datetime.now(UTC)` while its test fixed
+`db.now()`. It passed in October and failed a month later. Use `db.now()` for every
+comparison with the present, in code and tests, so a test that fixes the clock fixes all
+of it.
+
 ## 2026-10-16 — Write the source list as data before writing any scraper
 
 Asked to "dig the internet for every article" about a company, the useful first step was a

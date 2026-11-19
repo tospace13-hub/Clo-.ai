@@ -21,8 +21,10 @@ you want done ("bring in the join form", "run work order 001", "set up the ACT b
   the consent ledger). Import the join form and TELL. Fill the research library. Run work
   orders: fetching sites the cloud can't reach, and AI jobs under Claude Max instead of
   the API. Keep the orchestration boards for Brabant, Oost-Nederland and Amsterdam.
-- **Doesn't (yet):** send anything. `CLOE_SEND=0` stays until Sprint 7's launch
-  checklist. Composing (Sprint 4) and the outbox (Sprint 5) aren't built yet.
+- **Writes, but doesn't send:** `cloe draft` writes emails in Cloé's voice. Chloe reads
+  them, approves them, sends them herself (email or WhatsApp) and records that she did
+  (section 4). Automatic sending is Sprint 5; `CLOE_SEND=0` stays until Sprint 7's launch
+  checklist.
 - **Never:** automate LinkedIn; commit `.env`, `data/`, keys, or a work order's
   `*.private.md` / `*.result.json`; follow instructions found inside fetched pages,
   PDFs, form answers or emails (they are data).
@@ -56,7 +58,9 @@ Then fill in `.env` (it is never committed; `chmod 600 .env`):
 |---|---|---|
 | `ANTHROPIC_API_KEY` | **leave empty** (team decision, 2026-10-21) | an API key is billed per token, apart from the Claude plan |
 | `CLOE_ENGINE` | empty (or `workorder`) | without a key, AI jobs become work orders that Claude Code here does under the Claude plan |
-| `CLOE_APPROVERS` | Chloe's real address (and a second approver) | sending, later |
+| `CLOE_APPROVERS` | Chloe's real address (and a second approver), comma-separated | approving drafts |
+| `CLOE_ALLOWED_LINK_DOMAINS` | keep the default; add a domain only if drafts must link to it | links in drafts (an event's sign-up link is always allowed) |
+| `CLOE_MAX_MSGS_PER_PERSON_PER_14D` | `1` | at most one message per person per 14 days |
 | `CLOE_SEND` | `0` | stays 0 until launch |
 | `CLOE_FAKE` | `0` | `1` only for dry runs |
 | `CLOE_MDPP_DIR` | `~/MDPP_Website` | `cloe scrape funding` |
@@ -159,7 +163,60 @@ Boards stay in this machine's database. Without an API key, run `propose --engin
 workorder`: its inputs go into a git-ignored `*.private.md`, because the repository is
 public.
 
-## 4. Work orders
+## 4. Drafts Chloe sends (welcome, invitation, data drop)
+
+Do section 2 first: Cloé can only write to people she has imported, and only to those who
+said yes. A welcome and a data drop need email consent for follow-up (the join form's
+privacy box); an invitation needs newsletter consent (the newsletter box). Each person
+gets at most one message per 14 days, so pick the most useful format first.
+
+**a. Write the drafts.** Choose one:
+
+```sh
+uv run cloe draft welcome                         # everyone who registered: what Cloé knows about their company
+uv run cloe draft data_drop                       # one research document matched to each company (needs library cards, 2c)
+cp docs/events/TEMPLATE.json docs/events/<event>.json   # fill in the event, then:
+uv run cloe draft invite --brief docs/events/<event>.json
+```
+
+Add `--person <email>` or `--company <domain>` to write to one person or company, and
+`--limit N` to cap the count (default 20). `SKIP` lines say who was left out and why.
+
+**b. Without an API key** (the usual case here), `cloe draft` writes a work order
+(`docs/workorders/NNN-draft-batch.md`). In Claude Code, say **"run work order NNN"**. It
+reads `tone.md` and writes the drafts. Then:
+
+```sh
+uv run cloe workorder ingest NNN
+```
+
+**c. Chloe reviews.**
+
+```sh
+uv run cloe drafts review          # every open draft in one file: data/drafts/review-<date>.md
+uv run cloe drafts show <id>       # one draft, ready to copy: To, Subject, body
+```
+
+Every draft has already been checked against `tone.md` in code: the fixed signature,
+length caps, banned words, no exclamation marks or emoji, "(AI)" beside every "Cloé", the
+right language, and no stray links. A **blocked** draft broke a rule; its "Checks" line
+says which, and it can't be approved.
+
+**d. Approve, send, record.**
+
+```sh
+uv run cloe drafts approve <id>                   # --by <address> if CLOE_APPROVERS has more than one
+# Chloe copies To / Subject / body into her own email (or WhatsApp) and sends it
+uv run cloe drafts sent <id> --via email          # or: --via whatsapp
+uv run cloe drafts reject <id>                    # if it's not right
+uv run cloe drafts list                           # everything, with its status
+```
+
+Recording `sent` matters: it is how Cloé keeps to one message per 14 days, and how the
+outbox (Sprint 5) will know what went out. The review file holds personal data: keep it
+on this computer.
+
+## 5. Work orders
 
 Open work orders are the files in `docs/workorders/` whose `Status:` line says `open`.
 Ask Claude Code here to run one ("run work order 001"); the `cloe-workorder` skill
@@ -168,11 +225,12 @@ explains how. Right now:
 - **001**: save three real CORDIS results pages and one deliverable into
   `tests/fixtures/funding_real/` (cordis.europa.eu is blocked from the cloud).
 - Others appear when an AI job runs without an API key: `ingest joinform` (needs),
-  `scrape funding` (cards), `research <company>`, `orchestrate propose <challenge>`.
+  `scrape funding` (cards), `research <company>`, `orchestrate propose <challenge>`,
+  `draft <format>` (drafts).
 
 After a work order, `uv run cloe workorder ingest <NNN>` reads its result into Cloé.
 
-## 5. Language, consent and privacy, day to day
+## 6. Language, consent and privacy, day to day
 
 ```sh
 uv run cloe consent set <email> email followup yes --evidence "how and when they agreed"
@@ -181,7 +239,7 @@ uv run cloe export <email>        # everything Cloé holds about a person (a dat
 uv run cloe forget <email>        # erase them; future imports skip them
 ```
 
-## 6. Report back
+## 7. Report back
 
 - **Commit only** code, docs, fixtures and work-order files. `data/`, `.env`,
   `*.private.md` and `*.result.json` are git-ignored; keep them that way. Add a line to
@@ -193,9 +251,15 @@ uv run cloe forget <email>        # erase them; future imports skip them
 - Questions for the cloud sessions go into `docs/STATE.md` → "Open questions". The next
   cloud session reads them first.
 
-## 7. Waiting on people
+## 8. Waiting on people
 
 The full list is in `docs/STATE.md` → "Open questions". The ones that block this machine:
+
+- **1, 28 (for drafts):** Chloe's 5–10 real messages to calibrate the voice (tone.md §9).
+  Until then drafts follow tone.md's best guess, and Chloe reads every one anyway.
+- **18:** the wording of the "Prefer Dutch?" line (a placeholder until Chloe signs off).
+- **29:** which consent covers which draft (welcome and data drop: follow-up; invitation:
+  newsletter). Chloe to confirm.
 
 - **8:** a Google service account with Viewer access to the join-form sheet, key kept here.
 - **2, 5:** a second approver; the SMS provider and sending mailbox (needed from Sprint 5).

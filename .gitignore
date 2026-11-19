@@ -9,4 +9,5 @@ data/
 !data/.gitkeep
 docs/workorders/*.result.json
 docs/workorders/*.private.md
+docs/workorders/*.private.json
 .DS_Store

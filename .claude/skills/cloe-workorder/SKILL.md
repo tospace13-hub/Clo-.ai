@@ -1,6 +1,6 @@
 ---
 name: cloe-workorder
-description: Carry out one of Cloé's work orders (docs/workorders/NNN-*.md) on the team's MacBook. That means fetching pages the cloud can't reach, making research-library cards, researching a company, or proposing orchestration tensions and interventions without API calls; then writing the result, ingesting it and reporting. Use when the user mentions a work order, a funding batch, join-form needs, a company research order, an orchestrate proposal, or "Cloé's MacBook jobs".
+description: Carry out one of Cloé's work orders (docs/workorders/NNN-*.md) on the team's MacBook. That means fetching pages the cloud can't reach, making research-library cards, researching a company, writing email drafts in Cloé's voice, or proposing orchestration tensions and interventions without API calls; then writing the result, ingesting it and reporting. Use when the user mentions a work order, a funding batch, join-form needs, a company research order, a draft batch, an orchestrate proposal, or "Cloé's MacBook jobs".
 ---
 
 # Running a Cloé work order
@@ -31,6 +31,10 @@ Cloé is built in cloud sessions; this machine runs the jobs they can't. Start b
      Never propose that anyone sends messages on their own.
    - *classify-needs*: read `NNN-classify-needs.private.md` (git-ignored; the questions
      people asked on the join form) and give each need id a kind, as the task describes.
+   - *draft-batch*: **read `tone.md` in full first.** Then, for each section of
+     `NNN-draft-batch.private.md` (git-ignored; personal data), write one email following
+     that section's task, using only the facts in its block. Don't write a signature: code
+     adds it. Code checks every draft afterwards, and Chloe approves and sends them herself.
    - *research* (`NNN-research-<domain>.md`): answer the order's questions from the
      sources it lists, KvK number first. Record every page you read in `visited`; every
      fact cites one of them. LinkedIn only in the person's own browser, as the order says.

@@ -6,13 +6,15 @@ round-log line to `finished` or `stopped` when you stop. The pre-commit hook (Sp
 refuses any commit that doesn't touch this file. When the team praises the work, add it
 to "Laurels" with the habits that earned it.
 
-**Next sprint:** 4 (Matching and composing). Branch: `main` (Sprint 3 merged 2026-10-21).
+**Next sprint:** 4, the rest (match step, model tone check, other formats; the Monday
+scope is done), then 5. Branch: `main`.
 Work order 001 (MacBook, narrowed) still asks for three real CORDIS results pages; see open question 13.
 
 ## Round log (newest first)
 
-- 2026-11-19 · sprint 4 (Monday scope) · started — the team needs drafts Chloe can send by
-  Monday 2026-11-23: welcome, event invitation, data drop; Chloe sends them herself.
+- 2026-11-19 · sprint 4 (Monday scope) · finished — `cloe draft welcome|invite|data_drop`
+  with tone.md enforced in code; Chloe approves, sends by hand, records it; 356 tests.
+  The rest of Sprint 4 (match step, model tone check, other formats) is still open.
 - 2026-11-19 · status check · finished — one test failed only because a month had passed:
   `research.recently_researched` read the system clock instead of `db.now()`; fixed; 335 tests.
 - 2026-10-21 · Max plan engine · finished — no API costs: without a key every AI job
@@ -77,12 +79,44 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## In progress
 
-Sprint 4, Monday scope (team decision 2026-11-19): `cloe draft` for `welcome`, `invite`
-and `data_drop`, with code checks. Chloe sends by hand and records it (`sent --via`). The
-outbox and automatic sending stay in Sprint 5.
+(none — Sprint 4's Monday scope is done; the rest of Sprint 4 is listed in sprint.md.)
 
 ## Done
 
+- 2026-11-19 (sprint 4, Monday scope): the team needs drafts Chloe sends herself by
+  Monday 2026-11-23. Migration 10 adds `message.format`, `event` and `sent_via`.
+  `compose.py`:
+  - formats `welcome` (the company scan; says so if they rejoined), `invite` (from an
+    `EventBrief` JSON, see `docs/events/TEMPLATE.json`) and `data_drop` (`_match`: the best
+    library document for the company's open needs and facts, not yet brought to anyone
+    there; a `match` row, status `used`);
+  - `targets()` gates: email consent `yes` for the format's purpose; the 14-day cap,
+    counting drafts still waiting; no second welcome; no second invite to the same event;
+  - `context()`: person, company, sourced and dated facts, their join-form question,
+    news and register mentions, the document or event; never flagged text; wrapped as
+    untrusted;
+  - `check()`: tone.md read by code (the §6 signatures and §4 banned words are parsed, not
+    restated). It cuts the writer's own sign-off and appends the fixed signature, plus the
+    "Prefer Dutch?" line (English, per §3) while the language isn't explicit. It caps 120
+    words and an 8-word subject; bans the §4 words, "!" and emoji; requires "(AI)" beside
+    "Cloé" and nothing that reads as Chloe signing; checks language and je/u; strips links
+    outside `CLOE_ALLOWED_LINK_DOMAINS` (plus the document's or event's own link), email
+    addresses and phone numbers; flags instruction-like text;
+  - `store`, `approve` (approver must be in CLOE_APPROVERS; consent and the cap are
+    re-checked), `mark_sent` (`--via email|whatsapp`, `provider_id = manual`), `reject`,
+    `review_file` (0600) and `standin` (CLOE_FAKE).
+
+  Work-order twin `NNN-draft-batch.md`: personal data only in `.private.md` and
+  `.private.json` (0600, git-ignored); ingest runs the same checks. CLI: `cloe draft
+  <format> [--person|--company|--limit|--brief|--engine|--lang]`, `cloe drafts
+  list|show|review|approve|sent|reject`. The Sprint 4 injection placeholder is now a real
+  test. Fixed: `research.recently_researched` read the system clock instead of
+  `db.now()`. `uv run pytest -q` → `356 passed, 2 skipped`; ruff clean. MACBOOK.md §4
+  gives the exact Monday steps.
+  **Not done (rest of Sprint 4):** `cloe match` as its own step, the model tone check
+  (`tonecheck.py`, `tone-check`, `tone-report`), the formats `sms`, `email_reply`,
+  `intro`, `digest`, `colleague_ask` and `colleague_intro`. tone.md §9 calibration is still
+  pending, so drafts follow the best-guess voice.
 - 2026-10-21 (Max plan engine): the team does not want API costs ("Anthropic keys use real
   money, not my Max account"). `config.ENGINES`, `Settings.engine`: `CLOE_ENGINE` (api |
   workorder), and when empty, api with a key or `CLOE_FAKE=1`, else workorder. `--engine`
@@ -665,3 +699,9 @@ outbox and automatic sending stay in Sprint 5.
     projecten.rvo.nl, TenderNed, FashionUnited, Ecotextile. Also measure the token cost.
 27. **HvA library:** may the team use Nexis Uni (full-text Dutch press) and Company.info in
     research work orders? The order asks for them when available.
+28. **Chloe (before drafts go out widely):** tone.md §9 is still uncalibrated: 5–10 real
+    messages she sent, je/u, first names, words she'd never use. Until then, every draft
+    is checked in code and read by Chloe.
+29. **Chloe:** consent per draft. Welcome and data drop use email consent for *follow-up*
+    (the join form's privacy box); an invitation uses *newsletter* consent. Is that right,
+    or should invitations count as follow-up?

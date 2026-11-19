@@ -363,6 +363,15 @@ MIGRATIONS: list[str] = [
     );
     CREATE INDEX mention_company ON mention(company_id, published_at);
     """,
+    # 10 — Sprint 4, Monday scope (team, 2026-11-19: drafts Chloe sends herself). A message
+    # records its format (welcome, invite, data_drop), the event an invitation is for (so
+    # nobody is invited twice), and how Chloe sent it (email or WhatsApp, by hand).
+    """
+    ALTER TABLE message ADD COLUMN format TEXT;
+    ALTER TABLE message ADD COLUMN event TEXT;
+    ALTER TABLE message ADD COLUMN sent_via TEXT;
+    CREATE INDEX message_format ON message(person_id, format, status);
+    """,
 ]
 
 # Events carry ids and hashes, never bodies (sprint.md → Security → principle 11).

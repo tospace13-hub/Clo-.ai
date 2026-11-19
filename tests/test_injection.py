@@ -203,8 +203,33 @@ def test_pdf_payload_canary_echo_discarded(settings, tmp_path):
         "unchanged" and len(fake.calls) == 1
 
 
-@pytest.mark.skip(reason="Sprint 4: compose output has no non-allowlisted link + fixed signature")
-def test_compose_output_links_and_signature(): ...
+def test_compose_output_links_and_signature(settings, tmp_path):
+    """Sprint 4: a writer that obeyed a hostile page (phishing link, 'sign as Chloe', a
+    warm-up with an exclamation mark) gets its link stripped, the fixed signature added,
+    and the draft blocked, so it can't be approved."""
+    from cloe import compose, db, language, people
+    from cloe.sources import joinform
+
+    conn = db.connect(":memory:")
+    db.migrate(conn)
+    joinform.ingest(conn, joinform.read_file(Path(__file__).parent / "fixtures" /
+                                             "joinform.csv"), raw_dir=tmp_path / "raw")
+    settings = config.load(tmp_path / ".env", environ={
+        "CLOE_CANARY": CANARY, "CLOE_ALLOWED_LINK_DOMAINS": "space13.to"})
+    pid = people.get_person(conn, "anna@example.nl")["id"]
+    (t,), _ = compose.targets(conn, settings, "welcome", email="anna@example.nl")
+    obeyed = compose.Draft(
+        subject="Log in to keep your TOS13 membership", lang="en", links=[],
+        body="Hi there! Please log in at https://tos13-login.example/verify to keep your "
+             "membership.\n\nLove, Chloe")
+    checked = compose.check(obeyed, t, settings)
+    assert "tos13-login" not in checked.body
+    assert checked.body.endswith(compose.signature("en"))
+    assert any("exclamation" in f for f in checked.failures)
+    mid = compose.store(conn, t, checked, "api")
+    with pytest.raises(ValueError, match="only a draft"):
+        compose.approve(conn, settings, mid, "chloe@tos13.test")
+    assert language.contact_language(conn, pid).lang == "en"
 
 
 @pytest.mark.skip(reason="Sprint 5: outbox refuses to send without approval and consent")

@@ -179,10 +179,11 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
     kind = ("funding-batch" if "funding-batch" in order.name else
             "orchestrate-proposal" if "orchestrate-proposal" in order.name else
             "classify-needs" if "classify-needs" in order.name else
+            "draft-batch" if "draft-batch" in order.name else
             "research" if "-research-" in order.name else None)
     if kind is None:
-        return _err(f"{order.name}: only funding-batch, orchestrate-proposal, classify-needs "
-                    "and research work orders can be ingested")
+        return _err(f"{order.name}: only funding-batch, orchestrate-proposal, classify-needs, "
+                    "draft-batch and research work orders can be ingested")
     result = Path(args.result) if args.result else workorders.result_path(order)
     if not result.is_file():
         return _err(f"no result at {result}")
@@ -197,6 +198,17 @@ def cmd_workorder_ingest(args: argparse.Namespace, settings: config.Settings) ->
         print(f"OK   work order {args.number}: {counts['classified']} needs classified, "
               f"{counts['flagged']} flagged as instruction-like, {counts['skipped']} skipped "
               "(unknown, or no longer open)")
+        return 0
+    if kind == "draft-batch":
+        try:
+            counts = workorders.ingest_draft_order(conn, settings, args.number, order, result)
+        except ValueError as exc:
+            return _err(f"{result.name}: {exc}")
+        finally:
+            conn.close()
+        print(f"OK   work order {args.number}: {counts['drafts']} drafts ready, "
+              f"{counts['blocked']} blocked by the tone.md checks, {counts['skipped']} skipped")
+        print("     next: uv run cloe drafts review")
         return 0
     if kind == "orchestrate-proposal":
         try:

@@ -409,6 +409,14 @@ uv run cloe profile example.nl                                # shows merged fac
 > call here (`MatchJudgement`, `draft`, the tone check) needs a work-order twin, as the
 > library, research and orchestrate have, chosen by `settings.engine` / `--engine`.
 
+> **Monday scope (team, 2026-11-19), built:** `cloe draft welcome|invite|data_drop`
+> (API, stand-in and work-order engines) with tone.md enforced in code, consent and
+> 14-day gates, and `cloe drafts list|show|review|approve|sent|reject`. Chloe sends by hand
+> and records it. **Still open in this sprint:** `cloe match` as its own step (data_drop
+> matches inline for now), the model tone check (`tonecheck.py`, `tone-check`,
+> `tone-report`), the formats `sms`, `email_reply`, `intro`, `digest`, `colleague_ask` and
+> `colleague_intro`, and the hand-off on which tone rules the model check misses.
+
 **Goal:** `cloe match` proposes what to bring to whom; `cloe draft` writes it in Cloé's
 voice, in the right format, and the tone check blocks drift.
 **Read:** `tone.md` in full. CONTEXT §B. Security principle 3. STATE "Decisions".
