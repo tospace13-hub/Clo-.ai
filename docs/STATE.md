@@ -12,6 +12,9 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-11-27 · roadmap board horizons · finished — the team set the horizons to 6 months,
+  18 months and 3 years (beside "in place today"), replacing the toolkit's 1, 2–5 and 5–10
+  years on the board, in "About us" and in the summary; 367 tests.
 - 2026-11-27 · roadmap board style · finished — the team rejected the first palette: the
   page is now in TOS13 style (space13.to: yellow #FFF799, black #0A0A0A, white, Inter,
   the short logo); board and cards keep the original Loopholes colours; 367 tests.

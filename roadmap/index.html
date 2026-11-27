@@ -205,9 +205,9 @@ dialog p { margin: 0; line-height: 1.5; color: var(--muted); }
     <label class="f">What makes us different<textarea class="in" id="p-different" maxlength="1500"></textarea></label>
     <label class="f">Strategic priorities <small>Fair practices, innovation, customer experience, transparency…</small><textarea class="in" id="p-priorities" maxlength="1500"></textarea></label>
     <div class="grid3">
-      <label class="f">Goal within 1 year<textarea class="in" id="p-g1" maxlength="800"></textarea></label>
-      <label class="f">Goal in 2–5 years<textarea class="in" id="p-g5" maxlength="800"></textarea></label>
-      <label class="f">Goal in 5–10 years<textarea class="in" id="p-g10" maxlength="800"></textarea></label>
+      <label class="f">Goal in 6 months<textarea class="in" id="p-g1" maxlength="800"></textarea></label>
+      <label class="f">Goal in 18 months<textarea class="in" id="p-g5" maxlength="800"></textarea></label>
+      <label class="f">Goal in 3 years<textarea class="in" id="p-g10" maxlength="800"></textarea></label>
     </div>
     <div class="row"><button class="btn primary" type="submit">Done</button></div>
   </form>
@@ -251,7 +251,7 @@ dialog p { margin: 0; line-height: 1.5; color: var(--muted); }
   var BY_ID = {}; CARDS.forEach(function (c) { BY_ID[c.id] = c; });
   var CATS = [['D', 'Digitalisation'], ['S', 'Sustainability'], ['B', 'Business & Finance'], ['E', 'Stakeholder Engagement']];
   var CAT_NAME = {}; CATS.forEach(function (c) { CAT_NAME[c[0]] = c[1]; });
-  var COLS = [['In place today', 'What you already do'], ['Within 1 year', 'Immediate goals'], ['2–5 years', 'Medium-term goals'], ['5–10 years', 'Long-term goals']];
+  var COLS = [['In place today', 'What you already do'], ['6 months', 'First steps'], ['18 months', 'What you build next'], ['3 years', 'Where you are heading']];
   var ROWS = [['Design', 'What you plan, develop and choose'], ['Produce', 'Materials, making and suppliers'],
     ['Use', 'Sale, wear, care, repair and reuse'], ['Information management', 'The data that connects the loops']];
   var NOTE_KINDS = { today: 'Today', idea: 'Idea', question: 'Question' };
@@ -289,7 +289,7 @@ dialog p { margin: 0; line-height: 1.5; color: var(--muted); }
   function example() {
     var c = function (card, col, row, dx, dy, note) { return { type: 'card', card: card, x: LBL + col * COLW + dx, y: HDR + row * ROWH + dy, note: note || '' }; };
     var n = function (kind, col, row, dx, dy, text) { return { type: 'note', kind: kind, x: LBL + col * COLW + dx, y: HDR + row * ROWH + dy, text: text }; };
-    return sanitize({ company: 'Example: a knitwear brand', project: { offer: 'Knitted garments, made to order in small series.', g1: 'A product passport on every new style.', g5: 'A repair service that pays for itself.' }, items: [
+    return sanitize({ company: 'Example: a knitwear brand', project: { offer: 'Knitted garments, made to order in small series.', g1: 'Yarn origin and care data collected for every style.', g5: 'A product passport on every new style.', g10: 'A repair service that pays for itself.' }, items: [
       c('co-design', 0, 0, 40, 60, 'Customers pick colours and fit before we knit.'),
       c('digital-production', 0, 1, 40, 50), n('today', 0, 1, 290, 60, 'Flat-bed machines knit to shape, almost no cutting waste.'),
       c('digital-product-passports', 1, 3, 60, 60, 'Start with yarn origin and care data.'), n('question', 1, 3, 310, 90, 'Which data do our yarn suppliers already have?'),
@@ -488,7 +488,7 @@ dialog p { margin: 0; line-height: 1.5; color: var(--muted); }
   /* ---------- summary ---------- */
   function summary() {
     var out = ['Roadmap' + (state.company ? ' of ' + state.company : ''), ''], p = state.project;
-    [['offer', 'We offer'], ['where', 'Where we work'], ['different', 'What makes us different'], ['priorities', 'Strategic priorities'], ['g1', 'Goal within 1 year'], ['g5', 'Goal in 2–5 years'], ['g10', 'Goal in 5–10 years']]
+    [['offer', 'We offer'], ['where', 'Where we work'], ['different', 'What makes us different'], ['priorities', 'Strategic priorities'], ['g1', 'Goal in 6 months'], ['g5', 'Goal in 18 months'], ['g10', 'Goal in 3 years']]
       .forEach(function (f) { if (p[f[0]]) out.push(f[1] + ': ' + p[f[0]].replace(/\s+/g, ' ').trim()); });
     function line(it) { if (it.type === 'card') { var c = BY_ID[it.card]; return '  - ' + c.t + ' [' + CAT_NAME[c.c] + ']' + (it.note ? ': ' + it.note.replace(/\s+/g, ' ').trim() : ''); }
       return it.text.trim() ? '  - ' + NOTE_KINDS[it.kind] + ' note: ' + it.text.replace(/\s+/g, ' ').trim() : null; }

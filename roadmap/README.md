@@ -10,8 +10,8 @@ static page (GitHub Pages works).
   Stakeholder Engagement) sit in the deck on the left. Click one to read it; drag it onto
   the board.
 - **The board** crosses the four loops of the Loopholes main board (Design, Produce, Use,
-  Information management) with the toolkit's time horizons (in place today, within 1 year,
-  2–5 years, 5–10 years). Where a card lands says what the company does now and what it
+  Information management) with four time horizons (in place today, 6 months, 18 months,
+  3 years; the team's choice, shorter than the toolkit's 1, 2–5 and 5–10 years). Where a card lands says what the company does now and what it
   is heading for.
 - **Notes** in three colours, as the manual recommends: what we do today, an idea for the
   future, a question. Each card can also carry a short note of the company's own.
