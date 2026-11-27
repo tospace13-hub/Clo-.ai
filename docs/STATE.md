@@ -12,8 +12,9 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
-- 2026-11-27 · roadmap board · started — a Miro-like roadmapping board for companies, built
-  from the Loopholes toolkit cards (circularloopholes.net, the team's own, CC BY 4.0).
+- 2026-11-27 · roadmap board · finished — `roadmap/index.html`: a Miro-like board where a
+  company places the 50 Loopholes strategy cards (circularloopholes.net, the team's own,
+  CC BY 4.0) on four loops × four time horizons; one static file, no server; 367 tests.
 - 2026-11-19 · keychain · finished — settings and secrets can live in the macOS Keychain
   (`cloe secrets`); the MacBook is installed (356 tests passed there); 364 tests.
 - 2026-11-19 · sprint 4 (Monday scope) · finished — `cloe draft welcome|invite|data_drop`
@@ -87,6 +88,26 @@ habits that earned it, so later rounds repeat them. Newest first.
 
 ## Done
 
+- 2026-11-27 (roadmap board): the team asked for a roadmapping tool companies can engage
+  with, built from the cards and concepts of circularloopholes.net (their own site; source
+  `github.com/troykyo/dssloopholes.github.io`, CC BY 4.0). `roadmap/index.html` is one
+  static page, no server, no build step, no script from elsewhere. The deck holds the 50
+  cards from `assets/Cards V2 MASTER.csv` (12 Digitalisation, 12 Sustainability, 13
+  Business & Finance, 13 Stakeholder Engagement), embedded as JSON. The board crosses the
+  main board's four loops (Design, Produce, Use, Information management) with the
+  toolkit's horizons (in place today, within 1 year, 2–5 years, 5–10 years). Drag cards
+  from the deck, pan and zoom, add notes in the manual's three colours (today, idea,
+  question), a note per card, "About us" (the project description canvas), a text summary
+  per horizon. A board saves in the browser; it leaves as board code, a `.json` file or a
+  share link that holds the whole board. Loaded boards are rebuilt field by field and
+  shown as text only. First open shows a marked example board. `roadmap/README.md`
+  explains it; `tests/test_roadmap_board.py` checks the cards. Checked in a browser
+  (desktop and phone width). `uv run pytest -q` → `367 passed, 2 skipped` (after
+  `uv sync --all-extras`); ruff clean.
+  **Not done:** hosting it where companies can open it (open question 31); several people
+  on one board at once (needs a server); Cloé reading a company's exported board into
+  its profile; Dutch. `circularloopholes.net` is now an allowed host of the TOS13 cloud
+  environment.
 - 2026-11-19 (keychain): the MacBook is installed (`~/Clo-.ai`, `~/MDPP_Website`; `cloe
   doctor` OK, 356 tests passed there on Python 3.12.16). The team asked for settings in
   the macOS Keychain. `keychain.py`: one generic-password item per setting, service
@@ -727,3 +748,6 @@ habits that earned it, so later rounds repeat them. Newest first.
 30. **MacBook:** run `uv run cloe secrets move` once and confirm `uv run cloe doctor`
     shows "macOS Keychain: N settings there" (the Keychain code was tested with a stand-in
     only). If macOS asks to allow access, choose Always Allow.
+31. **Roadmap board:** where should companies open it (circularloopholes.net, space13.to,
+    another address), and should a finished board come back to Cloé (the exported `.json`
+    read into the company's profile, with its consent)? Does it need Dutch?

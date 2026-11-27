@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--PAGE-->
+<title>Loopholes Roadmap Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: one-screen app. A top bar, the strategy deck on the left, and a pannable
+   board: four life-cycle loops (rows) across four time horizons (columns). */
+:root {
+  --bg: #eef3f0; --panel: #ffffff; --ink: #1b2a27; --muted: #586a65; --line: #cbd9d4;
+  --board: #7ccbb8; --lane: #8fd4c3; --board-ink: #0f3a32; --board-line: #f6f7f1;
+  --card: #f6f7f1; --card-ink: #1b2a27;
+  --accent: #17695a; --accent-ink: #ffffff;
+  --cat-d: #f38520; --cat-s: #febd29; --cat-b: #8081be; --cat-e: #e25270; --cat-ink: #2a1a05;
+  --note-today: #cfe6fb; --note-idea: #ffd6df; --note-question: #fff1a8; --note-ink: #1b2a27;
+  --shadow: 0 2px 6px rgba(15, 58, 50, .28);
+  --font: "Open Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101917; --panel: #17221f; --ink: #e7efec; --muted: #9db0aa; --line: #2d3d38;
+  --board: #1d473e; --lane: #235247; --board-ink: #d9f2ea; --board-line: #3f7c6e;
+  --card: #26332f; --card-ink: #eef3f0;
+  --accent: #7ccbb8; --accent-ink: #0c2a24;
+  --cat-d: #f38520; --cat-s: #febd29; --cat-b: #9495d3; --cat-e: #ea6884; --cat-ink: #1c1203;
+  --note-today: #1f4763; --note-idea: #63293a; --note-question: #5d5417; --note-ink: #f2f5f4;
+  --shadow: 0 2px 8px rgba(0, 0, 0, .5);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #101917; --panel: #17221f; --ink: #e7efec; --muted: #9db0aa; --line: #2d3d38;
+  --board: #1d473e; --lane: #235247; --board-ink: #d9f2ea; --board-line: #3f7c6e;
+  --card: #26332f; --card-ink: #eef3f0;
+  --accent: #7ccbb8; --accent-ink: #0c2a24;
+  --cat-d: #f38520; --cat-s: #febd29; --cat-b: #9495d3; --cat-e: #ea6884; --cat-ink: #1c1203;
+  --note-today: #1f4763; --note-idea: #63293a; --note-question: #5d5417; --note-ink: #f2f5f4;
+  --shadow: 0 2px 8px rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; overflow: hidden; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#app { height: 100%; display: flex; flex-direction: column; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-block: 8px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--panel); border-bottom: 1px solid var(--line); }
+.brand { font-weight: 800; letter-spacing: .06em; font-size: 15px; white-space: nowrap; }
+.brand span { font-weight: 600; letter-spacing: 0; color: var(--muted); }
+#company { flex: 1 1 160px; min-width: 0; max-width: 340px; padding: 6px 10px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--bg); font-weight: 600; }
+.bar .grow { flex: 1 1 0; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn { padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel);
+  cursor: pointer; font-weight: 600; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.quiet { border-color: transparent; color: var(--muted); }
+
+#banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-block: 7px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--note-question); color: var(--note-ink); font-weight: 600; }
+#banner .btn { background: transparent; border-color: currentColor; color: inherit; padding: 3px 10px; }
+
+#main { flex: 1 1 0; min-height: 0; display: flex; position: relative; }
+#deck { width: 280px; flex: none; display: flex; flex-direction: column; background: var(--panel);
+  border-right: 1px solid var(--line); min-height: 0; }
+#deck .head { padding: 12px 12px 8px; display: flex; flex-direction: column; gap: 8px; }
+#deck h2, #detail h2, dialog h2 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+#search { width: 100%; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 2px 9px 2px 6px;
+  cursor: pointer; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+.chip i, .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.chip[aria-pressed="false"] { opacity: .45; }
+.c-D { --cat: var(--cat-d); } .c-S { --cat: var(--cat-s); } .c-B { --cat: var(--cat-b); } .c-E { --cat: var(--cat-e); }
+.chip i, .dot, .band { background: var(--cat); }
+#decklist { flex: 1 1 0; overflow-y: auto; padding: 0 12px 16px; touch-action: pan-y; }
+#decklist h3 { margin: 12px 0 6px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.dcard { display: flex; align-items: stretch; width: 100%; text-align: left; padding: 0; margin-bottom: 5px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--card); color: var(--card-ink); cursor: grab; overflow: hidden; }
+.dcard .band { width: 8px; flex: none; }
+.dcard .t { padding: 6px 8px; flex: 1 1 0; min-width: 0; font-weight: 600; font-size: 13px; }
+.dcard .n { padding: 6px 8px 6px 0; color: var(--muted); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.dcard:hover { border-color: var(--accent); }
+.empty { color: var(--muted); padding: 12px 0; }
+.credit { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); line-height: 1.45; }
+.credit a { color: inherit; }
+
+#viewport { flex: 1 1 0; min-width: 0; position: relative; overflow: hidden; background: var(--board); touch-action: none; cursor: grab; }
+#viewport.panning { cursor: grabbing; }
+#world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.col-h, .row-h, .cell { position: absolute; }
+.cell { border-right: 3px solid var(--board-line); border-bottom: 3px solid var(--board-line); opacity: .9; }
+.cell.alt { background: var(--lane); }
+.col-h { color: var(--board-ink); padding: 14px 18px; border-right: 3px solid var(--board-line); border-bottom: 3px solid var(--board-line); }
+.col-h b { display: block; font-size: 24px; font-weight: 800; }
+.col-h span { font-size: 15px; font-weight: 600; opacity: .8; }
+.row-h { color: var(--board-ink); padding: 18px 16px; border-right: 3px solid var(--board-line); border-bottom: 3px solid var(--board-line); }
+.row-h b { display: block; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; overflow-wrap: anywhere; }
+.row-h span { display: block; margin-top: 6px; font-size: 14px; font-weight: 600; opacity: .8; line-height: 1.35; }
+
+.item { position: absolute; box-shadow: var(--shadow); cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; }
+.item.sel { outline: 3px solid var(--accent); outline-offset: 2px; }
+.item .x { position: absolute; top: -12px; right: -12px; width: 26px; height: 26px; border-radius: 50%; border: 0;
+  background: var(--ink); color: var(--panel); font-weight: 800; cursor: pointer; line-height: 1; }
+.item:not(.sel) .x { display: none; }
+.bcard { width: 210px; background: var(--card); color: var(--card-ink); border-radius: 8px 8px 22px 22px; overflow: hidden; }
+.bcard .t { padding: 12px 12px 8px; font-weight: 700; font-size: 15px; line-height: 1.25; min-height: 58px; }
+.bcard .nt { padding: 0 12px 10px; font-size: 12px; line-height: 1.35; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.bcard .band { padding: 5px 12px 6px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--cat-ink); }
+.note { width: 190px; color: var(--note-ink); padding: 6px 8px 8px; }
+.note.k-today { background: var(--note-today); } .note.k-idea { background: var(--note-idea); } .note.k-question { background: var(--note-question); }
+.note .k { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .75; padding-bottom: 4px; }
+.note textarea { display: block; width: 100%; height: 96px; resize: none; border: 0; background: transparent; color: inherit;
+  font-size: 14px; line-height: 1.35; cursor: text; }
+
+.float { position: absolute; display: flex; gap: 6px; align-items: center; padding: 6px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+#tools { left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); flex-wrap: wrap; max-width: calc(100% - 24px); }
+#zoom { right: 12px; top: 12px; }
+#tools .lbl { font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 4px; }
+.nbtn { border: 1px solid transparent; border-radius: 4px; padding: 5px 10px; font-weight: 700; cursor: pointer; color: var(--note-ink); }
+.nbtn:hover { border-color: var(--ink); }
+.zb { width: 30px; height: 30px; padding: 0; }
+#ghost { position: fixed; z-index: 50; pointer-events: none; opacity: .9; transform: translate(-50%, -50%); }
+
+#detail { position: absolute; right: 0; top: 0; bottom: 0; width: 340px; max-width: 100%; background: var(--panel);
+  border-left: 1px solid var(--line); box-shadow: var(--shadow); padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; z-index: 20; }
+#detail .cat { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+#detail h3 { margin: 0; font-size: 20px; line-height: 1.2; text-wrap: balance; }
+#detail p { margin: 0; line-height: 1.55; }
+#detail .q { border-left: 4px solid var(--cat); padding: 2px 0 2px 10px; font-weight: 600; }
+#detail .where { font-weight: 700; color: var(--accent); }
+label.f { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 13px; }
+label.f small { font-weight: 400; color: var(--muted); }
+textarea.in, input.in { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-weight: 400; }
+textarea.in { min-height: 70px; resize: vertical; line-height: 1.4; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+dialog { width: min(680px, calc(100% - 32px)); max-height: calc(100% - 32px); border: 1px solid var(--line); border-radius: 10px;
+  background: var(--panel); color: var(--ink); padding: 20px; }
+dialog::backdrop { background: rgba(10, 30, 26, .55); }
+dialog form, dialog .body { display: flex; flex-direction: column; gap: 14px; }
+dialog h3 { margin: 0; font-size: 20px; }
+dialog p { margin: 0; line-height: 1.5; color: var(--muted); }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+#sumtext, #code { width: 100%; min-height: 220px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+#sumtext { min-height: 320px; font-family: var(--font); font-size: 13px; }
+.msg { font-weight: 600; color: var(--accent); min-height: 1.4em; }
+
+@media (max-width: 760px) {
+  #deck { position: absolute; z-index: 15; left: 0; top: 0; bottom: 0; width: min(300px, 88%); box-shadow: var(--shadow); }
+  .brand span { display: none; }
+  #zoom { top: 8px; right: 8px; }
+}
+@media (prefers-reduced-motion: no-preference) { .item { transition: box-shadow .15s; } }
+</style>
+
+<div id="app">
+  <header class="bar">
+    <div class="brand">LOOPHOLES <span>roadmap board</span></div>
+    <input id="company" type="text" maxlength="120" placeholder="Your company name" aria-label="Company name">
+    <div class="grow"></div>
+    <div class="btns">
+      <button class="btn" id="b-deck" type="button" aria-expanded="true">Cards</button>
+      <button class="btn" id="b-about" type="button">About us</button>
+      <button class="btn" id="b-summary" type="button">Summary</button>
+      <button class="btn primary" id="b-share" type="button">Save &amp; share</button>
+    </div>
+  </header>
+  <div id="banner" hidden><span id="banner-text"></span><button class="btn" id="banner-btn" type="button"></button></div>
+  <div id="main">
+    <aside id="deck" aria-label="Strategy cards">
+      <div class="head">
+        <h2>50 strategy cards</h2>
+        <input id="search" type="search" placeholder="Search cards" aria-label="Search cards">
+        <div class="chips" id="chips"></div>
+      </div>
+      <div id="decklist"></div>
+      <div class="credit">Cards and board from the <a href="https://circularloopholes.net" target="_blank" rel="noopener">Loopholes Toolkit</a>
+        by the Transitions project partners, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</div>
+    </aside>
+    <div id="viewport" aria-label="Roadmap board">
+      <div id="world"></div>
+      <div class="float" id="zoom">
+        <button class="btn zb" id="z-out" type="button" aria-label="Zoom out">−</button>
+        <button class="btn zb" id="z-in" type="button" aria-label="Zoom in">+</button>
+        <button class="btn" id="z-fit" type="button">Fit</button>
+      </div>
+      <div class="float" id="tools">
+        <span class="lbl">Add a note</span>
+        <button class="nbtn" style="background:var(--note-today)" data-kind="today" type="button">What we do today</button>
+        <button class="nbtn" style="background:var(--note-idea)" data-kind="idea" type="button">Idea for the future</button>
+        <button class="nbtn" style="background:var(--note-question)" data-kind="question" type="button">Question</button>
+      </div>
+    </div>
+    <aside id="detail" hidden aria-label="Card details"></aside>
+  </div>
+</div>
+
+<dialog id="d-about">
+  <form method="dialog">
+    <h2>Describe your company</h2>
+    <h3>Where you stand and where you want to go</h3>
+    <label class="f">Products and services we offer<textarea class="in" id="p-offer" maxlength="1500"></textarea></label>
+    <label class="f">Where we work <small>Headquarters, raw materials, production and suppliers, retail</small><textarea class="in" id="p-where" maxlength="1500"></textarea></label>
+    <label class="f">What makes us different<textarea class="in" id="p-different" maxlength="1500"></textarea></label>
+    <label class="f">Strategic priorities <small>Fair practices, innovation, customer experience, transparency…</small><textarea class="in" id="p-priorities" maxlength="1500"></textarea></label>
+    <div class="grid3">
+      <label class="f">Goal within 1 year<textarea class="in" id="p-g1" maxlength="800"></textarea></label>
+      <label class="f">Goal in 2–5 years<textarea class="in" id="p-g5" maxlength="800"></textarea></label>
+      <label class="f">Goal in 5–10 years<textarea class="in" id="p-g10" maxlength="800"></textarea></label>
+    </div>
+    <div class="row"><button class="btn primary" type="submit">Done</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-summary">
+  <div class="body">
+    <h2>Summary</h2>
+    <h3>Your direction, horizon by horizon</h3>
+    <textarea class="in" id="sumtext" readonly></textarea>
+    <div class="row"><button class="btn primary" id="sum-copy" type="button">Copy text</button>
+      <button class="btn" data-close type="button">Close</button><span class="msg" id="sum-msg"></span></div>
+  </div>
+</dialog>
+
+<dialog id="d-share">
+  <div class="body">
+    <h2>Save &amp; share</h2>
+    <h3>Your board stays on this device</h3>
+    <p>It is saved in this browser as you work. To send it to someone or move it to another computer, copy the board code below or download it as a file. Nothing is sent anywhere until you do.</p>
+    <textarea class="in" id="code" spellcheck="false" aria-label="Board code"></textarea>
+    <div class="row">
+      <button class="btn primary" id="sh-copy" type="button">Copy board code</button>
+      <button class="btn" id="sh-link" type="button">Copy share link</button>
+      <button class="btn" id="sh-file" type="button">Download file</button>
+      <button class="btn" id="sh-load" type="button">Load the code in the box</button>
+      <label class="btn" id="sh-open">Open a file<input id="sh-input" type="file" accept="application/json,.json" hidden></label>
+    </div>
+    <div class="row"><span class="msg" id="sh-msg"></span></div>
+    <div class="row"><button class="btn" data-close type="button">Close</button><div style="flex:1"></div>
+      <button class="btn quiet" id="sh-clear" type="button">Empty the board</button>
+      <button class="btn" id="sh-clear-yes" type="button" hidden>Yes, remove everything</button></div>
+  </div>
+</dialog>
+
+<script type="application/json" id="cards-data">[{"id":"personalisation","t":"Personalisation","c":"D","d":"Digital Manufacturing allows for the creation of custom-fit clothes and a personalized fashion experience using data from social media, 3D scanners, and online profiles. These can be tailored to fit the wearer's body size, personal style, social role, or wardrobe needs.","q":"How can we use information about people to make clothes that fit them perfectly?","q2":"What information from data sources can be used to make clothing and textiles that match personal preferences and needs? What are the risks of using that data?"},{"id":"virtual-fashion","t":"Virtual Fashion","c":"D","d":"Making virtual clothing and textiles (in programs like Clo3D, Browzwear, Blender, or Optitex Lectra) can facilitate fitting, sharing, or entirely digital fashion. Fewer physical garments are needed, and users can even wear the garments digitally.","q":"How can creating clothes digitally on a computer change the way we wear and share fashion?","q2":"In what ways can virtual fashion and textiles be better than traditional methods in design, production, fitting, and use?"},{"id":"digital-production","t":"Digital Production","c":"D","d":"Advanced digital manufacturing technologies such as 3D printing and computer-controlled machines (spinning, cutting, sewing, knitting, weaving, dyeing, pressing, coating, logistics) streamline the fashion process, enabling innovative and sustainable textile creation and modification.","q":"How can new machines and technology like 3D printers change the way clothes are made and worn?","q2":"How can advancements in digital manufacturing technologies revolutionize the fashion ecosystem workflows and value chains?"},{"id":"digital-product-passports","t":"Digital Product Passports","c":"D","d":"Digital Product Passports provide transparency on garment origins, including material sources, environmental impact (water, energy, carbon), and manufacturing locations, facilitating transparent information practices.","q":"How can tracking where and how clothes are made help us recycle and reuse them better?","q2":"How can the implementation of Digital Product Passports enhance trackability and traceability of garment life-cycles, supporting the transition to a circularity?"},{"id":"technographic-web-tracking","t":"Technographic Web-Tracking","c":"D","d":"Everything we do on the internet creates information that is recorded and often retained as data. Digitalizing fashion and textile processes over the internet creates new opportunities for data science. Small data about the time, place, and frequency of interactions can tell us many things about the stakeholders and our business model.","q":"How can people's information from the internet help us make it more sustainable?","q2":"How can data collected from stakeholders digital activites be leveraged to create circular fashion systems and comply with new EU reporting requirements like CSRD?"},{"id":"digital-twin","t":"Digital Twin","c":"D","d":"A digital twin is a digital model of a physical product, process, or system. In fashion, this could mean a detailed, dynamic 3D model (or, more often, a data model) of a garment, factory, store, entire value chain, and/or the interaction of many value chains. This helps us understand how product/service eco-systems are working at a practical level","q":"How can making a virtual copy of clothes or factories help us understand and improve fashion production?","q2":"How can the use of digital twins in fashion ecosystem improve efficiency, sustainability and collaboration?"},{"id":"blockchain-and-unique-id-technologies","t":"Blockchain and Unique ID technologies","c":"D","d":"Tracking every garment and who is wearing it is a complex process. Web3 uses Blockchain technology to create decentralized systems that log data about the life-cycles without central authorities, promoting stakeholder empowerment.","q":"How can blockchain technology help track and trace garments, ensuring fairness throughout the fashion value chain?","q2":"How can blockchain and decentralized technologies be integrated into the fashion ecosystem, and what impact will transparent ownership have on fashion ecosystems?"},{"id":"advanced-sorting-technologies","t":"Advanced Sorting Technologies","c":"D","d":"Sorting clothes for reuse and recycling is a difficult process, often with more than 300 categories. New technologies like visual identification AI can be used to help sorters identify and sort materials into recycling and reuse by material and brand. Using phone cameras, wearers could be encouraged to dispose their clothes at an optimal time.","q":"How can using new technology to sort and recycle clothes make recycling easier and better?","q2":"How can visual identification technologies improve the fashion ecosystem processes and encourage sustainable behavior?"},{"id":"wear-and-tear","t":"Wear and Tear","c":"D","d":"As worn garments come back to the brand under the EPR, wear and tear on these clothes can provide valuable data about use, consumption, and the wearer's habits. For example, an iPhone has a 3D scanner that can scan your garment and compare it to the original factory scan to see what has changed.","q":"How can we set up places to fix and repair clothes that look at how jeans age and wear out?","q2":"How can integrating wear and repair photos help businesses promote sustainability, repairability and circularity? What are the initial challenges in implementing such systems?"},{"id":"ar-try-on","t":"AR Try-on","c":"D","d":"Augmented Reality (AR) for clothing and textiles can bridge the gap between digital and physical retail by using phones, VR and computer cameras to create a realistic virtual representation of a product over the users body in real-time for physical and digital fashion.","q":"How can using Augmented Reality (like trying on clothes with your phone) make fashion more fun and useful?","q2":"What are the potential benefits and challenges of implementing Augmented Reality technology in the fashion mnufacturing, retail, use, or recycling?"},{"id":"data-science-artificial-intelligence-and-machine-learning-ds-ai-and-ml","t":"Data Science, Artificial Intelligence, and Machine Learning (DS, AI, and ML)","c":"D","d":"DS, AI and ML play a crucial role in Fashion ecosystem processes. From image generation for design, user profile creation, business systems, and production optimization; DS, AI and ML have been a . It can even support sustainability by analyzing images of what you wear understand what is in your wardrobe to helps companies understand what to make or connect you with existing items.","q":"How can DS, AI and ML help make fashion more eco-friendly and reduce waste?","q2":"How can DS, AI and ML predict demand for sustainable fashion, cut waste in production, and boost eco-friendly material use?"},{"id":"digital-worlds","t":"Digital Worlds","c":"D","d":"Digital worlds merge virtual platforms where creators trade digital clothing and fabric patterns (often as NFTs), blending fashion and gaming for avatar customization and immersive experiences. The goal is innovation, waste reduction, and new creative avenues, with fashion brands, designers, and tech firms like DressX and The Fabricant lead this innovation.","q":"How can digital fashion platforms boost creativity and help the environment in Fashion?","q2":"What role do NFTs and other unique identifiers play in transforming the fashion and design industries, especially in virtual and gaming worlds?"},{"id":"ecodesign","t":"EcoDesign","c":"S","d":"EcoDesign is a design approach that considers the entire life cycle of a product, from its conception to the end of its useful life, with the aim of minimising waste and environmental impact, EcoDesign includes a synthesis of innovative design strategies, sustainable material choices, and comprehensive end-of-lives management.","q":"How can you ensure that a T-shirt is environmentally friendly and does not harm the environment during design, production, use and when you no longer need it?","q2":"What stratagies are needed to ensure an approach that considers entire life-cycles of a product?"},{"id":"biobased","t":"Biobased","c":"S","d":"Biobased material are considered sustainable depending on many factors, including recyclability and how they are made and how they can rejuvenate clothing. Biomaterials are considered circular when they can decompose into the ecosystem or can be easily recycled/reused.","q":"How can you change to a biobased materials?","q2":"How can you create a system that restores clothing in use by biorejuvinating the material or coating?"},{"id":"environmental-accounting","t":"Environmental accounting","c":"S","d":"Recording a comprehensive set of environmental indicators, such as water, energy, carbon, chemicals, land use, air pollution. This will pave the way for CSRD compliance and needs to be developed to assess the impact of product service lifetimes.","q":"What information do you need (including from suppliers) to understand how many resources are used?","q2":"Does a Life Cycle Analyses of environmental accounting support the adoption of new materials compared to mainstream or curent practices?"},{"id":"extended-producer-responsibility-epr","t":"Extended Producer Responsibility (EPR)","c":"S","d":"EPR requirements ensure that producers are responsible for post use waste and recycling as well as pre-consumer waste (unsold production). When done using a product, users take them back to the place they were purchased for reuse and recycling. To close the loop and reduce this fiscal load, companies need to devise processes that facilitate repair, re-use and recycling of their products from the beginning.","q":"How would you reuse the materials of the things that you make?","q2":"How can you create long use materials that are easy to recycle when they return to you, often seven years from now?"},{"id":"design-for-disassembly-dfd","t":"Design For Disassembly (DfD)","c":"S","d":"DfD requires designing the recycling phase while designing the garment product or system. Thingking about the End-of-lives first improves the chances of the textile being recycled or upcycled instead of being trashed. Melting stitching yarns and hand removable metal findings are examples.","q":"What could be changed in your project to enable disassembly?","q2":"What technologies can be used to make it easier to disassemble your product and salvage the materials?"},{"id":"collaborative-consumption","t":"Collaborative Consumption","c":"S","d":"In collaborative consumption, users minimize the negative impact by sharing, swapping and exchanging clothes. This extends the use phase of garments and reduces the need for new clothing. Companies can engage resale, rental and remake platforms to reduce the overall consumption.","q":"How could you share your wardrobe with someone else?","q2":"What kind of services could you provide to promote this alternative business model?"},{"id":"waste-reduction","t":"Waste Reduction","c":"S","d":"Waste is generated in multiple stages during the loopholes process: cutting, sewing, dyeing, finishing, washing, and more. Strategies like Zero Waste Pattern Cutting limit waste from the process.","q":"How can you design clothing that minimizes waste from the outset of the design process?","q2":"Which step in the value chain is generating most waste and how can you minimize the waste?"},{"id":"regenerative-fashion","t":"Regenerative Fashion","c":"S","d":"Regeneration embodies practices that give back to people and planet. Examples include cultivating bioregional materials using crop rotation and intercropping to improve soil health. Another example is creating product-services that embody indigenous or ancestral knowledge (such as ways of making, materiality, and land management practices) directly with people from those communities, providing meaningful work.","q":"How do you make clothing that makes another system better?","q2":"What does your system look like from ground to wardrobe and back again?"},{"id":"closed-loop-water-and-renewable-energy","t":"Closed Loop Water and Renewable Energy","c":"S","d":"Closed-loop water systems recycle and reuse water in production and use, conserving resources and pollution. Renewable energy uses sources like solar or wind power, reducing fossil fuel use and environmental impact.","q":"How can reusing water and using renewable energy like solar help make fashion better?","q2":"How can the integration of closed loop water systems and renewable energy sources in the fashion ecosystem contribute to sustainable production practices and reduce environmental impact?"},{"id":"design-for-repairability-dfr","t":"Design for Repairability (DfR)","c":"S","d":"Making somthing that it is easy to repair is an artform. Extended Producer Responsibility (EPR) requires repair (or recycling) of garments by the brand who sold it. Designing for the repair of the garment from the beginning makes the process easier and reuse/resale possible.","q":"What can you change in your current clothing to make it more repairable?","q2":"How can you Design for Repair (DfR) in a circular process? How might that change if seven years pass for the garment to go back to the company?"},{"id":"sustainable-packaging","t":"Sustainable Packaging","c":"S","d":"Alternative solutions for packaging including biobased or recycled materials, increase the reuse of packaging, while minimizing the impact for example by reducing the amount and impact of packaging used.","q":"How can you make packaging that creates less waste?","q2":"How can you change your logistics in terms of procurement or packaging processes?"},{"id":"post-use-materials","t":"Post-Use Materials","c":"S","d":"Post-use materials are textiles and garments that have finished their initial use. These textiles are recycled or upcycled to create new products, promoting a circular economy.","q":"How can we use old clothes and materials to make new things instead of throwing them away?","q2":"What are the challenges and opportunities associated with integrating post-use materials into new fashion products, and how can designers overcome these to support a circular economy?"},{"id":"building-product-service-ecosystems","t":"Building Product-Service Ecosystems","c":"B","d":"An ecosystem is composed of a range of companies, organizations, governments and other systems that support each other. This could be companies who provide yarn, textile (finished goods), confectioning, retail, brand, recycler, or legislators and the users themselves. Large companies silos are often ecosystems within themselves.","q":"How can you change (add or subtract) partners to make your product-service ecosystem more circular?","q2":"How can you engage the user or government to extend your ecosystem and be more circular?"},{"id":"textile-labelling-requirements-tlr","t":"Textile Labelling Requirements (TLR)","c":"B","d":"New laws such as the Textile Labeling Requirements provide information that creates new opportunities for future repair and recycling along with the sharing understanding with all the people involved in the textile process (Stakeholders).","q":"How can you provide clear information for the person who will be repairing or recycling the garment seven years from now?","q2":"How can you design a system that allows for future changes within the system (legislation, new materials, prodution processes) that do not exist yet (futureproof)?"},{"id":"developing-competencies","t":"Developing Competencies","c":"B","d":"Developing competencies involves identifying, training, and enhancing key skills and knowledge areas vital for the fashion industry, such as circular design, AI trend analysis, sustainable ecosystems, advanced supply chain management, digital marketing, and emerging digital technologies.","q":"Why is it important for people in the fashion ecosystem to keep learning new skills?","q2":"How can a systematic approach to competency development enhance organizational performance in your fashion system?"},{"id":"economic-resilience","t":"Economic Resilience","c":"B","d":"Companies usually rely on external funding, meaning investments are mostly covered by institutional banks or other investors. However, this makes companies less willing to take risks and more vulnerable (liable) to economic issues.","q":"Can you think of alternative ways of financing entrepreneurial risk (e.g. crowdfunding, or sharing risks with others)?","q2":"How has the financial landscape changed in the last few decades, and how does it impact your organization today and in the future?"},{"id":"life-cycle-costing","t":"Life-Cycle Costing","c":"B","d":"Life-cycle costing (LCC) is an accounting method that considers the total cost of a product throughout its life cycle, from raw material extraction to end-of-lifes disposal. This helps businesses make informed decisions about production, pricing, and sustainability, promoting the use of durable and high-quality products.","q":"Why should we think about all the costs of making, using, and throwing away a product?","q2":"How can life cycle costing support sustainability initiatives and improve decision-making in a fashion system?"},{"id":"market-ing-opportunities","t":"Market(ing) Opportunities","c":"B","d":"An important source of revenues (rents) is to find new markets or new ways to present and sell products. This can be the result of new possible applications of existing products and services, but also of new technologies, channels, demographics and/or geographic markets.","q":"Can you think of new uses/markets for your product-service?","q2":"How can innovative marketing strategies help sustainable companies enter new markets effectively?"},{"id":"circular-loyalty-loops","t":"Circular Loyalty Loops","c":"B","d":"Circular Marketing goes beyond convincing people to buy and includes supporting life-cycle activities (like repair events, information exchange, or reuse suggesttions) that reinforce sharing and community building.","q":"Which marketing activities could you develop aimed at creating collective experiences through sharing for the users, and other stakeholders?","q2":"How can you communicate the importance of circularity to encourage user loyalty without it being marketing?"},{"id":"person-to-person-p2p","t":"Person To Person (P2P)","c":"B","d":"Person-to-person sharing moves a garment directly from owner to owner without the need for a company to sort and restore it. For example, P2P platforms such as Vinted encourage users to sell their clothing directly to other users.","q":"What do you like and dislike about reselling fashion directly between users?","q2":"Can you make a system where a garment is moved into its second or third life directly between users, where the owners remain anonymous?"},{"id":"re-positioning","t":"Re-positioning","c":"B","d":"Price elasticity is what we call the extent to which people react to changes in price. Sometimes changing the prices could lead to a higher economic, but also societal impact (more people using the product/service). Pricing however is a crucial marketing variable that also informs potential users about the quality of the value proposition.","q":"How does circularity affect the price of your product/service?","q2":"How do you work with governments, society, academia and companies to re-position a circular sustainable product/service that has a higher price?"},{"id":"circular-revenue-model","t":"Circular Revenue Model","c":"B","d":"Circular revenue models focus on generating income in ways that promote sustainability, such as through recycling, upcycling, and reusing materials. This includes traditional models like direct sales and innovative approaches like subscription services and digital platforms, aligning with sustainable practices.","q":"How can fashion companies make money while also helping the environment by reusing and recycling?","q2":"What are the key components of circular revenue models in the fashion system, and how can they be implemented to drive sustainability and profitability?"},{"id":"technology-readiness-levels-society-readiness-levels","t":"Technology Readiness Levels / Society Readiness Levels","c":"B","d":"Technology Readiness Levels (TRLs) assess the maturity of technologies, while Society Readiness Levels (SRLs) gauge societal acceptance of these technologies. In fashion, these assessments help evaluate the feasibility, scalability, and market adoption of innovations.","q":"How can we tell if a new fashion technology is ready for people to use and like?","q2":"How do Technology Readiness Levels (TRLs) and Society Readiness Levels (SRLs) influence the adoption of innovations in the fashion system ?"},{"id":"technological-dependency","t":"Technological Dependency","c":"B","d":"A company uses many tools, materials, machines in order to create its products and services. Some of these are however more important than others. That means companies are particularly dependent on them. A problem can arise if one of these become unaccessible as the company becomes dependent.","q":"On which technologies (Tools, Materials, Software, Machines) do you depend on?","q2":"What is the impact of the technogies needed for your product-service? Can you find alternatives that are more sustainable?"},{"id":"on-demand-production","t":"On-Demand Production","c":"B","d":"Each phase of the fashion and textile process is often made to a future forecast. On-demand production waits until the order is placed, making the textile or garment to order. This can be done in micro factories geographically close to the user.","q":"How can you help the users see the benefit of waiting a bit longer to receive a product in this age of fast fashion?","q2":"How can you shift a company process to be more made-to-order instead of made-to-forecast?"},{"id":"open-source-co-production","t":"Open Source Co-Production","c":"E","d":"Instead of copyright, licences like Open Source creative commons empower co-production allows global communities to share knowledge and collaborate, accelerating innovation and enhancing fashion sustainability through collective learning. 3D printable fashion is an example.","q":"How can sharing knowledge and ideas freely, with others help us create better fashion together?","q2":"What types of knowledge and processes can be shared through open-source licenses to facilitate collaborative innovation in fashion production and use?"},{"id":"fair-labor-practices","t":"Fair Labor Practices","c":"E","d":"Industry 5.0 seeks a transition towards sustainable, human-centric and resilient industries. In this, workers should be paid fair wages, have safe working conditions, and not be subjected to exploitation or abuse.","q":"Are your workers treated well? What about the companies you work with?","q2":"Are there any points in the supply chain where it is unclear how workers are being treated? What steps would you have to take in order to improve these points?"},{"id":"fluid-fashion-consumption","t":"Fluid Fashion Consumption","c":"E","d":"Fluid fashion consumption promotes reimagining ownership and embracing innovative models like renting, borrowing, swapping, and sharing items.","q":"How can you share clothing with others in a way you are comfortable with?","q2":"How can your business model incorporate building community, extending garment life and/or facilitate user interaction?"},{"id":"local-community","t":"Local Community","c":"E","d":"Employing and/or involving local communities in processes like designing and manufacturing often leads to positive benefits for the company, environment, and society.","q":"Who are (part of) your local communities (residents, artisans, designers, and businesses)?","q2":"Are there processes that, if done by local community stakeholders, could bring value to your company as well as the local community?"},{"id":"considering-more-than-human-ecosystems","t":"Considering More-than-Human Ecosystems","c":"E","d":"Considering non-humans in fashion ecosystems emphasizes the impact on the environment from the point of view of materials, production, supply chain, and ecology. The aim is to minimize environmental harm and conserve resources.","q":"What non-humans like insects, water systems or animals are affected by your whole process?","q2":"What more-than human ecosystems does your practice impact? How can you consider these ecosystems for mutual, regenerative, or sustainable benefits?"},{"id":"refreshing-roles","t":"Refreshing Roles","c":"E","d":"For organizations to grow and change it is important to reorganize task into engaging positions that attract talent and keep good employees connected. This helps organizations address emerging needs, adapt to shifting market dynamics, adopt technological advancements, and evolve with challenges and opportunities.","q":"Which tasks are most important in your organization?","q2":"What new tasks will need to be added, and how could you integrate these tasks over existing and new roles to keep people engaged?"},{"id":"shared-governance","t":"Shared Governance","c":"E","d":"Shared governance models split the responcibility and accountability of an organization with stakeholders across the value chain. Shared Governance ensures an inclusive approach to decision-making and management, but collaboration between stakeholders is needed.","q":"Who makes the decisions in your organization? Who is impacted by the decisions that are made and how can you involve them in the decision-making process?","q2":"How can you add more stakeholders from your value chain to your current decision-making process?"},{"id":"social-responsibility","t":"Social Responsibility","c":"E","d":"Social Responsibility is the commitment to act ethically and contribute to economic, social, and environmental well-being. It includes upholding ethical conduct, promoting sustainability, engaging with communities, ensuring economic accountability, and adhering to legal compliance.","q":"How is your organization impacting society and the environment?","q2":"How could you change your practice to ensure a positive impact on the society and environment?"},{"id":"socioeconomic-and-governmental-factors","t":"Socioeconomic and Governmental Factors","c":"E","d":"New laws, regulations, socil beliefs and societal costs (like inflation) play a crucial role in influencing sustainability and technolpgy practices in the fashion industry. Systemic change influences who society works and causes our orcanization to change.","q":"Which new laws and regulations will impact sustainability and technology practices in fashion?","q2":"How do economic and legislative factors influence fashion consumption and use?"},{"id":"feedback-loops","t":"Feedback Loops","c":"E","d":"Collecting and making sense of stakeholder feedback is critical for businesses that wish to make improvements based on what their stakeholders (such as users) need.","q":"What stakeholder feedback is essential to your organization?","q2":"How could digital technologies support and incentivize stakeholders to be willing to share feedback?"},{"id":"users-as-stakeholders","t":"Users As Stakeholders","c":"E","d":"Encouraging users to be active stakeholders in the fashion ecosyste empowers them and leads to more customer-centric, sustainable offerings.","q":"In what governence, design, production and use processes could you involve users?","q2":"What technologies could enable users to engage with your current processes? How would that change those processes?"},{"id":"co-design","t":"Co-Design","c":"E","d":"Co-Design refers to the collaborative principles and practices that actively involve other people (stakeholders) in the process. Co-Design emphasizes inclusivity, transparency, and shared decision-making through participatory models that seek to reshape the traditional top-down approaches of the fashion industry.","q":"How can you involve your friends or family when making decisions about what to wear?","q2":"How would you make a system that allows all the stakeholders to be part of the Design process?"},{"id":"strategic-partnerships","t":"Strategic Partnerships","c":"E","d":"Strategic partners are the stakeholdes that impact your value proposition and value chain. The level of dependency can be high or low, balanced or unbalanced.","q":"Who are your strategic partners and why do you choose them? Are your users strategic partners?","q2":"What new partners would you need in your organization to make enable circularity? (e.g. textile recycling)"}]</script>
+<script>
+(function () {
+  'use strict';
+  var CARDS = JSON.parse(document.getElementById('cards-data').textContent);
+  var BY_ID = {}; CARDS.forEach(function (c) { BY_ID[c.id] = c; });
+  var CATS = [['D', 'Digitalisation'], ['S', 'Sustainability'], ['B', 'Business & Finance'], ['E', 'Stakeholder Engagement']];
+  var CAT_NAME = {}; CATS.forEach(function (c) { CAT_NAME[c[0]] = c[1]; });
+  var COLS = [['In place today', 'What you already do'], ['Within 1 year', 'Immediate goals'], ['2–5 years', 'Medium-term goals'], ['5–10 years', 'Long-term goals']];
+  var ROWS = [['Design', 'What you plan, develop and choose'], ['Produce', 'Materials, making and suppliers'],
+    ['Use', 'Sale, wear, care, repair and reuse'], ['Information management', 'The data that connects the loops']];
+  var NOTE_KINDS = { today: 'Today', idea: 'Idea', question: 'Question' };
+  var LBL = 210, HDR = 96, COLW = 540, ROWH = 330, W = LBL + 4 * COLW, H = HDR + 4 * ROWH;
+  var KEY = 'loopholes-roadmap-v1', TOP = (function () { try { return window.self === window.top; } catch (e) { return false; } })();
+  var PFIELDS = ['offer', 'where', 'different', 'priorities', 'g1', 'g5', 'g10'];
+
+  var $ = function (id) { return document.getElementById(id); };
+  function h(tag, attrs, kids) {
+    var el = document.createElement(tag), k;
+    for (k in attrs || {}) { if (k === 'text') el.textContent = attrs[k]; else if (k === 'class') el.className = attrs[k]; else el.setAttribute(k, attrs[k]); }
+    (kids || []).forEach(function (c) { el.appendChild(c); });
+    return el;
+  }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  /* ---------- state ---------- */
+  function blank() { return { v: 1, company: '', project: {}, items: [] }; }
+  function str(v, max) { return typeof v === 'string' ? v.slice(0, max) : ''; }
+  function num(v, lo, hi) { v = Number(v); return isFinite(v) ? Math.min(hi, Math.max(lo, v)) : 0; }
+  /* Anything loaded from outside (a file, a link, pasted code) is rebuilt field by field. */
+  function sanitize(o) {
+    if (!o || typeof o !== 'object' || !Array.isArray(o.items)) throw new Error('This is not a roadmap board.');
+    var s = blank(); s.company = str(o.company, 120);
+    PFIELDS.forEach(function (f) { s.project[f] = str(o.project && o.project[f], 1500); });
+    o.items.slice(0, 400).forEach(function (it) {
+      if (!it || typeof it !== 'object') return;
+      var base = { id: uid(), x: num(it.x, -600, W + 600), y: num(it.y, -600, H + 600) };
+      if (it.type === 'card' && Object.prototype.hasOwnProperty.call(BY_ID, it.card)) { base.type = 'card'; base.card = it.card; base.note = str(it.note, 600); s.items.push(base); }
+      else if (it.type === 'note') { base.type = 'note'; base.kind = NOTE_KINDS[it.kind] ? it.kind : 'idea'; base.text = str(it.text, 600); s.items.push(base); }
+    });
+    return s;
+  }
+  var seq = 0; function uid() { return 'i' + Date.now().toString(36) + (seq++).toString(36); }
+  function example() {
+    var c = function (card, col, row, dx, dy, note) { return { type: 'card', card: card, x: LBL + col * COLW + dx, y: HDR + row * ROWH + dy, note: note || '' }; };
+    var n = function (kind, col, row, dx, dy, text) { return { type: 'note', kind: kind, x: LBL + col * COLW + dx, y: HDR + row * ROWH + dy, text: text }; };
+    return sanitize({ company: 'Example: a knitwear brand', project: { offer: 'Knitted garments, made to order in small series.', g1: 'A product passport on every new style.', g5: 'A repair service that pays for itself.' }, items: [
+      c('co-design', 0, 0, 40, 60, 'Customers pick colours and fit before we knit.'),
+      c('digital-production', 0, 1, 40, 50), n('today', 0, 1, 290, 60, 'Flat-bed machines knit to shape, almost no cutting waste.'),
+      c('digital-product-passports', 1, 3, 60, 60, 'Start with yarn origin and care data.'), n('question', 1, 3, 310, 90, 'Which data do our yarn suppliers already have?'),
+      c('design-for-repairability-dfr', 2, 0, 60, 70), c('circular-revenue-model', 2, 2, 80, 60, 'Repair and take-back as a paid service.'),
+      n('idea', 2, 2, 330, 110, 'Pilot with 50 loyal customers first.'), c('post-use-materials', 3, 1, 90, 70) ] });
+  }
+  var state, preview = null, sel = null, view = { x: 0, y: 0, k: 1 }, saveT = 0, ownExists = false;
+
+  function persist() { clearTimeout(saveT); saveT = setTimeout(function () { store(KEY, JSON.stringify(state)); }, 300); }
+  /* Call after every change the person makes. An example or shared board becomes theirs on the first change. */
+  function commit() {
+    if (preview) { if (preview === 'shared' && ownExists) store(KEY + '-backup', store(KEY) || ''); preview = null; showBanner(); }
+    ownExists = true; persist();
+  }
+  function showBanner() {
+    var b = $('banner'); b.hidden = !preview; if (!preview) return;
+    $('banner-text').textContent = preview === 'example' ? 'This is an example board. Move things around to try it.' : 'You opened a board someone shared. Changing it replaces the board saved on this device.';
+    $('banner-btn').textContent = preview === 'example' ? 'Start with an empty board' : 'Back to my own board';
+    $('banner-btn').hidden = preview === 'shared' && !ownExists;
+  }
+  function setState(s, mode) { state = s; preview = mode || null; sel = null; closeDetail(); $('company').value = state.company; renderItems(); renderDeck(); showBanner(); }
+
+  /* ---------- board ---------- */
+  var world = $('world'), viewport = $('viewport'), layer = h('div');
+  function buildBoard() {
+    world.style.width = W + 'px'; world.style.height = H + 'px';
+    function box(cls, x, y, w, ht, kids) { var el = h('div', { class: cls }, kids); el.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + ht + 'px'; world.appendChild(el); }
+    COLS.forEach(function (c, i) { box('col-h', LBL + i * COLW, 0, COLW, HDR, [h('b', { text: c[0] }), h('span', { text: c[1] })]); });
+    ROWS.forEach(function (r, j) {
+      box('row-h', 0, HDR + j * ROWH, LBL, ROWH, [h('b', { text: r[0] }), h('span', { text: r[1] })]);
+      COLS.forEach(function (c, i) { box('cell' + ((i + j) % 2 ? ' alt' : ''), LBL + i * COLW, HDR + j * ROWH, COLW, ROWH); });
+    });
+    world.appendChild(layer);
+  }
+  function applyView() { world.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.k + ')'; }
+  function fit() { var r = viewport.getBoundingClientRect(); view.k = Math.max(.12, Math.min(1.2, Math.min(r.width / W, r.height / H) * .97)); view.x = (r.width - W * view.k) / 2; view.y = (r.height - H * view.k) / 2;
+    if (r.width < 700) { view.k = Math.max(.12, r.height / H * .97); view.x = 6; view.y = (r.height - H * view.k) / 2; } /* phones: fit the height, pan sideways through the years */
+    applyView(); }
+  function zoomAt(cx, cy, f) { var k = Math.max(.12, Math.min(2.5, view.k * f)); view.x = cx - (cx - view.x) * (k / view.k); view.y = cy - (cy - view.y) * (k / view.k); view.k = k; applyView(); }
+  function toWorld(clientX, clientY) { var r = viewport.getBoundingClientRect(); return { x: (clientX - r.left - view.x) / view.k, y: (clientY - r.top - view.y) / view.k }; }
+  function laneOf(it) {
+    var col = Math.floor((it.x + 100 - LBL) / COLW), row = Math.floor((it.y + 40 - HDR) / ROWH);
+    return (col >= 0 && col < 4 && row >= 0 && row < 4) ? { col: col, row: row } : null;
+  }
+  function laneText(it) { var l = laneOf(it); return l ? ROWS[l.row][0] + ' · ' + COLS[l.col][0] : 'Parked outside the board'; }
+
+  function itemEl(it) {
+    var el, x = h('button', { class: 'x', type: 'button', 'aria-label': 'Remove', text: '×' });
+    if (it.type === 'card') {
+      var c = BY_ID[it.card];
+      el = h('div', { class: 'item bcard c-' + c.c, tabindex: '0', role: 'button', 'aria-label': c.t }, [h('div', { class: 't', text: c.t })]);
+      if (it.note) el.appendChild(h('div', { class: 'nt', text: it.note }));
+      el.appendChild(h('div', { class: 'band', text: CAT_NAME[c.c] })); el.appendChild(x);
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { select(it.id); openDetail(c, it); } });
+    } else {
+      var ta = h('textarea', { 'aria-label': NOTE_KINDS[it.kind] + ' note', maxlength: '600', placeholder: 'Write here' }); ta.value = it.text;
+      ta.addEventListener('input', function () { it.text = ta.value; commit(); });
+      ta.addEventListener('focus', function () { select(it.id); });
+      el = h('div', { class: 'item note k-' + it.kind }, [h('div', { class: 'k', text: NOTE_KINDS[it.kind] }), ta, x]);
+    }
+    el.dataset.id = it.id; el.style.left = it.x + 'px'; el.style.top = it.y + 'px';
+    if (sel === it.id) el.classList.add('sel');
+    x.addEventListener('click', function (e) { e.stopPropagation(); removeItem(it.id); });
+    x.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+    el.addEventListener('pointerdown', function (e) { startItemDrag(e, it, el); });
+    return el;
+  }
+  function renderItems() { layer.textContent = ''; state.items.forEach(function (it) { layer.appendChild(itemEl(it)); }); }
+  function find(id) { return state.items.filter(function (i) { return i.id === id; })[0]; }
+  function select(id) { sel = id; Array.prototype.forEach.call(layer.children, function (el) { el.classList.toggle('sel', el.dataset.id === id); }); }
+  function removeItem(id) { state.items = state.items.filter(function (i) { return i.id !== id; }); if (sel === id) { sel = null; closeDetail(); } commit(); renderItems(); renderDeck(); }
+  function addItem(it, focus) {
+    it.id = uid(); state.items.push(it); commit(); renderItems(); renderDeck(); select(it.id);
+    if (focus) { var ta = layer.lastChild.querySelector('textarea'); if (ta) ta.focus(); }
+    return it;
+  }
+  function viewCentre() { var r = viewport.getBoundingClientRect(), p = toWorld(r.left + r.width / 2, r.top + r.height / 2), n = state.items.length % 6; return { x: p.x - 100 + n * 24, y: p.y - 60 + n * 24 }; }
+
+  function startItemDrag(e, it, el) {
+    if (e.button > 0) return;
+    var inText = e.target.tagName === 'TEXTAREA'; select(it.id);
+    if (inText) return;
+    e.stopPropagation();
+    var sx = e.clientX, sy = e.clientY, ox = it.x, oy = it.y, moved = false;
+    el.setPointerCapture(e.pointerId);
+    function mv(ev) { var dx = (ev.clientX - sx) / view.k, dy = (ev.clientY - sy) / view.k; if (!moved && Math.abs(dx) + Math.abs(dy) < 4 / view.k) return; moved = true; it.x = Math.round(ox + dx); it.y = Math.round(oy + dy); el.style.left = it.x + 'px'; el.style.top = it.y + 'px'; }
+    function up() { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
+      if (moved) { state.items.splice(state.items.indexOf(it), 1); state.items.push(it); layer.appendChild(el); commit(); if (it.type === 'card' && !$('detail').hidden) openDetail(BY_ID[it.card], it); }
+      else if (it.type === 'card') openDetail(BY_ID[it.card], it); }
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  }
+
+  /* pan with one pointer, pinch with two, zoom with the wheel */
+  var pts = {}, pinch = 0;
+  viewport.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('.float') || e.target.closest('.item')) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY }; viewport.setPointerCapture(e.pointerId); viewport.classList.add('panning');
+    select(null); if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') document.activeElement.blur();
+  });
+  viewport.addEventListener('pointermove', function (e) {
+    var p = pts[e.pointerId]; if (!p) return;
+    var ids = Object.keys(pts);
+    if (ids.length === 1) { view.x += e.clientX - p.x; view.y += e.clientY - p.y; applyView(); }
+    p.x = e.clientX; p.y = e.clientY;
+    if (ids.length === 2) { var a = pts[ids[0]], b = pts[ids[1]], d = Math.hypot(a.x - b.x, a.y - b.y), r = viewport.getBoundingClientRect();
+      if (pinch) zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, d / pinch); pinch = d; }
+  });
+  function endPt(e) { delete pts[e.pointerId]; pinch = 0; if (!Object.keys(pts).length) viewport.classList.remove('panning'); }
+  viewport.addEventListener('pointerup', endPt); viewport.addEventListener('pointercancel', endPt);
+  viewport.addEventListener('wheel', function (e) { if (e.target.tagName === 'TEXTAREA') return; e.preventDefault(); var r = viewport.getBoundingClientRect(); zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * .0015)); }, { passive: false });
+  function zoomBtn(f) { var r = viewport.getBoundingClientRect(); zoomAt(r.width / 2, r.height / 2, f); }
+  $('z-in').onclick = function () { zoomBtn(1.25); }; $('z-out').onclick = function () { zoomBtn(.8); }; $('z-fit').onclick = fit;
+  document.addEventListener('keydown', function (e) {
+    var t = e.target.tagName; if (t === 'INPUT' || t === 'TEXTAREA' || document.querySelector('dialog[open]')) return;
+    if ((e.key === 'Delete' || e.key === 'Backspace') && sel) { e.preventDefault(); removeItem(sel); }
+    if (e.key === 'Escape') { closeDetail(); select(null); }
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#tools .nbtn'), function (b) {
+    b.onclick = function () { var p = viewCentre(); addItem({ type: 'note', kind: b.dataset.kind, x: Math.round(p.x), y: Math.round(p.y), text: '' }, true); };
+  });
+
+  /* ---------- deck ---------- */
+  var catOn = { D: true, S: true, B: true, E: true };
+  function buildChips() { CATS.forEach(function (c) {
+    var b = h('button', { class: 'chip c-' + c[0], type: 'button', 'aria-pressed': 'true' }, [h('i'), h('span', { text: c[1] })]);
+    b.onclick = function () { catOn[c[0]] = !catOn[c[0]]; b.setAttribute('aria-pressed', String(catOn[c[0]])); renderDeck(); };
+    $('chips').appendChild(b); }); }
+  function renderDeck() {
+    var list = $('decklist'), q = $('search').value.trim().toLowerCase(), used = {}, any = false;
+    state.items.forEach(function (i) { if (i.type === 'card') used[i.card] = (used[i.card] || 0) + 1; });
+    list.textContent = '';
+    CATS.forEach(function (cat) {
+      if (!catOn[cat[0]]) return;
+      var cs = CARDS.filter(function (c) { return c.c === cat[0] && (!q || (c.t + ' ' + c.d).toLowerCase().indexOf(q) >= 0); });
+      if (!cs.length) return; any = true;
+      list.appendChild(h('h3', { class: 'c-' + cat[0] }, [h('span', { class: 'dot' }), h('span', { text: cat[1] })]));
+      cs.forEach(function (c) {
+        var b = h('button', { class: 'dcard c-' + c.c, type: 'button' }, [h('span', { class: 'band' }), h('span', { class: 't', text: c.t })]);
+        if (used[c.id]) b.appendChild(h('span', { class: 'n', text: 'on board' }));
+        b.addEventListener('pointerdown', function (e) { startDeckDrag(e, c); });
+        b.addEventListener('click', function () { if (!deckDragged) openDetail(c, null); });
+        list.appendChild(b);
+      });
+    });
+    if (!any) list.appendChild(h('div', { class: 'empty', text: 'No cards match. Clear the search or turn a theme back on.' }));
+  }
+  var deckDragged = false;
+  function startDeckDrag(e, c) {
+    deckDragged = false; if (e.pointerType === 'touch' || e.button > 0) return;
+    var sx = e.clientX, sy = e.clientY, ghost = null;
+    function mv(ev) {
+      if (!ghost) { if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return; deckDragged = true;
+        ghost = h('div', { id: 'ghost', class: 'bcard c-' + c.c }, [h('div', { class: 't', text: c.t }), h('div', { class: 'band', text: CAT_NAME[c.c] })]); document.body.appendChild(ghost); }
+      ghost.style.left = ev.clientX + 'px'; ghost.style.top = ev.clientY + 'px';
+    }
+    function up(ev) { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up);
+      if (!ghost) return; ghost.remove();
+      var r = viewport.getBoundingClientRect();
+      if (ev.clientX > r.left && ev.clientX < r.right && ev.clientY > r.top && ev.clientY < r.bottom) { var p = toWorld(ev.clientX, ev.clientY); addItem({ type: 'card', card: c.id, x: Math.round(p.x - 105), y: Math.round(p.y - 50), note: '' }); } }
+    document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up);
+  }
+  $('search').addEventListener('input', renderDeck);
+  function toggleDeck(show) { var d = $('deck'); d.hidden = show === undefined ? !d.hidden : !show; $('b-deck').setAttribute('aria-expanded', String(!d.hidden)); }
+  $('b-deck').onclick = function () { toggleDeck(); };
+
+  /* ---------- card details ---------- */
+  function closeDetail() { $('detail').hidden = true; }
+  function openDetail(c, it) {
+    var d = $('detail'); d.textContent = ''; d.className = 'c-' + c.c; d.hidden = false;
+    var close = h('button', { class: 'btn', type: 'button', text: 'Close' }); close.onclick = closeDetail;
+    d.appendChild(h('div', { class: 'row' }, [h('span', { class: 'cat' }, [h('span', { class: 'dot' }), h('span', { text: CAT_NAME[c.c] })]), h('div', { style: 'flex:1' }), close]));
+    d.appendChild(h('h3', { text: c.t })); d.appendChild(h('p', { text: c.d }));
+    d.appendChild(h('h2', { text: 'Ask yourselves' })); d.appendChild(h('p', { class: 'q', text: c.q }));
+    if (c.q2) { d.appendChild(h('h2', { text: 'Go deeper' })); d.appendChild(h('p', { class: 'q', text: c.q2 })); }
+    if (it) {
+      d.appendChild(h('p', { class: 'where', text: laneText(it) }));
+      var ta = h('textarea', { class: 'in', id: 'card-note', maxlength: '600', placeholder: 'What this means for us, in one or two lines' }); ta.value = it.note;
+      ta.addEventListener('input', function () { it.note = ta.value; commit(); var el = layer.querySelector('[data-id="' + it.id + '"]'); if (el) layer.replaceChild(itemEl(it), el); });
+      d.appendChild(h('label', { class: 'f' }, [h('span', { text: 'Our note on this card' }), ta]));
+      var rm = h('button', { class: 'btn', type: 'button', text: 'Remove from board' }); rm.onclick = function () { removeItem(it.id); };
+      d.appendChild(h('div', { class: 'row' }, [rm]));
+    } else {
+      var add = h('button', { class: 'btn primary', type: 'button', text: 'Add to board' });
+      add.onclick = function () { var p = viewCentre(), n = addItem({ type: 'card', card: c.id, x: Math.round(p.x), y: Math.round(p.y), note: '' }); if (window.innerWidth <= 760) toggleDeck(false); openDetail(c, n); };
+      d.appendChild(h('div', { class: 'row' }, [add]));
+      d.appendChild(h('p', { text: 'Then drag it to the loop and the time horizon where it belongs.', style: 'color:var(--muted)' }));
+    }
+  }
+
+  /* ---------- company ---------- */
+  $('company').addEventListener('input', function () { state.company = $('company').value; commit(); });
+  $('b-about').onclick = function () { PFIELDS.forEach(function (f) { $('p-' + f).value = state.project[f] || ''; }); $('d-about').showModal(); };
+  PFIELDS.forEach(function (f) { $('p-' + f).addEventListener('input', function () { state.project[f] = $('p-' + f).value; commit(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close]'), function (b) { b.onclick = function () { b.closest('dialog').close(); }; });
+
+  /* ---------- summary ---------- */
+  function summary() {
+    var out = ['Roadmap' + (state.company ? ' of ' + state.company : ''), ''], p = state.project;
+    [['offer', 'We offer'], ['where', 'Where we work'], ['different', 'What makes us different'], ['priorities', 'Strategic priorities'], ['g1', 'Goal within 1 year'], ['g5', 'Goal in 2–5 years'], ['g10', 'Goal in 5–10 years']]
+      .forEach(function (f) { if (p[f[0]]) out.push(f[1] + ': ' + p[f[0]].replace(/\s+/g, ' ').trim()); });
+    function line(it) { if (it.type === 'card') { var c = BY_ID[it.card]; return '  - ' + c.t + ' [' + CAT_NAME[c.c] + ']' + (it.note ? ': ' + it.note.replace(/\s+/g, ' ').trim() : ''); }
+      return it.text.trim() ? '  - ' + NOTE_KINDS[it.kind] + ' note: ' + it.text.replace(/\s+/g, ' ').trim() : null; }
+    COLS.forEach(function (col, i) {
+      var block = [];
+      ROWS.forEach(function (row, j) { var ls = state.items.filter(function (it) { var l = laneOf(it); return l && l.col === i && l.row === j; }).map(line).filter(Boolean); if (ls.length) { block.push(' ' + row[0]); block = block.concat(ls); } });
+      if (block.length) { out.push('', col[0].toUpperCase()); out = out.concat(block); }
+    });
+    var parked = state.items.filter(function (it) { return !laneOf(it); }).map(line).filter(Boolean);
+    if (parked.length) { out.push('', 'NOT PLACED YET'); out = out.concat(parked); }
+    if (!state.items.length) out.push('', 'The board is empty. Drag cards from the deck to start.');
+    return out.join('\n');
+  }
+  function copy(text, box, msg) {
+    function fallback() { box.focus(); box.select(); msg.textContent = 'Selected. Press Ctrl+C or Cmd+C to copy.'; }
+    try { navigator.clipboard.writeText(text).then(function () { msg.textContent = 'Copied.'; }, fallback); } catch (e) { fallback(); }
+  }
+  $('b-summary').onclick = function () { $('sumtext').value = summary(); $('sum-msg').textContent = ''; $('d-summary').showModal(); };
+  $('sum-copy').onclick = function () { copy($('sumtext').value, $('sumtext'), $('sum-msg')); };
+
+  /* ---------- save & share ---------- */
+  function b64(s) { var b = new TextEncoder().encode(s), o = ''; for (var i = 0; i < b.length; i++) o += String.fromCharCode(b[i]); return btoa(o).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64(s) { var o = atob(s.replace(/-/g, '+').replace(/_/g, '/')), b = new Uint8Array(o.length); for (var i = 0; i < o.length; i++) b[i] = o.charCodeAt(i); return new TextDecoder().decode(b); }
+  function exported() { var s = JSON.parse(JSON.stringify(state)); s.app = 'loopholes-roadmap'; s.saved = new Date().toISOString(); return JSON.stringify(s, null, 1); }
+  function load(text, mode) { var s; try { s = sanitize(JSON.parse(text)); } catch (e) { $('sh-msg').textContent = 'That code could not be read. Copy the whole board code and try again.'; return false; }
+    if (!mode && ownExists) store(KEY + '-backup', store(KEY) || ''); setState(s, mode); if (!mode) { ownExists = true; persist(); } fit(); return true; }
+  $('b-share').onclick = function () { $('code').value = exported(); $('sh-msg').textContent = ''; $('sh-clear-yes').hidden = true; $('d-share').showModal(); };
+  $('sh-copy').onclick = function () { $('code').value = exported(); copy($('code').value, $('code'), $('sh-msg')); };
+  $('sh-load').onclick = function () { if (load($('code').value)) { $('sh-msg').textContent = 'Board loaded.'; } };
+  $('sh-link').hidden = $('sh-file').hidden = !TOP;
+  $('sh-link').onclick = function () { var url = location.href.split('#')[0] + '#b=' + b64(JSON.stringify(state)); copy(url, $('code'), $('sh-msg')); $('code').value = url; };
+  $('sh-file').onclick = function () { var a = h('a', { href: URL.createObjectURL(new Blob([exported()], { type: 'application/json' })), download: 'roadmap-' + (state.company.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'board') + '.json' }); document.body.appendChild(a); a.click(); a.remove(); $('sh-msg').textContent = 'Downloaded.'; };
+  $('sh-input').addEventListener('change', function () { var f = this.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { if (load(String(r.result))) $('sh-msg').textContent = 'Board loaded from ' + f.name + '.'; }; r.readAsText(f); this.value = ''; });
+  $('sh-clear').onclick = function () { $('sh-clear-yes').hidden = false; };
+  $('sh-clear-yes').onclick = function () { var s = blank(); s.company = state.company; s.project = state.project; setState(s); commit(); $('d-share').close(); };
+  $('banner-btn').onclick = function () {
+    if (preview === 'example') { setState(blank()); commit(); }
+    else { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} boot(true); }
+  };
+
+  /* ---------- start ---------- */
+  function boot(skipHash) {
+    var saved = store(KEY), own = null;
+    if (saved) { try { own = sanitize(JSON.parse(saved)); } catch (e) { own = null; } }
+    ownExists = !!own;
+    if (!skipHash && location.hash.indexOf('#b=') === 0) { try { setState(sanitize(JSON.parse(unb64(location.hash.slice(3)))), 'shared'); fit(); return; } catch (e) {} }
+    if (own) setState(own); else setState(example(), 'example');
+    fit();
+  }
+  buildBoard(); buildChips();
+  if (window.innerWidth <= 760) toggleDeck(false);
+  boot();
+  window.addEventListener('resize', function () { if (!state.items.length) fit(); });
+})();
+</script>
+<!--/PAGE-->
+</body>
+</html>
