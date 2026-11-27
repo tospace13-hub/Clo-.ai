@@ -12,6 +12,9 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-11-27 · roadmap board style · finished — the team rejected the first palette: the
+  page is now in TOS13 style (space13.to: yellow #FFF799, black #0A0A0A, white, Inter,
+  the short logo); board and cards keep the original Loopholes colours; 367 tests.
 - 2026-11-27 · roadmap board · finished — `roadmap/index.html`: a Miro-like board where a
   company places the 50 Loopholes strategy cards (circularloopholes.net, the team's own,
   CC BY 4.0) on four loops × four time horizons; one static file, no server; 367 tests.
@@ -108,6 +111,17 @@ habits that earned it, so later rounds repeat them. Newest first.
   on one board at once (needs a server); Cloé reading a company's exported board into
   its profile; Dutch. `circularloopholes.net` is now an allowed host of the TOS13 cloud
   environment.
+  **Style (same day, after the team's feedback):** the first version mixed in colours of
+  its own (green page, pastel notes); the team called it horrible. Now the page takes
+  its look from `space13.to/assets/css/style.css`: `--yellow #FFF799`, `--yellow-dark
+  #EDE27B`, `--yellow-light #FFFDE8`, `--black #0A0A0A`, `--gray #555`, white panels with
+  a `rgba(0,0,0,.15)` hairline and 8–10px corners, black uppercase buttons with yellow
+  text, Inter 400/600/700, the short TOS13 logo in the bar. Loopholes keeps its own
+  colours on the board and cards: teal `#7CCBB8`, card `#F6F7F1`, themes `#F38520`
+  (Digitalisation), `#FEBD29` (Sustainability), `#8081BE` (Business & Finance), `#E25270`
+  (Stakeholder Engagement). Notes: white (today), TOS13 yellow (idea), black with yellow
+  text (question). One look, no dark theme, as on space13.to. `space13.to` is now an
+  allowed host of the TOS13 cloud environment.
 - 2026-11-19 (keychain): the MacBook is installed (`~/Clo-.ai`, `~/MDPP_Website`; `cloe
   doctor` OK, 356 tests passed there on Python 3.12.16). The team asked for settings in
   the macOS Keychain. `keychain.py`: one generic-password item per setting, service

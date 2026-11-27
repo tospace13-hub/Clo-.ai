@@ -75,3 +75,6 @@ environment's network policy (and, since 2026-10-09, `cordis.europa.eu`, `ec.eur
 address check), so it can't use the cloud proxy even for allowed hosts. Fetch them on the MacBook (work order) or ask an environment
 owner to allow the domains. Don't burn turns retrying; test scrapers against committed
 fixtures.
+- Anything a company will see takes its look from space13.to (`assets/css/style.css`) and,
+  for Loopholes material, from the Loopholes assets. Read those before choosing a single
+  colour; do not invent a palette. (Roadmap board, 2026-11-27.)
