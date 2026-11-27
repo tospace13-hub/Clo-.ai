@@ -12,6 +12,8 @@ Work order 001 (MacBook, narrowed) still asks for three real CORDIS results page
 
 ## Round log (newest first)
 
+- 2026-11-27 · roadmap board · started — a Miro-like roadmapping board for companies, built
+  from the Loopholes toolkit cards (circularloopholes.net, the team's own, CC BY 4.0).
 - 2026-11-19 · keychain · finished — settings and secrets can live in the macOS Keychain
   (`cloe secrets`); the MacBook is installed (356 tests passed there); 364 tests.
 - 2026-11-19 · sprint 4 (Monday scope) · finished — `cloe draft welcome|invite|data_drop`
